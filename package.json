@@ -1,7 +1,7 @@
 {
   "name": "codino",
   "version": "1.0.0",
-  "description": "",
+  "description": "A narrative-driven coding education game for children aged 7-8. Learn programming through personalized storytelling with AI-generated challenges.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,9 +12,34 @@
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "education",
+    "coding",
+    "children",
+    "programming",
+    "learning",
+    "game",
+    "ai",
+    "claude",
+    "storytelling",
+    "interactive",
+    "bilingual",
+    "italian",
+    "english",
+    "lezer",
+    "parser",
+    "interpreter"
+  ],
+  "author": "Alessio Treglia",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alessio/codino.git"
+  },
+  "homepage": "https://alessio.github.io/codino/",
+  "bugs": {
+    "url": "https://github.com/alessio/codino/issues"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.9",
     "@codemirror/commands": "^6.10.3",
