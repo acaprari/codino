@@ -3,9 +3,10 @@ import { AppLayout } from './components/layout/AppLayout';
 import { WelcomeScreen } from './features/story/WelcomeScreen';
 import { StoryInput } from './features/story/StoryInput';
 import { MapView } from './features/map/MapView';
+import { SettingsView } from './features/settings/SettingsView';
 import { useGameStore } from './store/gameStore';
 
-type Screen = 'welcome' | 'story' | 'map' | 'editor';
+type Screen = 'welcome' | 'story' | 'map' | 'editor' | 'settings';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('welcome');
@@ -24,7 +25,7 @@ function App() {
   };
 
   return (
-    <AppLayout>
+    <AppLayout onSettingsClick={() => setScreen('settings')}>
       {screen === 'welcome' && (
         <WelcomeScreen onStart={() => setScreen('story')} />
       )}
@@ -36,6 +37,9 @@ function App() {
       )}
       {screen === 'editor' && (
         <div className="text-center text-child-lg">Editor will go here</div>
+      )}
+      {screen === 'settings' && (
+        <SettingsView onClose={() => setScreen('welcome')} />
       )}
     </AppLayout>
   );

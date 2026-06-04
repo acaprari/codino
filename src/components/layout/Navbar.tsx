@@ -1,6 +1,10 @@
 import { useGameStore } from '../../store/gameStore';
 
-export function Navbar() {
+interface NavbarProps {
+  onSettingsClick?: () => void;
+}
+
+export function Navbar({ onSettingsClick }: NavbarProps) {
   const { language, setLanguage } = useGameStore();
 
   const toggleLanguage = () => {
@@ -20,7 +24,10 @@ export function Navbar() {
             {language === 'it' ? '🇮🇹 IT' : '🇬🇧 EN'}
           </button>
 
-          <button className="text-child-base px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">
+          <button
+            onClick={onSettingsClick}
+            className="text-child-base px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+          >
             ⚙️
           </button>
         </div>
