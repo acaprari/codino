@@ -2,18 +2,25 @@ import { useState } from 'react';
 import { AppLayout } from './components/layout/AppLayout';
 import { WelcomeScreen } from './features/story/WelcomeScreen';
 import { StoryInput } from './features/story/StoryInput';
+import { MapView } from './features/map/MapView';
 import { useGameStore } from './store/gameStore';
 
-type Screen = 'welcome' | 'story' | 'map';
+type Screen = 'welcome' | 'story' | 'map' | 'editor';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('welcome');
-  const { setStory } = useGameStore();
+  const { setStory, setMapStructure } = useGameStore();
 
-  const handleStorySubmit = (story: string) => {
+  const handleStorySubmit = async (story: string) => {
     setStory(story);
+    // Mock map structure for now
+    setMapStructure([]);
     setScreen('map');
-    // TODO: Generate map with AI
+  };
+
+  const handleNodeClick = (level: number) => {
+    console.log('Clicked level:', level);
+    // TODO: Generate problem and go to editor
   };
 
   return (
@@ -25,7 +32,10 @@ function App() {
         <StoryInput onSubmit={handleStorySubmit} />
       )}
       {screen === 'map' && (
-        <div className="text-center text-child-lg">Map will go here</div>
+        <MapView onNodeClick={handleNodeClick} />
+      )}
+      {screen === 'editor' && (
+        <div className="text-center text-child-lg">Editor will go here</div>
       )}
     </AppLayout>
   );
