@@ -14,12 +14,9 @@ test.describe('Settings', () => {
   });
 
   test('should toggle language', async ({ page }) => {
-    // Find language buttons
-    const languageSection = page.locator('text=/Language|Lingua/i').locator('..');
-    
-    // Check both IT and EN options exist
-    await expect(languageSection.getByText('🇮🇹 IT')).toBeVisible();
-    await expect(languageSection.getByText('🇬🇧 EN')).toBeVisible();
+    // Check both IT and EN language buttons exist
+    await expect(page.getByText('Italiano')).toBeVisible();
+    await expect(page.getByText('English')).toBeVisible();
   });
 
   test('should show API key input', async ({ page }) => {
@@ -29,10 +26,10 @@ test.describe('Settings', () => {
   });
 
   test('should close settings', async ({ page }) => {
-    // Click close button
-    await page.getByRole('button', { name: /Close|Chiudi/i }).click();
-    
+    // Click close button (X symbol)
+    await page.getByRole('button', { name: '✕' }).click();
+
     // Should return to welcome/previous screen
-    await expect(page.getByText(/Welcome|Benvenuto/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Welcome to Codino|Benvenuto in Codino/i })).toBeVisible();
   });
 });
