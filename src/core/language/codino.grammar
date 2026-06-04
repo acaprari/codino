@@ -1,0 +1,68 @@
+@top Program { statement* }
+
+statement {
+  Assignment |
+  Print |
+  Loop |
+  Conditional
+}
+
+Assignment {
+  Identifier "=" expression
+}
+
+Print {
+  (kw<"SCRIVI"> | kw<"WRITE">) expression
+}
+
+Loop {
+  (kw<"RIPETI"> | kw<"REPEAT">) Number (kw<"VOLTE"> | kw<"TIMES">) statement* (kw<"FINE"> | kw<"END">)
+}
+
+Conditional {
+  (kw<"SE"> | kw<"IF">) condition statement* (kw<"ALTRIMENTI"> | kw<"ELSE"> statement*)? (kw<"FINE"> | kw<"END">)
+}
+
+expression {
+  Term |
+  expression !add (Plus | Minus) Term |
+  expression !mul (Times | Divide) Term
+}
+
+Term {
+  Number |
+  String |
+  Identifier |
+  "(" expression ")"
+}
+
+condition {
+  expression (Greater | Less | Equal) expression
+}
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
+
+@tokens {
+  Identifier { $[a-zA-Z_]$[a-zA-Z0-9_]* }
+  Number { $[0-9]+ }
+  String { '"' !["]* '"' | "'" ![']* "'" }
+
+  Plus { "+" }
+  Minus { "-" }
+  Times { "*" | "x" }
+  Divide { "/" | ":" }
+  Greater { ">" }
+  Less { "<" }
+  Equal { "=" }
+
+  space { $[ \t\n\r]+ }
+
+  @precedence { Times, Identifier }
+}
+
+@skip { space }
+
+@precedence {
+  mul,
+  add
+}

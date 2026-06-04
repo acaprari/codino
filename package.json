@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:grammar": "lezer-generator src/core/language/codino.grammar -o src/core/language/parser.ts",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
