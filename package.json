@@ -40,6 +40,9 @@
   "bugs": {
     "url": "https://github.com/alessio/codino/issues"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
     "@codemirror/commands": "^6.10.3",
