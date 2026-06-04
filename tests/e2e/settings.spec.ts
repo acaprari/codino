@@ -8,9 +8,9 @@ test.describe('Settings', () => {
   });
 
   test('should display settings screen', async ({ page }) => {
-    await expect(page.getByText(/Settings|Impostazioni/i)).toBeVisible();
-    await expect(page.getByText(/API Key/i)).toBeVisible();
-    await expect(page.getByText(/Language|Lingua/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Settings|Impostazioni/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /API Key/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Language|Lingua/i })).toBeVisible();
   });
 
   test('should toggle language', async ({ page }) => {

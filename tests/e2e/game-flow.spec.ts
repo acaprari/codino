@@ -28,11 +28,11 @@ test.describe('Codino Game Flow', () => {
 
   test('should navigate to settings from navbar', async ({ page }) => {
     await page.goto('/');
-    
+
     // Click settings icon in navbar
     await page.getByRole('button', { name: '⚙️' }).click();
-    
-    // Should show settings screen
-    await expect(page.getByText(/API Key|Chiave API/i)).toBeVisible();
+
+    // Should show settings screen - check for heading
+    await expect(page.getByRole('heading', { name: /API Key/i })).toBeVisible();
   });
 });
