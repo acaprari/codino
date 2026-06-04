@@ -3,16 +3,16 @@ import {LRParser} from "@lezer/lr"
 const spec_Identifier = {__proto__:null,SCRIVI:24, WRITE:26, RIPETI:30, REPEAT:32, VOLTE:34, TIMES:36, FINE:38, END:40, SE:44, IF:46, ALTRIMENTI:54, ELSE:56}
 export const parser = LRParser.deserialize({
   version: 14,
-  states: "&SQVQPOOOnQPO'#C^OOQO'#C}'#C}OOQO'#Cy'#CyQVQPOOOsQPO'#CgO!RQPO'#CjOsQPO'#CqOsQPO,58xOOQO-E6w-E6wOOQO'#C`'#C`OsQPO'#C`OOQO'#DP'#DPO!WQPO,59RO#[QPO,59UO#dQQO'#DSO#{QPO,59]O$]QPO1G.dO%aQPO,58zOsQPO,59kO%rQPO1G.pOsQPO,59nO%|QPO1G.wOOQO1G.w1G.wO&^QPO1G.wO&fQPO1G.wOOQO1G.f1G.fOOQO1G/V1G/VO&pQPO7+$[OOQO7+$[7+$[O&zQPO1G/YOOQO7+$c7+$cO'{QPO7+$cO(TQPO7+$cO(TQPO7+$cOOQO<<Gv<<GvOOQO<<G}<<G}O(_QPO<<G}OOQOAN=iAN=i",
-  stateData: "(l~OpOS~ORPO[TO]TO_UO`UOfVOgVO~OrWO~ORYOTYOUYOtZO~OT^O~OVcOWcOXcOYcORZa[Za]Za_Za`ZafZagZanZacZadZakZalZa~OadObdO~OVcOWcOXcOYcOheOieOjeO~OcgOdgOkhOliO~PVOVcOWcOXcOYcORQi[Qi]Qi_Qi`QifQigQinQicQidQikQilQi~OVcOWcOXcOYcOujO~OcmOdmO~PVOcoOdoOkpOlqO~PVOcoOdoO~OcoOdoO~PVOcsOdsO~PVOVcOWcOXcOYcORvi[vi]vi_vi`vicvidvifvigvikvilvi~OctOdtO~OctOdtO~PVOcvOdvO~PVOXR~",
-  goto: "#fwPPxP!UPPPPPPxPPxPPPPPPxPPPPPPP!`PPP!vP#SPP#ceQOS`dfilqruY[TVWZeRkcQSOYXSflruQf`QldQriRuqeROS`dfilqruQ]TQ_VQaWQbZRneR`V",
+  states: "%vQVQPOOOnQPO'#C^OOQO'#C}'#C}OOQO'#Cy'#CyQVQPOOOsQPO'#CgO!RQPO'#CjOsQPO'#CqOsQPO,58xOOQO-E6w-E6wOOQO'#C`'#C`OsQPO'#C`OOQO'#DP'#DPO!WQPO,59RO#[QPO,59UO#dQQO'#DSO#{QPO,59]O$]QPO1G.dO%aQPO,58zOsQPO,59kO%rQPO1G.pOsQPO,59nO%|QPO1G.wOOQO1G.w1G.wO&^QPO1G.wOOQO1G.f1G.fOOQO1G/V1G/VO&hQPO7+$[OOQO7+$[7+$[O&rQPO1G/YOOQO7+$c7+$cO'sQPO7+$cO'sQPO7+$cOOQO<<Gv<<GvO'}QPO<<G}OOQO<<G}<<G}OOQOAN=iAN=i",
+  stateData: "([~OpOS~ORPO[TO]TO_UO`UOfVOgVO~OrWO~ORYOTYOUYOtZO~OT^O~OVcOWcOXcOYcORZa[Za]Za_Za`ZafZagZanZacZadZakZalZa~OadObdO~OVcOWcOXcOYcOheOieOjeO~OcgOdgOkhOlhO~PVOVcOWcOXcOYcORQi[Qi]Qi_Qi`QifQigQinQicQidQikQilQi~OVcOWcOXcOYcOuiO~OclOdlO~PVOcnOdnOkoOloO~PVOcnOdnO~PVOcqOdqO~PVOVcOWcOXcOYcORvi[vi]vi_vi`vicvidvifvigvikvilvi~OcsOdsO~PVOctOdtO~PVOXR~",
+  goto: "#fwPPxP!UPPPPPPxPPxPPPPPPxPPPPPPP!`PPP!vP#SPP#ceQOS`dfhkoprY[TVWZeRjcQSOYXSfkprQf`QkdQphRroeROS`dfhkoprQ]TQ_VQaWQbZRmeR`V",
   nodeNames: "⚠ Program Assignment Identifier Term Number String Plus Minus Times Divide Print SCRIVI WRITE Loop RIPETI REPEAT VOLTE TIMES FINE END Conditional SE IF Greater Less Equal ALTRIMENTI ELSE",
   maxTerm: 38,
   skippedNodes: [0],
   repeatNodeCount: 1,
-  tokenData: "&O~RfXY!gYZ!g]^!gpq!grs!xwx#gxy$Pyz$Uz{$Z{|$`}!O$e!P!Q$j!Q![$o![!]$j!^!_$w!_!`$|!`!a%T!c!}%Y#R#S%Y#T#l%Y#l#m%k#m#o%Y~!lSp~XY!gYZ!g]^!gpq!g~!{TOr!xrs#[s;'S!x;'S;=`#a<%lO!x~#aOU~~#dP;=`<%l!x~#jTOw#gwx#[x;'S#g;'S;=`#y<%lO#g~#|P;=`<%l#g~$UOt~~$ZOu~~$`OX~~$eOV~~$jOW~~$oOY~~$tPT~!Q![$o~$|Oi~R%TOrPjQ~%YOh~~%_SR~!Q![%Y!c!}%Y#R#S%Y#T#o%Y~%rSX~R~!Q![%Y!c!}%Y#R#S%Y#T#o%Y",
+  tokenData: "&g~RfXY!gYZ!g]^!gpq!grs!xwx#gxy$Pyz$Uz{$Z{|$`}!O$e!P!Q$j!Q![$o![!]$j!^!_%Y!_!`%_!`!a%l!c!z%q!z!{&S!{!}%q#R#S%q#T#o%q~!lSp~XY!gYZ!g]^!gpq!g~!{TOr!xrs#[s;'S!x;'S;=`#a<%lO!x~#aOU~~#dP;=`<%l!x~#jTOw#gwx#[x;'S#g;'S;=`#y<%lO#g~#|P;=`<%l#g~$UOt~~$ZOu~~$`OX~~$eOV~~$jOW~~$oOY~~$tQT~!O!P$z!Q![$o~$}P!Q![%Q~%VPT~!Q![%Q~%_Oi~R%dPrP!_!`%gQ%lOjQ~%qOh~~%vSR~!Q![%q!c!}%q#R#S%q#T#o%q~&ZSX~R~!Q![%q!c!}%q#R#S%q#T#o%q",
   tokenizers: [0, 1],
   topRules: {"Program":[0,1]},
   specialized: [{term: 3, get: (value) => spec_Identifier[value] || -1}],
-  tokenPrec: 347
+  tokenPrec: 331
 })
