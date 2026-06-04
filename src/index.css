@@ -1,3 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@source "../index.html";
+@source "./**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  /* Custom font sizes for children */
+  --text-child-sm: 16px;
+  --text-child-base: 18px;
+  --text-child-lg: 20px;
+  --text-child-xl: 24px;
+
+  /* Custom spacing */
+  --spacing-child: 60px;
+}

@@ -14,8 +14,8 @@ export function SettingsView({ onClose }: SettingsViewProps) {
   const handleTestApiKey = async (key: string): Promise<boolean> => {
     try {
       const client = new ClaudeAPIClient(key);
-      // Simple test - try to create a message
-      await client.generateMap({ story: 'test', language: 'en' });
+      // Lightweight connection test - minimal token usage
+      await client.testConnection();
       return true;
     } catch (error) {
       return false;

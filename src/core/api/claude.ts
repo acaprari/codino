@@ -30,6 +30,17 @@ export class ClaudeAPIClient {
     this.client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
   }
 
+  /**
+   * Test API key validity with a minimal, low-cost request
+   */
+  async testConnection(): Promise<void> {
+    await this.client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 10,
+      messages: [{ role: 'user', content: 'Hi' }],
+    });
+  }
+
   async generateMap(request: MapGenerationRequest): Promise<MapGenerationResponse> {
     const validatedStory = validateStoryInput(request.story);
     const prompt = buildMapGenerationPrompt(validatedStory, request.language);
