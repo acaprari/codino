@@ -51,7 +51,7 @@ describe('ClaudeAPIClient', () => {
       expect(result.mapStructure[0]).toHaveProperty('branches');
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           messages: expect.arrayContaining([
             expect.objectContaining({
@@ -173,7 +173,7 @@ describe('ClaudeAPIClient', () => {
       expect(result.expectedOutput).toBe('42');
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1000,
         })
       );
@@ -259,7 +259,7 @@ describe('ClaudeAPIClient', () => {
       expect(result.explanation).toBe('Great work! Your code is efficient and clear.');
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 500,
         })
       );

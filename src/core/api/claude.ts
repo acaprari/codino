@@ -35,7 +35,7 @@ export class ClaudeAPIClient {
     const prompt = buildMapGenerationPrompt(validatedStory, request.language);
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -67,7 +67,7 @@ export class ClaudeAPIClient {
     );
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -94,7 +94,7 @@ export class ClaudeAPIClient {
     const prompt = buildStarRatingPrompt(request.problem, validatedCode, request.language);
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 500,
       messages: [{ role: 'user', content: prompt }],
     });
