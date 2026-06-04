@@ -1,23 +1,32 @@
+import { useState } from 'react';
 import { AppLayout } from './components/layout/AppLayout';
-import { Button } from './components/ui/Button';
-import { Card } from './components/ui/Card';
+import { WelcomeScreen } from './features/story/WelcomeScreen';
+import { StoryInput } from './features/story/StoryInput';
+import { useGameStore } from './store/gameStore';
+
+type Screen = 'welcome' | 'story' | 'map';
 
 function App() {
+  const [screen, setScreen] = useState<Screen>('welcome');
+  const { setStory } = useGameStore();
+
+  const handleStorySubmit = (story: string) => {
+    setStory(story);
+    setScreen('map');
+    // TODO: Generate map with AI
+  };
+
   return (
     <AppLayout>
-      <div className="flex items-center justify-center min-h-[80vh]">
-        <Card className="max-w-lg text-center">
-          <h1 className="text-child-xl font-bold text-purple-600 mb-4">
-            Welcome to Codino!
-          </h1>
-          <p className="text-child-base text-gray-700 mb-6">
-            Learn to code through storytelling
-          </p>
-          <Button variant="primary" size="lg">
-            Start Your Adventure
-          </Button>
-        </Card>
-      </div>
+      {screen === 'welcome' && (
+        <WelcomeScreen onStart={() => setScreen('story')} />
+      )}
+      {screen === 'story' && (
+        <StoryInput onSubmit={handleStorySubmit} />
+      )}
+      {screen === 'map' && (
+        <div className="text-center text-child-lg">Map will go here</div>
+      )}
     </AppLayout>
   );
 }
