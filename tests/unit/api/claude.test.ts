@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ClaudeAPIClient } from '../../../src/core/api/claude';
-import type Anthropic from '@anthropic-ai/sdk';
 
 // Mock the Anthropic SDK
 vi.mock('@anthropic-ai/sdk', () => {

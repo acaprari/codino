@@ -1,0 +1,157 @@
+<h2>Code Editor Experience</h2>
+<p class="subtitle">How should the problem-solving interface look?</p>
+
+<div class="cards">
+  <div class="card" data-choice="side-by-side" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div style="background: white; border-radius: 8px; overflow: hidden;">
+        <div style="display: flex; height: 200px;">
+          <!-- Left: Story panel -->
+          <div style="flex: 1; background: #fef3c7; padding: 15px; border-right: 3px solid #f59e0b; overflow: hidden;">
+            <div style="font-size: 10px; font-weight: bold; color: #92400e; margin-bottom: 8px;">📖 THE CHALLENGE</div>
+            <div style="font-size: 11px; line-height: 1.5; color: #78350f;">
+              The brave knight found a magical sword in the castle! The sword can defeat 3 dragons at once.
+              <br/><br/>
+              <strong>Help the knight:</strong> If the sword defeats 3 dragons, how many dragons are left from 10?
+            </div>
+            <div style="margin-top: 12px; padding: 8px; background: white; border-radius: 4px; font-size: 10px; color: #64748b;">
+              <strong>Expected output:</strong> 7
+            </div>
+          </div>
+
+          <!-- Right: Code editor -->
+          <div style="flex: 1; background: #1e293b; padding: 10px; font-family: monospace; position: relative;">
+            <div style="position: absolute; top: 8px; right: 8px; display: flex; gap: 6px;">
+              <button style="padding: 4px 10px; background: #10b981; color: white; border: none; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer;">▶ RUN</button>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; line-height: 1.6; margin-top: 20px;">
+              <div><span style="color: #64748b;">1</span> <span style="color: #f472b6;">draghi</span> = <span style="color: #fbbf24;">10</span></div>
+              <div><span style="color: #64748b;">2</span> <span style="color: #f472b6;">sconfitti</span> = <span style="color: #fbbf24;">3</span></div>
+              <div><span style="color: #64748b;">3</span> <span style="color: #f472b6;">rimasti</span> = draghi - sconfitti</div>
+              <div><span style="color: #64748b;">4</span> <span style="color: #60a5fa;">STAMPA</span> rimasti</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Side-by-Side Split</h3>
+      <p>Story/problem on left, code editor on right. Both visible at once. Good for referencing problem while coding.</p>
+      <div class="pros-cons" style="margin-top: 10px;">
+        <div class="pros"><ul><li>See problem always</li><li>Natural flow</li><li>Feels professional</li></ul></div>
+        <div class="cons"><ul><li>Less space for each</li><li>Might feel cramped</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="top-bottom" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <div style="background: white; border-radius: 8px; overflow: hidden;">
+        <!-- Top: Story panel -->
+        <div style="background: #dbeafe; padding: 15px; border-bottom: 3px solid #3b82f6;">
+          <div style="font-size: 10px; font-weight: bold; color: #1e40af; margin-bottom: 8px;">📖 THE CHALLENGE</div>
+          <div style="font-size: 11px; line-height: 1.5; color: #1e3a8a;">
+            The brave knight found a magical sword! The sword defeats 3 dragons. <strong>Help:</strong> If there are 10 dragons, how many are left?
+          </div>
+          <div style="display: inline-block; margin-top: 8px; padding: 4px 10px; background: white; border-radius: 4px; font-size: 10px; color: #64748b;">
+            Expected: <strong>7</strong>
+          </div>
+        </div>
+
+        <!-- Bottom: Code editor -->
+        <div style="background: #1e293b; padding: 12px; font-family: monospace; height: 130px; position: relative;">
+          <div style="position: absolute; top: 8px; right: 8px;">
+            <button style="padding: 4px 12px; background: #10b981; color: white; border: none; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer;">▶ RUN</button>
+          </div>
+          <div style="font-size: 11px; color: #94a3b8; line-height: 1.6; margin-top: 20px;">
+            <div><span style="color: #64748b;">1</span> <span style="color: #f472b6;">draghi</span> = <span style="color: #fbbf24;">10</span></div>
+            <div><span style="color: #64748b;">2</span> <span style="color: #f472b6;">sconfitti</span> = <span style="color: #fbbf24;">3</span></div>
+            <div><span style="color: #64748b;">3</span> <span style="color: #f472b6;">rimasti</span> = draghi - sconfitti</div>
+            <div><span style="color: #64748b;">4</span> <span style="color: #60a5fa;">STAMPA</span> rimasti</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Top-Bottom Stack</h3>
+      <p>Problem on top, editor below. More horizontal space for code. Classic "read then code" flow.</p>
+      <div class="pros-cons" style="margin-top: 10px;">
+        <div class="pros"><ul><li>More code width</li><li>Read-then-code flow</li><li>Works on tablets</li></ul></div>
+        <div class="cons"><ul><li>Can't see problem while coding below</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="modal-problem" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 15px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <div style="background: white; border-radius: 8px; overflow: hidden; position: relative;">
+        <!-- Full editor -->
+        <div style="background: #1e293b; padding: 15px; font-family: monospace; height: 200px; position: relative;">
+          <!-- Problem card floating top-right -->
+          <div style="position: absolute; top: 12px; right: 12px; width: 180px; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+            <div style="font-size: 9px; font-weight: bold; color: #92400e; margin-bottom: 6px;">📖 CHALLENGE</div>
+            <div style="font-size: 9px; line-height: 1.4; color: #78350f;">
+              Knight + sword. Defeats 3 dragons. 10 total. How many left?
+            </div>
+            <div style="margin-top: 6px; font-size: 8px; color: #92400e;">
+              Expected: <strong>7</strong>
+            </div>
+          </div>
+
+          <!-- Code editor -->
+          <div style="font-size: 11px; color: #94a3b8; line-height: 1.6; padding-top: 10px;">
+            <div><span style="color: #64748b;">1</span> <span style="color: #f472b6;">draghi</span> = <span style="color: #fbbf24;">10</span></div>
+            <div><span style="color: #64748b;">2</span> <span style="color: #f472b6;">sconfitti</span> = <span style="color: #fbbf24;">3</span></div>
+            <div><span style="color: #64748b;">3</span> <span style="color: #f472b6;">rimasti</span> = draghi - sconfitti</div>
+            <div><span style="color: #64748b;">4</span> <span style="color: #60a5fa;">STAMPA</span> rimasti</div>
+            <div><span style="color: #64748b;">5</span> </div>
+            <div><span style="color: #64748b;">6</span> </div>
+          </div>
+
+          <div style="position: absolute; bottom: 12px; right: 12px;">
+            <button style="padding: 6px 14px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">▶ RUN CODE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Floating Problem Card</h3>
+      <p>Full-screen editor with problem in a collapsible card (top-right). Max coding space, but problem can be toggled away.</p>
+      <div class="pros-cons" style="margin-top: 10px;">
+        <div class="pros"><ul><li>Maximum editor space</li><li>Minimalist, focused</li><li>Problem dismissible when memorized</li></ul></div>
+        <div class="cons"><ul><li>More complex UI</li><li>Card might obscure code</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 40px;">
+  <h3>Editor Features</h3>
+  <p style="margin-bottom: 15px;">Regardless of layout, these features should be included:</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+    <div style="padding: 15px; background: #f8fafc; border-left: 4px solid #10b981; border-radius: 4px;">
+      <div style="font-weight: bold; margin-bottom: 8px; color: #1e293b;">✅ Autocomplete</div>
+      <div style="font-size: 12px; color: #64748b;">Type "RIP" → suggests "RIPETI". Visual dropdown with keywords in both languages.</div>
+    </div>
+
+    <div style="padding: 15px; background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px;">
+      <div style="font-weight: bold; margin-bottom: 8px; color: #1e293b;">🎨 Syntax Highlighting</div>
+      <div style="font-size: 12px; color: #64748b;">Keywords (RIPETI, SE) in blue, numbers in yellow, variables in pink. Makes code readable.</div>
+    </div>
+
+    <div style="padding: 15px; background: #f8fafc; border-left: 4px solid #f59e0b; border-radius: 4px;">
+      <div style="font-weight: bold; margin-bottom: 8px; color: #1e293b;">😊 Friendly Errors</div>
+      <div style="font-size: 12px; color: #64748b;">"Hai scritto RIPETTI — intendevi RIPETI? 🤔" Appears inline or in a panel below code.</div>
+    </div>
+
+    <div style="padding: 15px; background: #f8fafc; border-left: 4px solid #ec4899; border-radius: 4px;">
+      <div style="font-weight: bold; margin-bottom: 8px; color: #1e293b;">✨ Visual Execution</div>
+      <div style="font-size: 12px; color: #64748b;">Line-by-line animation showing which line is running. Variables update visually in sidebar/overlay.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 30px; padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+  <strong>Question:</strong> Should execution be animated (showing each line highlighting as it runs) or just show final output? Animation helps understanding but takes more time.
+</div>

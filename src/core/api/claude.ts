@@ -27,7 +27,7 @@ export class ClaudeAPIClient {
   private client: Anthropic;
 
   constructor(apiKey: string) {
-    this.client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+    this.client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true } as any);
   }
 
   async generateMap(request: MapGenerationRequest): Promise<MapGenerationResponse> {

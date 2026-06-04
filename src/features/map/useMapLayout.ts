@@ -1,10 +1,5 @@
 import { useMemo } from 'react';
 
-interface Point {
-  x: number;
-  y: number;
-}
-
 interface NodePosition {
   id: number;
   level: number;
