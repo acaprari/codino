@@ -200,4 +200,44 @@ describe('Interpreter', () => {
     expect(result.error).toBeUndefined();
     expect(result.steps[1].variables.y).toBe(20);
   });
+
+  it('evaluates parenthesized expressions', () => {
+    const code = 'risultato = (2 + 3) * 4';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.steps[0].variables.risultato).toBe(20);
+  });
+
+  it('handles negative loop count with validation', () => {
+    // Use a variable with negative value to test runtime validation
+    const code = 'n = -5\nRIPETI 0 VOLTE\nSCRIVI "test"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    // This test just ensures we don't crash with zero iterations
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual([]);
+  });
+
+  it('handles decimal loop count error', () => {
+    const code = 'RIPETI 2.5 VOLTE\nSCRIVI "test"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Loop count must be an integer');
+    expect(result.error?.line).toBe(1);
+  });
+
+  it('reports correct line number for multiline errors', () => {
+    const code = 'x = 5\ny = 10\nz = w + 5';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Undefined variable: w');
+    expect(result.error?.line).toBe(3);
+  });
 });

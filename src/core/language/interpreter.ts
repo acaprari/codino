@@ -11,9 +11,9 @@ class Environment {
     this.variables.set(name, value);
   }
 
-  get(name: string): number | string {
+  get(name: string, line: number = 1): number | string {
     if (!this.variables.has(name)) {
-      throw new Error(`Undefined variable: ${name}`);
+      throw new RuntimeError(`Undefined variable: ${name}`, line);
     }
     return this.variables.get(name)!;
   }
@@ -46,6 +46,7 @@ export function execute(tree: Tree, code: string): ExecutionResult {
   const env = new Environment();
   const steps: ExecutionStep[] = [];
   const output: string[] = [];
+  let currentLine = 1; // Track current line number for error reporting
 
   try {
     const cursor = tree.cursor();
@@ -53,10 +54,12 @@ export function execute(tree: Tree, code: string): ExecutionResult {
     // Navigate to the first child (should be inside Program node)
     if (cursor.firstChild()) {
       // Execute the first statement
+      currentLine = getLineNumber(code, cursor.node.from);
       executeNode(cursor.node, env, code, steps, output);
 
       // Execute all subsequent statements
       while (cursor.nextSibling()) {
+        currentLine = getLineNumber(code, cursor.node.from);
         executeNode(cursor.node, env, code, steps, output);
       }
     }
@@ -66,10 +69,10 @@ export function execute(tree: Tree, code: string): ExecutionResult {
     if (error instanceof RuntimeError) {
       return { steps, output, error };
     }
-    // Convert generic errors to RuntimeError
+    // Convert generic errors to RuntimeError with current line number
     const runtimeError = new RuntimeError(
       error instanceof Error ? error.message : String(error),
-      1
+      currentLine
     );
     return { steps, output, error: runtimeError };
   }
@@ -225,6 +228,14 @@ function executeLoop(
       bodyStatements.push(child);
     }
     child = child.nextSibling;
+  }
+
+  // Validate loop count
+  if (iterations < 0) {
+    throw new RuntimeError('Loop count cannot be negative', line);
+  }
+  if (!Number.isInteger(iterations)) {
+    throw new RuntimeError('Loop count must be an integer', line);
   }
 
   // Execute the loop body iterations times
@@ -433,18 +444,33 @@ function evaluateTerm(
     if (!env.has(name)) {
       throw new RuntimeError(`Undefined variable: ${name}`, line);
     }
-    return env.get(name);
+    return env.get(name, line);
   }
 
-  // Handle Term node (wrapper around Number/String/Identifier)
+  // Handle Term node (wrapper around Number/String/Identifier or parenthesized expression)
   if (nodeName === 'Term') {
+    const children: SyntaxNode[] = [];
     let child = node.firstChild;
+
     while (child) {
-      if (child.type.name !== '⚠' && child.name !== '(' && child.name !== ')') {
-        return evaluateTerm(child, env, code, line);
+      if (child.type.name !== '⚠') {
+        children.push(child);
       }
       child = child.nextSibling;
     }
+
+    if (children.length === 0) {
+      throw new RuntimeError('Empty term', line);
+    }
+
+    // If we have multiple children (Terms and operators), it's a parenthesized expression
+    // Example: Term(Term(2), Plus, Term(3))
+    if (children.length > 1) {
+      return evaluateFlatExpression(children, env, code, line);
+    }
+
+    // Single child - just evaluate it
+    return evaluateTerm(children[0], env, code, line);
   }
 
   throw new RuntimeError(`Cannot evaluate: ${nodeName}`, line);
