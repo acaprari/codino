@@ -4,11 +4,11 @@ import { ClaudeAPIClient } from '../../../src/core/api/claude';
 // Mock the Anthropic SDK
 vi.mock('@anthropic-ai/sdk', () => {
   return {
-    default: vi.fn().mockImplementation(() => ({
-      messages: {
+    default: class MockAnthropic {
+      messages = {
         create: vi.fn(),
-      },
-    })),
+      };
+    },
   };
 });
 
