@@ -8,7 +8,7 @@ statement {
 }
 
 Assignment {
-  Identifier "=" expression
+  Identifier Equal expression
 }
 
 Print {
@@ -26,7 +26,7 @@ Conditional {
 expression {
   Term |
   expression !add (Plus | Minus) Term |
-  expression !mul (Times | Divide) Term
+  expression !mul (Times | XMul | Divide) Term
 }
 
 Term {
@@ -40,6 +40,11 @@ condition {
   expression (Greater | Less | Equal) expression
 }
 
+// XMul: the letter x as a multiplication operator alias.
+// @specialize maps the complete identifier "x" to XMul, leaving
+// multi-character identifiers like xa, x2, xyz as plain Identifiers.
+XMul { @specialize[@name=XMul]<Identifier, "x"> }
+
 kw<term> { @specialize[@name={term}]<Identifier, term> }
 
 @tokens {
@@ -49,15 +54,13 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
 
   Plus { "+" }
   Minus { "-" }
-  Times { "*" | "X" }
+  Times { "*" }
   Divide { "/" | ":" }
   Greater { ">" }
   Less { "<" }
-  Equal { "==" }
+  Equal { "=" }
 
   space { $[ \t\n\r]+ }
-
-  @precedence { Times, Identifier }
 }
 
 @skip { space }

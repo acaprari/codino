@@ -1,6 +1,8 @@
 import type { Tree, SyntaxNode } from '@lezer/common';
 import { ExecutionStep, ExecutionResult, RuntimeError } from './types';
 
+const MAX_LOOP_ITERATIONS = 1000;
+
 /**
  * Environment for variable storage and management
  */
@@ -128,8 +130,8 @@ function executeAssignment(
     if (isFirst && child.type.name === 'Identifier') {
       identifier = code.substring(child.from, child.to);
       isFirst = false;
-    } else if (!isFirst && child.type.name !== '⚠') {
-      // Everything after the identifier is part of the expression
+    } else if (!isFirst && child.type.name !== '⚠' && child.type.name !== 'Equal') {
+      // Everything after the identifier (skipping the = separator) is part of the expression
       expressionParts.push(child);
     }
     child = child.nextSibling;
@@ -236,6 +238,9 @@ function executeLoop(
   }
   if (!Number.isInteger(iterations)) {
     throw new RuntimeError('Loop count must be an integer', line);
+  }
+  if (iterations > MAX_LOOP_ITERATIONS) {
+    throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
   }
 
   // Execute the loop body iterations times
@@ -360,6 +365,7 @@ function evaluateFlatExpression(
       part.type.name === 'Plus' ||
       part.type.name === 'Minus' ||
       part.type.name === 'Times' ||
+      part.type.name === 'XMul' ||
       part.type.name === 'Divide'
     ) {
       const op =
@@ -367,7 +373,7 @@ function evaluateFlatExpression(
           ? '+'
           : part.type.name === 'Minus'
           ? '-'
-          : part.type.name === 'Times'
+          : part.type.name === 'Times' || part.type.name === 'XMul'
           ? '*'
           : '/';
       operators.push(op);
@@ -378,6 +384,13 @@ function evaluateFlatExpression(
 
   if (values.length !== operators.length + 1) {
     throw new RuntimeError('Invalid expression structure', line);
+  }
+
+  // Strings cannot be used in arithmetic
+  for (const v of values) {
+    if (typeof v === 'string') {
+      throw new RuntimeError('Cannot use text in an arithmetic operation', line);
+    }
   }
 
   // Apply operators with precedence: * and / before + and -

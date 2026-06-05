@@ -2,19 +2,26 @@ import { useGameStore } from '../../store/gameStore';
 import { useMapLayout } from './useMapLayout';
 import { MapPath } from './MapPath';
 import { MapNode } from './MapNode';
+import { MapBranch } from './MapBranch';
+import type { Element } from '../../types/game';
 
 interface MapViewProps {
-  onNodeClick: (level: number) => void;
+  onBranchClick: (element: Element) => void;
 }
 
-export function MapView({ onNodeClick }: MapViewProps) {
-  const { completedLevels, currentLevel, chosenElements } = useGameStore();
-  const { positions, pathD, width, height } = useMapLayout(10);
+export function MapView({ onBranchClick }: MapViewProps) {
+  const { completedLevels, currentLevel, chosenElements, mapStructure } = useGameStore();
+  const completedCount = completedLevels.length;
+
+  const { spineNodes, branchNodes, spinePath, width, height } =
+    useMapLayout(10, completedCount, mapStructure);
+
+  const gameComplete = completedCount >= 10;
 
   return (
     <div className="flex flex-col items-center">
       <div className="mb-4 text-child-lg font-bold text-purple-600">
-        Level {currentLevel} of 10
+        {gameComplete ? '🎉 Adventure Complete!' : `Level ${currentLevel} of 10`}
       </div>
 
       <svg
@@ -23,26 +30,55 @@ export function MapView({ onNodeClick }: MapViewProps) {
         viewBox={`0 0 ${width} ${height}`}
         className="bg-white rounded-xl shadow-lg"
       >
-        <MapPath pathD={pathD} />
+        {/* Winding path spine */}
+        <MapPath pathD={spinePath} />
 
-        {positions.map((pos, idx) => {
-          const completed = completedLevels.includes(pos.level);
-          const unlocked = pos.level <= currentLevel + 1;
-          const element = chosenElements[idx];
+        {/* Spine nodes: completed (green) and locked (gray).
+            The frontier spine position is omitted when branch nodes are shown there. */}
+        {spineNodes.map((node, idx) => {
+          const isCompleted = completedLevels.includes(node.level);
+          const isFrontier = idx === completedCount && branchNodes.length > 0;
+
+          if (isFrontier) return null; // replaced by branch nodes
 
           return (
             <MapNode
-              key={pos.id}
-              x={pos.x}
-              y={pos.y}
-              level={pos.level}
-              emoji={element?.emoji}
-              completed={completed}
-              unlocked={unlocked}
-              onClick={() => onNodeClick(pos.level)}
+              key={node.level}
+              x={node.x}
+              y={node.y}
+              level={node.level}
+              emoji={isCompleted ? chosenElements[idx]?.emoji : undefined}
+              completed={isCompleted}
+              unlocked={false}
             />
           );
         })}
+
+        {/* Branch nodes at the frontier — the clickable element choices */}
+        {branchNodes.map((branch, idx) => (
+          <MapBranch
+            key={idx}
+            x={branch.x}
+            y={branch.y}
+            fromX={branch.fromX}
+            fromY={branch.fromY}
+            element={branch.element}
+            onClick={() => onBranchClick(branch.element)}
+          />
+        ))}
+
+        {/* No branches yet — map generation pending or failed */}
+        {!gameComplete && branchNodes.length === 0 && (
+          <text
+            x={width / 2}
+            y={height / 2}
+            textAnchor="middle"
+            fontSize="18"
+            fill="#9ca3af"
+          >
+            Generating map…
+          </text>
+        )}
       </svg>
     </div>
   );

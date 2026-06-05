@@ -5,10 +5,13 @@ import { useGameStore } from '../../store/gameStore';
 
 interface StoryInputProps {
   onSubmit: (story: string) => void;
+  onGetIdeas?: () => Promise<string[]>;
 }
 
-export function StoryInput({ onSubmit }: StoryInputProps) {
+export function StoryInput({ onSubmit, onGetIdeas }: StoryInputProps) {
   const [story, setStory] = useState('');
+  const [ideasLoading, setIdeasLoading] = useState(false);
+  const [aiIdeas, setAiIdeas] = useState<string[]>([]);
   const { language } = useGameStore();
 
   const text = {
@@ -21,6 +24,9 @@ export function StoryInput({ onSubmit }: StoryInputProps) {
         'Un mago impara nuovi incantesimi...',
       ],
       examplesLabel: 'Esempi:',
+      ideasButton: 'Dammi un\'idea 💡',
+      ideasLoading: '⏳ Penso...',
+      ideasLabel: 'Idee generate:',
       button: 'Inizia l\'avventura',
     },
     en: {
@@ -32,6 +38,9 @@ export function StoryInput({ onSubmit }: StoryInputProps) {
         'A wizard learns new spells...',
       ],
       examplesLabel: 'Examples:',
+      ideasButton: 'Give me ideas 💡',
+      ideasLoading: '⏳ Thinking...',
+      ideasLabel: 'Generated ideas:',
       button: 'Start Adventure',
     },
   };
@@ -41,6 +50,19 @@ export function StoryInput({ onSubmit }: StoryInputProps) {
   const handleSubmit = () => {
     if (story.trim()) {
       onSubmit(story.trim());
+    }
+  };
+
+  const handleGetIdeas = async () => {
+    if (!onGetIdeas) return;
+    setIdeasLoading(true);
+    try {
+      const ideas = await onGetIdeas();
+      setAiIdeas(ideas);
+    } catch {
+      // silently ignore — the button just resets
+    } finally {
+      setIdeasLoading(false);
     }
   };
 
@@ -59,11 +81,39 @@ export function StoryInput({ onSubmit }: StoryInputProps) {
           maxLength={500}
         />
 
-        <div className="mt-4 text-child-sm text-gray-500 text-right">
-          {story.length}/500
+        <div className="mt-2 flex justify-between items-center">
+          <span className="text-child-sm text-gray-400">{story.length}/500</span>
+          {onGetIdeas && (
+            <button
+              onClick={handleGetIdeas}
+              disabled={ideasLoading}
+              className="text-child-sm text-purple-600 hover:text-purple-800 disabled:text-gray-400 transition"
+            >
+              {ideasLoading ? t.ideasLoading : t.ideasButton}
+            </button>
+          )}
         </div>
 
-        <div className="mt-6">
+        {/* AI-generated idea chips */}
+        {aiIdeas.length > 0 && (
+          <div className="mt-4">
+            <p className="text-child-sm text-gray-600 mb-2">{t.ideasLabel}</p>
+            <div className="flex flex-wrap gap-2">
+              {aiIdeas.map((idea, i) => (
+                <button
+                  key={i}
+                  onClick={() => setStory(idea)}
+                  className="px-3 py-2 text-child-sm bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition"
+                >
+                  {idea.split('...')[0]}...
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Static example chips */}
+        <div className="mt-4">
           <p className="text-child-sm text-gray-600 mb-2">{t.examplesLabel}</p>
           <div className="flex flex-wrap gap-2">
             {t.examples.map((example, i) => (

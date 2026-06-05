@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppLayout } from './components/layout/AppLayout';
 import { WelcomeScreen } from './features/story/WelcomeScreen';
 import { StoryInput } from './features/story/StoryInput';
+import { GeneratingScreen } from './features/story/GeneratingScreen';
 import { MapView } from './features/map/MapView';
 import { EditorView } from './features/editor/EditorView';
 import { SuccessScreen } from './features/execution/SuccessScreen';
@@ -10,31 +11,53 @@ import { ExecutionAnimator } from './features/execution/ExecutionAnimator';
 import { SettingsView } from './features/settings/SettingsView';
 import { useGameStore } from './store/gameStore';
 import { useClaudeAPI } from './core/api/useClaudeAPI';
-import { parse, execute } from './core/language';
+import { parseWithErrors, execute } from './core/language';
+import type { ExecutionResult } from './core/language';
+import type { StarRatingResponse, Element } from './core/api/types';
 
-type Screen = 'welcome' | 'story' | 'map' | 'editor' | 'executing' | 'success' | 'error' | 'settings';
+type Screen = 'welcome' | 'story' | 'generating' | 'map' | 'editor' | 'executing' | 'success' | 'error' | 'settings';
+
+function initialScreen(): Screen {
+  const { initialStory, currentProblem } = useGameStore.getState();
+  if (currentProblem) return 'editor';
+  if (initialStory)   return 'map';
+  return 'welcome';
+}
+
+interface CompletedExecution {
+  result: ExecutionResult;
+  rating: StarRatingResponse | null;
+}
 
 function App() {
-  const [screen, setScreen] = useState<Screen>('welcome');
-  const [executionResult, setExecutionResult] = useState<any>(null);
+  const [screen, setScreen] = useState<Screen>(initialScreen);
+  const [pendingExecution, setPendingExecution] = useState<ExecutionResult | null>(null);
+  const [completedExecution, setCompletedExecution] = useState<CompletedExecution | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorExpected, setErrorExpected] = useState<string | undefined>();
+  const [errorActual, setErrorActual] = useState<string | undefined>();
+  const [hint, setHint] = useState<string | undefined>();
+  const [hintLoading, setHintLoading] = useState(false);
 
   const {
     initialStory,
     currentLevel,
     chosenElements,
+    currentProblem,
+    currentCode,
     language,
     setStory,
     setMapStructure,
     selectElement,
     setProblem,
-    completeLevel
+    completeLevel,
   } = useGameStore();
 
   const apiClient = useClaudeAPI();
 
   const handleStorySubmit = async (story: string) => {
     setStory(story);
+    setScreen('generating'); // show loading feedback immediately
 
     if (apiClient) {
       try {
@@ -42,28 +65,32 @@ function App() {
         setMapStructure(mapStructure);
       } catch (error) {
         console.error('Failed to generate map:', error);
+        // continue to map anyway — it will show "Generating map…" until branches arrive
       }
     }
 
     setScreen('map');
   };
 
-  const handleNodeClick = async (level: number) => {
+  const handleBranchClick = async (element: Element) => {
     if (!apiClient) {
       alert('Please set your API key in Settings first!');
       setScreen('settings');
       return;
     }
 
-    // For now, use mock element selection
-    const mockElement = { emoji: '⭐', name: 'star' };
-    selectElement(mockElement);
+    // Capture level and elements BEFORE selectElement increments currentLevel
+    const nextLevel = currentLevel + 1;
+    const allElements = [...chosenElements, element];
+
+    selectElement(element);
+    setHint(undefined);
 
     try {
       const problem = await apiClient.generateProblem({
         story: initialStory,
-        chosenElements: [...chosenElements, mockElement],
-        level,
+        chosenElements: allElements,
+        level: nextLevel,
         language,
       });
 
@@ -75,63 +102,116 @@ function App() {
     }
   };
 
-  const handleRunCode = async (code: string) => {
-    try {
-      const tree = parse(code);
-      const result = execute(tree, code);
+  const handleRunCode = (code: string) => {
+    setHint(undefined);
 
-      if (result.error) {
-        setErrorMessage(`Error on line ${result.error.line}: ${result.error.message}`);
-        setExecutionResult(result);
-        setScreen('error');
-        return;
+    // Step 1: check for parse errors before executing
+    const { tree, errors } = parseWithErrors(code);
+    if (errors.length > 0) {
+      // Present the first parse error; child-friendly message built by the UI layer
+      const first = errors[0];
+      let msg = `There's a problem on line ${first.line}.`;
+      if (first.type === 'typo-keyword' && first.suggestion) {
+        msg = `You wrote "${first.found}" on line ${first.line} — did you mean ${first.suggestion}? 🤔`;
+      } else if (first.type === 'missing-end') {
+        msg = `Your block on line ${first.line} needs a FINE (or END) at the end! 🤔`;
       }
-
-      setExecutionResult(result);
-      setScreen('executing');
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Unknown error');
+      setErrorMessage(msg);
+      setErrorExpected(undefined);
+      setErrorActual(undefined);
       setScreen('error');
+      return;
     }
+
+    // Step 2: execute
+    const result = execute(tree, code);
+
+    if (result.error) {
+      setErrorMessage(`Error on line ${result.error.line}: ${result.error.message}`);
+      setErrorExpected(undefined);
+      setErrorActual(undefined);
+      setPendingExecution(result);
+      setScreen('error');
+      return;
+    }
+
+    setPendingExecution(result);
+    setScreen('executing');
   };
 
   const handleExecutionComplete = async () => {
-    const { currentProblem } = useGameStore.getState();
+    if (!currentProblem || !pendingExecution) return;
 
-    if (!currentProblem || !executionResult) return;
-
-    // Check if output matches expected
-    const actualOutput = executionResult.output.join('\n').trim();
+    const actualOutput = pendingExecution.output.join('\n').trim();
     const expectedOutput = currentProblem.expectedOutput.trim();
 
-    if (actualOutput === expectedOutput) {
+    if (actualOutput !== expectedOutput) {
+      // Step 4a: output mismatch — call analyzeError for child-friendly explanation
+      setErrorExpected(expectedOutput);
+      setErrorActual(actualOutput);
+
       if (apiClient) {
         try {
-          const rating = await apiClient.rateCode({
+          const { explanation } = await apiClient.analyzeError({
             problem: currentProblem.narrative,
-            code: executionResult.output.join('\n'),
+            code: currentCode,
+            expectedOutput,
+            actualOutput,
             language,
           });
-
-          completeLevel(currentLevel, rating.stars);
-          setExecutionResult({ ...executionResult, ...rating });
-          setScreen('success');
-        } catch (error) {
-          console.error('Failed to rate code:', error);
-          // Default to success with 3 stars if rating fails
-          completeLevel(currentLevel, 3);
-          setExecutionResult({
-            ...executionResult,
-            stars: 3,
-            explanation: 'Great job!',
-            narrativeBridge: 'Your adventure continues...'
-          });
-          setScreen('success');
+          setErrorMessage(explanation);
+        } catch {
+          setErrorMessage("Your output doesn't match the expected result.");
         }
+      } else {
+        setErrorMessage("Your output doesn't match the expected result.");
       }
-    } else {
-      setErrorMessage('Your output doesn\'t match the expected result.');
+
       setScreen('error');
+      return;
+    }
+
+    // Step 5: correct output — rate the code
+    if (apiClient) {
+      try {
+        const rating = await apiClient.rateCode({
+          story: initialStory,
+          problem: currentProblem.narrative,
+          code: currentCode,          // source code, not execution output
+          level: currentLevel,
+          chosenElement: chosenElements[chosenElements.length - 1] ?? { emoji: '⭐', name: 'star' },
+          language,
+        });
+
+        completeLevel(currentLevel, rating.stars);
+        setCompletedExecution({ result: pendingExecution, rating });
+        setScreen('success');
+      } catch {
+        // Rating failure: complete with 3 stars and placeholder copy
+        completeLevel(currentLevel, 3);
+        setCompletedExecution({
+          result: pendingExecution,
+          rating: { stars: 3, explanation: 'Great job!', narrativeBridge: 'Your adventure continues...' },
+        });
+        setScreen('success');
+      }
+    }
+  };
+
+  const handleGetHelp = async () => {
+    if (!apiClient || !currentProblem) return;
+    setHintLoading(true);
+    try {
+      const { hint: hintText } = await apiClient.generateHint({
+        problem: currentProblem.narrative,
+        code: currentCode,
+        language,
+      });
+      setHint(hintText);
+    } catch {
+      setHint('Try reading the problem again carefully! 😊');
+    } finally {
+      setHintLoading(false);
     }
   };
 
@@ -142,31 +222,44 @@ function App() {
       )}
 
       {screen === 'story' && (
-        <StoryInput onSubmit={handleStorySubmit} />
+        <StoryInput
+          onSubmit={handleStorySubmit}
+          onGetIdeas={apiClient
+            ? () => apiClient.generateStoryIdeas({ language }).then(r => r.ideas)
+            : undefined}
+        />
+      )}
+
+      {screen === 'generating' && (
+        <GeneratingScreen language={language} />
       )}
 
       {screen === 'map' && (
-        <MapView onNodeClick={handleNodeClick} />
+        <MapView onBranchClick={handleBranchClick} />
       )}
 
       {screen === 'editor' && (
-        <EditorView onRun={handleRunCode} />
+        <EditorView
+          onRun={handleRunCode}
+          onGetHelp={handleGetHelp}
+          helpLoading={hintLoading}
+          hint={hint}
+        />
       )}
 
-      {screen === 'executing' && executionResult && (
-        <div className="max-w-4xl mx-auto">
-          <ExecutionAnimator
-            steps={executionResult.steps}
-            onComplete={handleExecutionComplete}
-          />
-        </div>
+      {screen === 'executing' && pendingExecution && (
+        <ExecutionAnimator
+          code={currentCode}
+          steps={pendingExecution.steps}
+          onComplete={handleExecutionComplete}
+        />
       )}
 
-      {screen === 'success' && executionResult && (
+      {screen === 'success' && completedExecution?.rating && (
         <SuccessScreen
-          stars={executionResult.stars || 3}
-          explanation={executionResult.explanation || 'Great job!'}
-          narrativeBridge={executionResult.narrativeBridge || 'Your adventure continues...'}
+          stars={completedExecution.rating.stars}
+          explanation={completedExecution.rating.explanation}
+          narrativeBridge={completedExecution.rating.narrativeBridge}
           onContinue={() => setScreen('map')}
         />
       )}
@@ -175,10 +268,10 @@ function App() {
         <div className="max-w-4xl mx-auto">
           <ErrorDisplay
             message={errorMessage}
-            expected={useGameStore.getState().currentProblem?.expectedOutput}
-            actual={executionResult?.output?.join('\n')}
+            expected={errorExpected}
+            actual={errorActual}
             onTryAgain={() => setScreen('editor')}
-            onGetHelp={() => alert('Help feature coming soon!')}
+            onGetHelp={handleGetHelp}
           />
         </div>
       )}

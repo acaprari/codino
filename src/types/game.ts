@@ -3,6 +3,11 @@ export interface Element {
   name: string;
 }
 
+export interface LevelStructure {
+  level: number;
+  branches: Element[];
+}
+
 export interface MapNode {
   id: number;
   level: number;

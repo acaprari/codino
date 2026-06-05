@@ -4,13 +4,13 @@ import { execute } from '../../../src/core/language/interpreter';
 
 describe('Interpreter', () => {
   it('executes simple assignment', () => {
-    const code = 'x = 5';
+    const code = 'a = 5';
     const tree = parse(code);
     const result = execute(tree, code);
 
     expect(result.error).toBeUndefined();
     expect(result.steps.length).toBeGreaterThan(0);
-    expect(result.steps[result.steps.length - 1].variables.x).toBe(5);
+    expect(result.steps[result.steps.length - 1].variables.a).toBe(5);
   });
 
   it('executes assignment with decimal number', () => {
@@ -34,7 +34,7 @@ describe('Interpreter', () => {
   });
 
   it('executes print with variable', () => {
-    const code = 'x = 10\nSCRIVI x';
+    const code = 'n = 10\nSCRIVI n';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -61,7 +61,7 @@ describe('Interpreter', () => {
   });
 
   it('executes conditional with > comparison', () => {
-    const code = 'x = 10\nSE x > 5\nSCRIVI "maggiore"\nFINE';
+    const code = 'n = 10\nSE n > 5\nSCRIVI "maggiore"\nFINE';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -70,7 +70,7 @@ describe('Interpreter', () => {
   });
 
   it('executes conditional with < comparison', () => {
-    const code = 'x = 3\nSE x < 5\nSCRIVI "minore"\nFINE';
+    const code = 'n = 3\nSE n < 5\nSCRIVI "minore"\nFINE';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -78,8 +78,8 @@ describe('Interpreter', () => {
     expect(result.output).toEqual(['minore']);
   });
 
-  it('executes conditional with == comparison', () => {
-    const code = 'x = 5\nSE x == 5\nSCRIVI "uguale"\nFINE';
+  it('executes conditional with = comparison', () => {
+    const code = 'n = 5\nSE n = 5\nSCRIVI "uguale"\nFINE';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -88,7 +88,7 @@ describe('Interpreter', () => {
   });
 
   it('executes conditional with ELSE branch', () => {
-    const code = 'x = 3\nSE x == 5\nSCRIVI "cinque"\nALTRIMENTI\nSCRIVI "altro"\nFINE';
+    const code = 'n = 3\nSE n = 5\nSCRIVI "cinque"\nALTRIMENTI\nSCRIVI "altro"\nFINE';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -123,8 +123,8 @@ describe('Interpreter', () => {
     expect(result.steps[0].variables.risultato).toBe(15);
   });
 
-  it('evaluates math expression with multiplication using X', () => {
-    const code = 'risultato = 5 X 3';
+  it('evaluates math expression with multiplication using lowercase x', () => {
+    const code = 'risultato = 5 x 3';
     const tree = parse(code);
     const result = execute(tree, code);
 
@@ -161,44 +161,43 @@ describe('Interpreter', () => {
   });
 
   it('handles undefined variable error', () => {
-    const code = 'x = y + 5';
+    const code = 'a = b + 5';
     const tree = parse(code);
     const result = execute(tree, code);
 
     expect(result.error).toBeDefined();
-    expect(result.error?.message).toContain('Undefined variable: y');
+    expect(result.error?.message).toContain('Undefined variable: b');
     expect(result.error?.line).toBe(1);
   });
 
+  it('handles string used in arithmetic', () => {
+    const code = 'parola = "ciao"\nrisultato = parola + 5';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('text');
+  });
+
   it('tracks execution steps with variable state', () => {
-    const code = 'x = 5\ny = 10\nz = x + y';
+    const code = 'a = 5\nb = 10\nc = a + b';
     const tree = parse(code);
     const result = execute(tree, code);
 
     expect(result.error).toBeUndefined();
     expect(result.steps.length).toBe(3);
-    expect(result.steps[0].variables).toEqual({ x: 5 });
-    expect(result.steps[1].variables).toEqual({ x: 5, y: 10 });
-    expect(result.steps[2].variables).toEqual({ x: 5, y: 10, z: 15 });
+    expect(result.steps[0].variables).toEqual({ a: 5 });
+    expect(result.steps[1].variables).toEqual({ a: 5, b: 10 });
+    expect(result.steps[2].variables).toEqual({ a: 5, b: 10, c: 15 });
   });
 
-  it('evaluates complex expressions with operator precedence', () => {
+  it('evaluates complex expressions with operator precedence (* before +)', () => {
     const code = 'risultato = 10 + 5 * 2';
     const tree = parse(code);
     const result = execute(tree, code);
 
     expect(result.error).toBeUndefined();
-    // With left-to-right evaluation in Lezer grammar: 5 * 2 = 10, then 10 + 10 = 20
     expect(result.steps[0].variables.risultato).toBe(20);
-  });
-
-  it('handles variable named x without multiplication conflict', () => {
-    const code = 'x = 10\ny = x * 2';
-    const tree = parse(code);
-    const result = execute(tree, code);
-
-    expect(result.error).toBeUndefined();
-    expect(result.steps[1].variables.y).toBe(20);
   });
 
   it('evaluates parenthesized expressions', () => {
@@ -210,13 +209,11 @@ describe('Interpreter', () => {
     expect(result.steps[0].variables.risultato).toBe(20);
   });
 
-  it('handles negative loop count with validation', () => {
-    // Use a variable with negative value to test runtime validation
-    const code = 'n = -5\nRIPETI 0 VOLTE\nSCRIVI "test"\nFINE';
+  it('executes loop with zero iterations without error', () => {
+    const code = 'RIPETI 0 VOLTE\nSCRIVI "test"\nFINE';
     const tree = parse(code);
     const result = execute(tree, code);
 
-    // This test just ensures we don't crash with zero iterations
     expect(result.error).toBeUndefined();
     expect(result.output).toEqual([]);
   });
@@ -231,8 +228,26 @@ describe('Interpreter', () => {
     expect(result.error?.line).toBe(1);
   });
 
+  it('rejects loop count exceeding 1000', () => {
+    const code = 'RIPETI 1001 VOLTE\nSCRIVI "test"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('1000');
+  });
+
+  it('accepts loop count of exactly 1000', () => {
+    const code = 'RIPETI 1000 VOLTE\nSCRIVI "a"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toHaveLength(1000);
+  });
+
   it('reports correct line number for multiline errors', () => {
-    const code = 'x = 5\ny = 10\nz = w + 5';
+    const code = 'a = 5\nb = 10\nc = w + 5';
     const tree = parse(code);
     const result = execute(tree, code);
 
