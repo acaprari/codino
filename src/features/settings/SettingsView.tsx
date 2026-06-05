@@ -28,6 +28,7 @@ export function SettingsView({ onClose }: SettingsViewProps) {
       confirmDescription: 'Questo cancellerà la tua storia e i progressi. Non si può tornare indietro.',
       cancel: 'Annulla',
       confirm: 'Conferma',
+      close: 'Chiudi',
     },
     en: {
       title: 'Settings',
@@ -42,6 +43,7 @@ export function SettingsView({ onClose }: SettingsViewProps) {
       confirmDescription: 'This will delete your story and progress. There is no way to undo this.',
       cancel: 'Cancel',
       confirm: 'Confirm',
+      close: 'Close',
     },
   };
 
@@ -70,7 +72,7 @@ export function SettingsView({ onClose }: SettingsViewProps) {
           <button
             onClick={onClose}
             className="text-child-lg text-gray-500 hover:text-gray-700"
-            aria-label="Close"
+            aria-label={t.close}
           >
             ✕
           </button>

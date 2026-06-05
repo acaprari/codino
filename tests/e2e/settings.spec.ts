@@ -3,9 +3,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Settings', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Open settings
+    // Open settings — the settings button is the only ⚙️ button in the navbar
     await page.getByRole('button', { name: '⚙️' }).click();
   });
+
+  // Settings UI is fully bilingual. Match either Italian or English labels
+  // since the default language depends on persisted state.
 
   test('should display settings screen', async ({ page }) => {
     await expect(page.getByRole('heading', { name: /Settings|Impostazioni/i })).toBeVisible();
@@ -14,9 +17,11 @@ test.describe('Settings', () => {
   });
 
   test('should toggle language', async ({ page }) => {
-    // Check both IT and EN language buttons exist
-    await expect(page.getByText('Italiano')).toBeVisible();
-    await expect(page.getByText('English')).toBeVisible();
+    // Both language buttons exist regardless of current UI language.
+    // Italian button label: "Italiano" (IT) or "Italian" (EN)
+    // English button label: "English" (EN) or "Inglese" (IT)
+    await expect(page.getByText(/Italiano|Italian/)).toBeVisible();
+    await expect(page.getByText(/English|Inglese/)).toBeVisible();
   });
 
   test('should show API key input', async ({ page }) => {
@@ -26,8 +31,8 @@ test.describe('Settings', () => {
   });
 
   test('should close settings', async ({ page }) => {
-    // Click close button (X symbol)
-    await page.getByRole('button', { name: '✕' }).click();
+    // Close button has bilingual aria-label: "Close" (EN) or "Chiudi" (IT)
+    await page.getByRole('button', { name: /Close|Chiudi/i }).click();
 
     // Should return to welcome/previous screen
     await expect(page.getByRole('heading', { name: /Welcome to Codino|Benvenuto in Codino/i })).toBeVisible();
