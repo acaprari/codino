@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:grammar": "lezer-generator src/core/language/codino.grammar -o src/core/language/parser.ts",
+    "build:grammar": "lezer-generator src/core/language/codino.grammar -o src/core/language/parser.ts && node -e \"const f='src/core/language/parser.ts';const fs=require('fs');const c=fs.readFileSync(f,'utf8');if(!c.includes('@ts-nocheck'))fs.writeFileSync(f,c.replace(/^(\\/\\/[^\\n]*\\n)/,'$1// @ts-nocheck\\n'))\"",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
