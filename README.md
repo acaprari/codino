@@ -274,7 +274,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## License
 
-ISC License - see package.json for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Support
 

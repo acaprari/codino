@@ -30,8 +30,8 @@
     "parser",
     "interpreter"
   ],
-  "author": "Alessio Treglia",
-  "license": "ISC",
+  "author": "Alessio Caprari",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/alessio/codino.git"
