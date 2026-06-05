@@ -177,8 +177,18 @@ function parseJSONResponse(response: Anthropic.Message): Record<string, unknown>
   if (content.type !== 'text') {
     throw new Error('Unexpected response type from AI');
   }
+  // Normalize a known wrapper format: ```json\n{...}\n``` or ```\n{...}\n```.
+  // This is not regex extraction from prose — it strips a known markdown
+  // fence format that some models emit despite "JSON only" instructions.
+  let text = content.text.trim();
+  if (text.startsWith('```')) {
+    text = text
+      .replace(/^```(?:json)?\s*\n?/, '')
+      .replace(/\n?\s*```\s*$/, '')
+      .trim();
+  }
   try {
-    return JSON.parse(content.text.trim()) as Record<string, unknown>;
+    return JSON.parse(text) as Record<string, unknown>;
   } catch {
     throw new Error('Invalid JSON in AI response');
   }

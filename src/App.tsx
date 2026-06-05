@@ -3,6 +3,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { WelcomeScreen } from './features/story/WelcomeScreen';
 import { StoryInput } from './features/story/StoryInput';
 import { GeneratingScreen } from './features/story/GeneratingScreen';
+import { MapErrorScreen } from './features/story/MapErrorScreen';
 import { MapView } from './features/map/MapView';
 import { EditorView } from './features/editor/EditorView';
 import { SuccessScreen } from './features/execution/SuccessScreen';
@@ -15,7 +16,7 @@ import { parseWithErrors, execute } from './core/language';
 import type { ExecutionResult } from './core/language';
 import type { StarRatingResponse, Element } from './core/api/types';
 
-type Screen = 'welcome' | 'story' | 'generating' | 'map' | 'editor' | 'executing' | 'success' | 'error' | 'settings';
+type Screen = 'welcome' | 'story' | 'generating' | 'map-error' | 'map' | 'editor' | 'executing' | 'success' | 'error' | 'settings';
 
 function initialScreen(): Screen {
   const { initialStory, currentProblem } = useGameStore.getState();
@@ -59,17 +60,27 @@ function App() {
     setStory(story);
     setScreen('generating'); // show loading feedback immediately
 
-    if (apiClient) {
-      try {
-        const { mapStructure } = await apiClient.generateMap({ story, language });
-        setMapStructure(mapStructure);
-      } catch (error) {
-        console.error('Failed to generate map:', error);
-        // continue to map anyway — it will show "Generating map…" until branches arrive
-      }
+    if (!apiClient) {
+      // No key — go to map; the empty-state UI will guide the player
+      setScreen('map');
+      return;
     }
 
-    setScreen('map');
+    try {
+      const { mapStructure } = await apiClient.generateMap({ story, language });
+      if (!Array.isArray(mapStructure) || mapStructure.length === 0) {
+        throw new Error('Empty map structure returned by AI');
+      }
+      setMapStructure(mapStructure);
+      setScreen('map');
+    } catch (error) {
+      console.error('Failed to generate map:', error);
+      setScreen('map-error');
+    }
+  };
+
+  const handleRetryMap = () => {
+    if (initialStory) handleStorySubmit(initialStory);
   };
 
   const handleBranchClick = async (element: Element) => {
@@ -232,6 +243,14 @@ function App() {
 
       {screen === 'generating' && (
         <GeneratingScreen language={language} />
+      )}
+
+      {screen === 'map-error' && (
+        <MapErrorScreen
+          language={language}
+          onRetry={handleRetryMap}
+          onSettings={() => setScreen('settings')}
+        />
       )}
 
       {screen === 'map' && (

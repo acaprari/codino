@@ -12,8 +12,8 @@ The initial screen is derived from the store's persisted state, not hardcoded to
 
 This ensures a player who refreshes mid-game returns exactly where they left off.
 
-### Onboarding has three steps: welcome → story input → generating
-After the player submits a story, the screen transitions to `'generating'` immediately so feedback is instant, while `generateMap` runs in the background. When the call resolves (success or failure), the screen transitions to `'map'`. If the call fails the map still appears, showing "Generating map…" — the branching visualization degrades gracefully until branches are available.
+### Onboarding has four reachable states: welcome → story input → generating → map (or map-error)
+After the player submits a story, the screen transitions to `'generating'` immediately so feedback is instant, while `generateMap` runs in the background. On success the screen transitions to `'map'` with the AI-generated branches available. On failure (API error, invalid response, or empty `mapStructure`) the screen transitions to `'map-error'`, which shows a friendly bilingual explanation with two actions: "Try Again" (calls `generateMap` again with the same story) or "Open Settings" (so the player can fix their API key). The map screen is never shown with an empty `mapStructure` — the player would have nothing to click.
 
 ### Story is capped at 500 characters, enforced at two layers
 The `<textarea>` carries `maxLength={500}` to prevent overflow in the UI. `validateStoryInput` in the API layer enforces the same limit and throws on violation. The character counter (`story.length / 500`) gives the child live feedback. The "Start Adventure" button is disabled until at least one non-whitespace character is entered.
@@ -36,7 +36,9 @@ The toggle lives in `Navbar` (rendered by `AppLayout`), which wraps all screens 
 
 INV-01: The `'welcome'` and `'story'` screens are only shown when `initialStory` is empty and `currentProblem` is null. A player with saved progress never sees the onboarding screens on reload.
 
-INV-02: The `'generating'` screen is shown between the player clicking "Start Adventure" and the map appearing. It is never skipped, even when the API key is missing (in which case the call is omitted and the transition to `'map'` happens immediately).
+INV-02: The `'generating'` screen is shown between the player clicking "Start Adventure" and the map (or map-error) appearing. It is never skipped, even when the API key is missing (in which case the call is omitted and the transition to `'map'` happens immediately).
+
+INV-08: When `generateMap` returns an empty array, throws, or rejects, the screen transitions to `'map-error'`, never to `'map'`. The map is never shown with `mapStructure.length === 0`.
 
 INV-03: The story passed to `onSubmit` is `.trim()`-ed before leaving `StoryInput`. The raw textarea value is never used.
 

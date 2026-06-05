@@ -94,6 +94,31 @@ describe('ClaudeAPIClient', () => {
         .rejects.toThrow('Invalid JSON in AI response');
     });
 
+    it('strips markdown ```json fences before parsing', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{
+          type: 'text',
+          text: '```json\n' + JSON.stringify({ levels: [{ level: 1, branches: [ELEMENT] }] }) + '\n```',
+        }],
+      });
+
+      const result = await client.generateMap({ story: STORY, language: 'en' });
+      expect(result.mapStructure).toHaveLength(1);
+      expect(result.mapStructure[0]).toHaveProperty('level', 1);
+    });
+
+    it('strips bare ``` fences before parsing', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{
+          type: 'text',
+          text: '```\n' + JSON.stringify({ levels: [{ level: 1, branches: [ELEMENT] }] }) + '\n```',
+        }],
+      });
+
+      const result = await client.generateMap({ story: STORY, language: 'en' });
+      expect(result.mapStructure).toHaveLength(1);
+    });
+
     it('throws when response content type is not text', async () => {
       mockCreate.mockResolvedValue({
         content: [{ type: 'image', data: 'base64' }],
