@@ -1,0 +1,15 @@
+# Codino — Specs
+
+Codino is a narrative-driven coding education game for children aged 7–8. Players write real code in a simple bilingual mini-language while following an AI-generated adventure story.
+
+## Capabilities
+
+- [project.md](project.md) — Purpose, non-scope, tech stack, architecture, dev commands
+- [codino-language.md](codino-language.md) — The Codino mini-language: grammar, parser, interpreter, and execution model
+- [ai-integration.md](ai-integration.md) — Claude API usage: map generation, problem generation, hints, ratings, prompt injection protection
+- [game-state.md](game-state.md) — Zustand store, level progression, localStorage persistence
+- [execution-engine.md](execution-engine.md) — Code execution pipeline, step-by-step animation, output validation
+- [map-visualization.md](map-visualization.md) — Winding path map, branching structure, level nodes
+- [editor.md](editor.md) — CodeMirror integration, syntax highlighting, theme, autocomplete
+- [story-onboarding.md](story-onboarding.md) — Welcome screen, story input, map generation loading flow
+- [settings.md](settings.md) — API key management, language preference, progress reset
