@@ -182,8 +182,10 @@ codino/
 ├── tests/                # Unit and E2E tests
 │   ├── unit/            # Vitest unit tests
 │   └── e2e/             # Playwright E2E tests
+├── specs/               # Design specifications (source of truth)
+│   ├── project.md       # Project overview and architecture
+│   └── <capability>.md  # One file per capability area
 ├── docs/                # Documentation
-│   ├── ARCHITECTURE.md  # Technical architecture
 │   ├── USER_GUIDE.md    # End-user documentation
 │   └── CONTRIBUTING.md  # Developer guide
 └── public/              # Static assets
@@ -264,7 +266,7 @@ We welcome contributions! Please see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md
 
 ### Quick Start for Contributors
 
-1. Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the codebase
+1. Read [specs/](specs/) to understand the project's design decisions and architecture
 2. Check open issues or propose new features
 3. Write tests for new features
 4. Follow the existing code style

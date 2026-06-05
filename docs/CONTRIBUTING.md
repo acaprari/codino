@@ -60,8 +60,14 @@ Thank you for your interest in contributing to Codino! This document provides gu
 ### Understanding the Codebase
 
 Before contributing, read:
-1. [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture overview
-2. [docs/superpowers/specs/2026-06-03-codino-design.md](superpowers/specs/2026-06-03-codino-design.md) - Original design spec
+1. [specs/](../specs/) - Design specifications. The source of truth for the
+   project. `specs/README.md` is the index; `specs/project.md` covers the
+   overall architecture; each `specs/<capability>.md` documents one area
+   of the system with the decisions and invariants that govern it.
+
+This is a spec-driven project: specs describe what the system is and why
+it is that way. Before writing code in an area, read the corresponding
+spec. When you change behaviour, update the spec in the same commit.
 
 ## Development Workflow
 
@@ -488,7 +494,8 @@ When adding a new feature:
 5. **Document**:
    - Update README if needed
    - Update USER_GUIDE for user-facing features
-   - Update ARCHITECTURE for technical changes
+   - Update the relevant `specs/<capability>.md` for any decision or
+     invariant change — the spec must reflect current behaviour
    - Add inline comments for complex code
 
 6. **Review**:
@@ -504,15 +511,18 @@ When adding a new feature:
 3. Update interpreter to handle new node type
 4. Add tests for parsing and execution
 5. Update USER_GUIDE.md with examples
+6. Update `specs/codino-language.md` with the new decision/invariant
 
 **Adding a New Feature Module**:
-1. Create folder in `src/features/`
-2. Add components, hooks, types
-3. Export from index file
-4. Integrate with App.tsx
-5. Add to state store if needed
-6. Write tests
-7. Update ARCHITECTURE.md
+1. Either reuse an existing capability spec or create a new
+   `specs/<capability>.md` first — the spec drives the design
+2. Create folder in `src/features/`
+3. Add components, hooks, types
+4. Export from index file
+5. Integrate with App.tsx
+6. Add to state store if needed
+7. Write tests
+8. Update `specs/README.md` if a new capability area was added
 
 **Modifying the API Integration**:
 1. Update types in `src/core/api/types.ts`
@@ -546,7 +556,7 @@ When adding a new feature:
 - E2E tests for user flows
 - Manual testing for UX quality
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical documentation.
+See [specs/](../specs/) for detailed design documentation and architectural decisions.
 
 ## Common Tasks
 
