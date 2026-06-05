@@ -48,7 +48,7 @@ export function MapNode({ x, y, level, emoji, completed, unlocked, onClick }: Ma
         </text>
       )}
 
-      {!unlocked && (
+      {!unlocked && !completed && (
         <text
           textAnchor="middle"
           dy="0.3em"

@@ -40,3 +40,5 @@ INV-04: `onBranchClick` receives the actual `Element` from `mapStructure` — ne
 INV-05: The emoji shown on a completed spine node comes from `chosenElements[levelIndex]` — the element the player chose when that level was started.
 
 INV-06: When `mapStructure` is empty (length 0), no branches are rendered and a "Generating map…" label is displayed.
+
+INV-07: A spine node displays exactly one center symbol — its chosen-element emoji (when completed), its level number (when unlocked but not completed), or 🔒 (when locked) — never two overlaid. The three rendering states are mutually exclusive.
