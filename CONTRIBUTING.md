@@ -60,7 +60,7 @@ Thank you for your interest in contributing to Codino! This document provides gu
 ### Understanding the Codebase
 
 Before contributing, read:
-1. [specs/](../specs/) - Design specifications. The source of truth for the
+1. [specs/](specs/) - Design specifications. The source of truth for the
    project. `specs/README.md` is the index; `specs/project.md` covers the
    overall architecture; each `specs/<capability>.md` documents one area
    of the system with the decisions and invariants that govern it.
@@ -556,7 +556,7 @@ When adding a new feature:
 - E2E tests for user flows
 - Manual testing for UX quality
 
-See [specs/](../specs/) for detailed design documentation and architectural decisions.
+See [specs/](specs/) for detailed design documentation and architectural decisions.
 
 ## Common Tasks
 

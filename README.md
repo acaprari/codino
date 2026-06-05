@@ -185,9 +185,9 @@ codino/
 ├── specs/               # Design specifications (source of truth)
 │   ├── project.md       # Project overview and architecture
 │   └── <capability>.md  # One file per capability area
-├── docs/                # Documentation
-│   ├── USER_GUIDE.md    # End-user documentation
-│   └── CONTRIBUTING.md  # Developer guide
+├── docs/                # User-facing documentation
+│   └── USER_GUIDE.md    # End-user guide (for players)
+├── CONTRIBUTING.md      # Contribution workflow
 └── public/              # Static assets
 
 ```
@@ -262,7 +262,7 @@ See [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for complete language reference.
 
 ## Contributing
 
-We welcome contributions! Please see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Quick Start for Contributors
 
