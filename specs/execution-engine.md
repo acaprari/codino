@@ -40,8 +40,12 @@ When output does not match, `analyzeError` is called with the problem descriptio
 ### `rateCode` is called with all required context
 `StarRatingRequest` requires `story`, `problem`, `code`, `level`, `chosenElement`, and `language`. All are available in the store at the time `rateCode` is called. The current code from the store (`currentCode`) is used — it is synchronously updated by `setCode` before `handleRunCode` is called.
 
-### Animation runs at 500 ms per step
-Each `ExecutionStep` is displayed for 500 ms before advancing. The `OutputPanel` accumulates output lines incrementally; the `VariablesPanel` shows the variable snapshot at each step. A progress bar shows `currentStep / totalSteps`.
+### Animation runs at 1500 ms per step
+Each `ExecutionStep` is displayed for 1500 ms before advancing. The value is defined as the named constant `STEP_DURATION_MS` in `ExecutionAnimator.tsx` (not a magic number) and is shared by the progress bar's CSS transition so the bar fills linearly across the same interval, eliminating jump-pause-jump artifacts.
+
+The cadence is tuned for the target audience: a 7–8 year old needs roughly 800–1500 ms to register the highlighted-line change AND connect it cognitively to the variable/output panel update. Below ~800 ms it reads as perceptual noise; above ~2000 ms attention wanders on simple steps. 1500 ms sits at the slow end of the comfortable range, prioritising comprehension over throughput. This value is a playtest tunable — the right number will emerge from observing real children. Changing it is a single-constant edit.
+
+The `OutputPanel` accumulates output lines incrementally; the `VariablesPanel` shows the variable snapshot at each step. A progress bar shows `currentStep / totalSteps`.
 
 ### Line highlighting during animation uses a CodeMirror decoration
 During execution the 'executing' screen shows the code editor in read-only mode. As each `ExecutionStep` is processed, the `ExecutionAnimator` sets `highlightedLine` from `step.line` and passes it to `CodeEditor` as a prop. `CodeEditor` dispatches a `setHighlightedLine` `StateEffect` whenever the prop changes; a `StateField` converts that into a `Decoration.line` with the `.cm-executionLine` CSS class (amber glow, `rgba(234, 179, 8, 0.3)`). When animation completes the highlight is cleared by dispatching `null`.

@@ -4,6 +4,12 @@ import { OutputPanel } from './OutputPanel';
 import { VariablesPanel } from './VariablesPanel';
 import { CodeEditor } from '../editor/CodeEditor';
 
+// Pace at which each execution step is displayed before advancing.
+// Tuned for 7-8 year olds: long enough to read the highlighted line and
+// connect it to the variables/output panel, short enough to stay engaging
+// across multi-iteration loops.
+const STEP_DURATION_MS = 1500;
+
 interface ExecutionAnimatorProps {
   code: string;
   steps: ExecutionStep[];
@@ -34,7 +40,7 @@ export function ExecutionAnimator({ code, steps, onComplete }: ExecutionAnimator
       }
       setVariables(step.variables);
       setCurrentStep(currentStep + 1);
-    }, 500);
+    }, STEP_DURATION_MS);
 
     return () => clearTimeout(timer);
   }, [currentStep, steps, onComplete]);
@@ -60,8 +66,8 @@ export function ExecutionAnimator({ code, steps, onComplete }: ExecutionAnimator
         </div>
         <div className="w-full bg-blue-200 rounded-full h-3">
           <div
-            className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
+            className="bg-blue-600 h-3 rounded-full transition-all ease-linear"
+            style={{ width: `${progress}%`, transitionDuration: `${STEP_DURATION_MS}ms` }}
           />
         </div>
       </div>
