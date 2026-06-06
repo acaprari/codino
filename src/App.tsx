@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AuroraApp } from './features/aurora/AuroraApp';
 import { AppLayout } from './components/layout/AppLayout';
 import { WelcomeScreen } from './features/story/WelcomeScreen';
 import { StoryInput } from './features/story/StoryInput';
@@ -31,6 +32,11 @@ interface CompletedExecution {
 }
 
 function App() {
+  // Aurora feature flag — when present, render the new workspace
+  if (typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('ui') === 'aurora') {
+    return <AuroraApp />;
+  }
   const [screen, setScreen] = useState<Screen>(initialScreen);
   const [pendingExecution, setPendingExecution] = useState<ExecutionResult | null>(null);
   const [completedExecution, setCompletedExecution] = useState<CompletedExecution | null>(null);
