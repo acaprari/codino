@@ -9,6 +9,7 @@ import { RunControls } from './workspace/RunControls';
 import { RightPanel } from './workspace/RightPanel';
 import { HelpPanel } from './workspace/HelpPanel';
 import { ExecutionPanel } from './workspace/ExecutionPanel';
+import { MapBar } from './workspace/MapBar';
 import { useGameStore } from '../../store/gameStore';
 import { useClaudeAPI } from '../../core/api/useClaudeAPI';
 import { parseWithErrors, execute } from '../../core/language';
@@ -21,7 +22,7 @@ type RightPanelMode = 'help' | 'execution';
 export function AuroraApp() {
   const {
     currentProblem, currentCode, setCode,
-    currentLevel, stars, language,
+    currentLevel, completedLevels, chosenElements, stars, language,
   } = useGameStore();
   const apiClient = useClaudeAPI();
 
@@ -167,9 +168,12 @@ export function AuroraApp() {
       }
       bottomBar={
         <BottomBar>
-          <div style={{ color: 'var(--aurora-text-tertiary)', fontSize: '12px' }}>
-            {language === 'it' ? 'Livello' : 'Level'} {currentLevel} / 10
-          </div>
+          <MapBar
+            completedLevels={completedLevels}
+            currentLevel={currentLevel}
+            chosenElements={chosenElements}
+            language={language}
+          />
         </BottomBar>
       }
     />
