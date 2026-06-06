@@ -18,6 +18,9 @@ test-results/
 playwright-report/
 .vitest/
 
+# Brainstorming mockups (ephemeral design exploration)
+.superpowers/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
