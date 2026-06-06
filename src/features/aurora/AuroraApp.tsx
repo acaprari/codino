@@ -10,6 +10,7 @@ import { RightPanel } from './workspace/RightPanel';
 import { HelpPanel } from './workspace/HelpPanel';
 import { ExecutionPanel } from './workspace/ExecutionPanel';
 import { MapBar } from './workspace/MapBar';
+import { SettingsModal } from './modals/SettingsModal';
 import { useGameStore } from '../../store/gameStore';
 import { useClaudeAPI } from '../../core/api/useClaudeAPI';
 import { parseWithErrors, execute } from '../../core/language';
@@ -39,7 +40,6 @@ export function AuroraApp() {
   const [steps, setSteps] = useState<Array<{ line: number; output?: string; variables: Record<string, number | string> }>>([]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
-  void settingsOpen; // wired in Phase G
 
   const totalStars = Object.values(stars).reduce((a, b) => a + b, 0);
 
@@ -102,6 +102,7 @@ export function AuroraApp() {
   };
 
   return (
+    <>
     <Workspace
       topBar={
         <TopBar
@@ -177,5 +178,7 @@ export function AuroraApp() {
         </BottomBar>
       }
     />
+    <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 }
