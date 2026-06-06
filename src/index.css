@@ -1,3 +1,4 @@
+@import './styles/aurora.css';
 @import "tailwindcss";
 
 @source "../index.html";
