@@ -339,4 +339,69 @@ describe('Interpreter', () => {
     expect(result.error?.message).toMatch(/integer/i);
     expect(result.error?.message).not.toMatch(/negative/i);
   });
+
+  it('iteration loop binds i and counts up inclusively', () => {
+    const code = 'REPEAT i FROM 1 TO 5\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2', '3', '4', '5']);
+  });
+
+  it('iteration loop with from === to runs once', () => {
+    const code = 'REPEAT i FROM 3 TO 3\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['3']);
+  });
+
+  it('iteration loop with from > to throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 5 TO 1\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/FROM|DA|at most/i);
+  });
+
+  it('iteration loop with span > 1000 throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 1 TO 1001\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/1000|too large/i);
+  });
+
+  it('iteration loop variable is visible after the loop ends', () => {
+    const code = 'REPEAT i FROM 1 TO 3\nWRITE i\nEND\nWRITE i';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2', '3', '3']);
+    const last = result.steps[result.steps.length - 1];
+    expect(last.variables.i).toBe(3);
+  });
+
+  it('iteration loop overwrites a pre-existing variable with the same name', () => {
+    const code = 'i = 99\nREPEAT i FROM 1 TO 2\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2']);
+  });
+
+  it('iteration loop with non-integer bounds throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 1.5 TO 3\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+  });
 });

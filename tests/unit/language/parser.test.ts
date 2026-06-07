@@ -147,6 +147,32 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('REPEAT 3 TIMES\nWRITE "ok"\nEND');
     expect(errors).toHaveLength(0);
   });
+
+  it('parses iteration-variable loop (English)', () => {
+    const { errors } = parseWithErrors('REPEAT i FROM 1 TO 5\nWRITE i\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses iteration-variable loop (Italian)', () => {
+    const { errors } = parseWithErrors('RIPETI i DA 1 A 5\nSCRIVI i\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses iteration loop with variable bounds', () => {
+    const code = 'start = 1\nstop = 10\nREPEAT i FROM start TO stop\nWRITE i\nEND';
+    const { errors } = parseWithErrors(code);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('uppercase A as variable name is a parse error', () => {
+    const { errors } = parseWithErrors('A = 5');
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('lowercase a as variable name still parses', () => {
+    const { errors } = parseWithErrors('a = 5');
+    expect(errors).toHaveLength(0);
+  });
 });
 
 describe('parseWithErrors', () => {

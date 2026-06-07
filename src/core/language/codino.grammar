@@ -3,7 +3,8 @@
 statement {
   Assignment |
   Print |
-  Loop |
+  CountLoop |
+  RangeLoop |
   Conditional
 }
 
@@ -15,8 +16,16 @@ Print {
   (kw<"SCRIVI"> | kw<"WRITE">) expression (Comma expression)*
 }
 
-Loop {
-  (kw<"RIPETI"> | kw<"REPEAT">) expression (kw<"VOLTE"> | kw<"TIMES">) statement* (kw<"FINE"> | kw<"END">)
+CountLoop {
+  (kw<"RIPETI"> | kw<"REPEAT">) expression (kw<"VOLTE"> | kw<"TIMES">)
+  statement* (kw<"FINE"> | kw<"END">)
+}
+
+RangeLoop[@dynamicPrecedence=1] {
+  (kw<"RIPETI"> | kw<"REPEAT">) Identifier
+  (kw<"DA"> | kw<"FROM">) expression
+  (kw<"A">  | kw<"TO">)   expression
+  statement* (kw<"FINE"> | kw<"END">)
 }
 
 Conditional {

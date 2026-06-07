@@ -19,6 +19,8 @@ const ALL_KEYWORDS = [
   'SE', 'IF',
   'ALTRIMENTI', 'ELSE',
   'FINE', 'END',
+  'FROM', 'TO',
+  'DA', 'A',
 ];
 
 // Regex: tokens that look like attempted keywords — 2+ uppercase letters (possibly with digits)
@@ -97,7 +99,7 @@ export function getParseErrors(code: string, tree: Tree): ParseError[] {
   const cursor = tree.cursor();
   do {
     const name = cursor.type.name;
-    if ((name === 'Loop' || name === 'Conditional') && !hasEndKeyword(cursor.node)) {
+    if ((name === 'CountLoop' || name === 'RangeLoop' || name === 'Conditional') && !hasEndKeyword(cursor.node)) {
       const line = getLineNumber(code, cursor.from);
       errors.push({ type: 'missing-end', line });
     }

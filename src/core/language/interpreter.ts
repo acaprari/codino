@@ -99,8 +99,11 @@ function executeNode(
     case 'Print':
       executePrint(node, env, code, steps, output);
       break;
-    case 'Loop':
+    case 'CountLoop':
       executeLoop(node, env, code, steps, output);
+      break;
+    case 'RangeLoop':
+      executeRangeLoop(node, env, code, steps, output);
       break;
     case 'Conditional':
       executeConditional(node, env, code, steps, output);
@@ -269,6 +272,106 @@ function executeLoop(
 }
 
 /**
+ * Execute an iteration-variable loop: REPEAT i FROM a TO b ... END
+ */
+function executeRangeLoop(
+  node: SyntaxNode,
+  env: Environment,
+  code: string,
+  steps: ExecutionStep[],
+  output: string[]
+): void {
+  const line = getLineNumber(code, node.from);
+
+  let varName: string | null = null;
+  const fromParts: SyntaxNode[] = [];
+  const toParts: SyntaxNode[] = [];
+  const bodyStatements: SyntaxNode[] = [];
+  let stage:
+    | 'awaiting-id'
+    | 'awaiting-from-kw'
+    | 'collecting-from'
+    | 'awaiting-to-kw'
+    | 'collecting-to'
+    | 'in-body' = 'awaiting-id';
+
+  let child = node.firstChild;
+  while (child) {
+    const name = child.type.name;
+
+    if (name === 'RIPETI' || name === 'REPEAT' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'FINE' || name === 'END') break;
+
+    switch (stage) {
+      case 'awaiting-id':
+        if (name === 'Identifier') {
+          varName = code.substring(child.from, child.to);
+          stage = 'awaiting-from-kw';
+        }
+        break;
+      case 'awaiting-from-kw':
+        if (name === 'FROM' || name === 'DA') stage = 'collecting-from';
+        break;
+      case 'collecting-from':
+        if (name === 'TO' || name === 'A') {
+          stage = 'collecting-to';
+        } else {
+          fromParts.push(child);
+        }
+        break;
+      case 'collecting-to':
+        if (
+          name === 'Assignment' ||
+          name === 'Print' ||
+          name === 'CountLoop' ||
+          name === 'RangeLoop' ||
+          name === 'Conditional'
+        ) {
+          bodyStatements.push(child);
+          stage = 'in-body';
+        } else {
+          toParts.push(child);
+        }
+        break;
+      case 'in-body':
+        bodyStatements.push(child);
+        break;
+    }
+    child = child.nextSibling;
+  }
+
+  if (!varName) throw new RuntimeError('Range loop missing iteration variable', line);
+  if (fromParts.length === 0) throw new RuntimeError('Range loop missing FROM/DA value', line);
+  if (toParts.length === 0) throw new RuntimeError('Range loop missing TO/A value', line);
+
+  const fromValue = evaluateFlatExpression(fromParts, env, code, line);
+  const toValue = evaluateFlatExpression(toParts, env, code, line);
+
+  if (typeof fromValue !== 'number' || typeof toValue !== 'number') {
+    throw new RuntimeError('Range loop bounds must be numbers', line);
+  }
+  if (!Number.isInteger(fromValue) || !Number.isInteger(toValue)) {
+    throw new RuntimeError('Range loop bounds must be integers', line);
+  }
+  if (toValue < fromValue) {
+    throw new RuntimeError('Range loop FROM must be at most TO', line);
+  }
+  if (toValue - fromValue + 1 > MAX_LOOP_ITERATIONS) {
+    throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
+  }
+
+  for (let i = fromValue; i <= toValue; i++) {
+    env.set(varName, i);
+    for (const statement of bodyStatements) {
+      executeNode(statement, env, code, steps, output);
+    }
+  }
+}
+
+/**
  * Execute a conditional statement
  * Structure: Conditional(SE/IF, Term, Operator, Term, statements..., FINE/END)
  */
@@ -323,7 +426,8 @@ function executeConditional(
     if (
       child.type.name === 'Assignment' ||
       child.type.name === 'Print' ||
-      child.type.name === 'Loop' ||
+      child.type.name === 'CountLoop' ||
+      child.type.name === 'RangeLoop' ||
       child.type.name === 'Conditional'
     ) {
       seenCondition = true;
@@ -532,7 +636,8 @@ function evaluateCondition(
     if (
       child.type.name === 'Assignment' ||
       child.type.name === 'Print' ||
-      child.type.name === 'Loop' ||
+      child.type.name === 'CountLoop' ||
+      child.type.name === 'RangeLoop' ||
       child.type.name === 'Conditional' ||
       child.type.name === 'ALTRIMENTI' ||
       child.type.name === 'ELSE' ||
