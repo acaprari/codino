@@ -40,6 +40,15 @@ Each execution step is displayed for 1500 ms via the module-level constant `STEP
 ### Wrong output uses Claude Haiku
 `analyzeError` runs Claude Haiku for cost-efficient explanation. Failure falls back to a generic bilingual message.
 
+### WrongOutputModal: "close" means "Try Again"
+`WrongOutputModal` opens when `mode === 'wrong-output'`. It shows the AI-generated `explanation` (or the fallback message) as the body, then a 2-column expected-vs-actual block: expected has a success-color left border, actual has an error-color left border, both rendered in the code font. Two actions live below:
+
+- **Try Again** (primary) — `onTryAgain` clears the wrong-output state and sets `mode` back to `'idle'`.
+- **Give me a hint** (ghost) — `onGetHint` triggers `generateHint` and renders the result.
+
+The modal is `dismissible={true}`, but `onClose === onTryAgain`. ✕, Escape, and backdrop click all retry — there is no plain "dismiss" that leaves the player in `'wrong-output'` mode with the modal closed.
+> Alternatives considered: a plain dismiss that hides the modal but stays in `'wrong-output'` mode was rejected. A wrong output means the player must try again — leaving the modal closable without action would strand them in an undefined state where the editor is enabled but the run pipeline still believes a wrong-output is being shown.
+
 ### Successful runs trigger rateCode
 `rateCode` is called with story, problem, source code, level, chosen element, language. Returns stars (1–3), explanation, and narrative bridge for the BranchSuccessPopup.
 
@@ -80,3 +89,7 @@ INV-10: `HelpPanel` auto-expands the category matching the current level's conce
 INV-11: `GameCompleteModal.open === (mode === 'game-complete')`. The modal is open if and only if the mode is `'game-complete'`.
 
 INV-12: `'game-complete'` mode is reachable only from `completeLevel(10, ...)` — specifically, the three branches in `handleRun` that fire after a successful output match on level 10 (rateCode success, rateCode failure fallback, no-API-key fallback). It is never set from `idle`, `gen-error`, `wrong-output`, or a partially-completed run.
+
+INV-13: `WrongOutputModal.open === (mode === 'wrong-output')`. The modal is open if and only if the mode is `'wrong-output'`.
+
+INV-14: Closing `WrongOutputModal` is equivalent to pressing Try Again. `onClose` is bound to `onTryAgain`, so ✕, Escape, and backdrop click all transition `mode` back to `'idle'`. The player can never end up in `'wrong-output'` mode without the modal visible.

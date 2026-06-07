@@ -36,6 +36,10 @@ Section markers throughout the UI use a single Label component: 11 px, weight 70
 
 There is no third variant. This replaces the previous primary/secondary/success/warning button palette.
 
+### Desktop-only guard at 900 px
+`DesktopOnlyGuard` wraps the app and short-circuits to a fallback card when `window.innerWidth < 900`. The threshold is a single module-level constant `MIN_WIDTH = 900`. A resize listener updates the width on every viewport change so the guard activates and deactivates live. The fallback card uses the elevated glass surface (per INV-03), contains a 💻 emoji header, and renders bilingual title + body strings. ADR-001 carries the rationale: coding requires a physical keyboard, and a half-working tablet layout would hurt perceived polish more than a clean refusal.
+> The 900 px cutoff was picked because it cleanly excludes tablets in portrait while leaving room for typical laptop widths. The threshold is not load-bearing — moving it by 50–100 px would not change which devices are blocked.
+
 ## Invariants
 
 INV-01: All Codino UI components must source colors via `var(--aurora-*)` custom properties. Hard-coded hex values outside `aurora.css` violate the discipline.
@@ -49,3 +53,5 @@ INV-04: All button surfaces use the `AuroraButton` component. Icon-only controls
 INV-05: All section markers use the `Label` component. Inline elements that duplicate the small-caps treatment violate INV-05.
 
 INV-06: The Aurora gradient is applied unconditionally via `body.aurora-mode` set in `src/main.tsx`.
+
+INV-07: `DesktopOnlyGuard` short-circuits the app render when `window.innerWidth < 900`, replacing children with the elevated-glass fallback card. The threshold lives in a single `MIN_WIDTH` constant in `DesktopOnlyGuard.tsx`. A `resize` event listener keeps the guard live; entering or leaving the threshold during a session flips the rendered tree without reload.

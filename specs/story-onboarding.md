@@ -32,8 +32,14 @@ Errors from `generateStoryIdeas` are silently swallowed: a `catch {}` clears the
 ### Generation phase
 After story submission, `generateMap` and then `generateProblem(level 1)` run in sequence. The modal closes immediately. The workspace shows a "Preparing your adventure…" loading state until both calls complete, at which point the first problem appears in the main area automatically — no player interaction required.
 
-### Error path
-If `generateMap` fails, `MapErrorModal` appears with "Try Again" and "Open Settings" actions. Retry calls `handleStorySubmit(initialStory)` again.
+### Error path: `MapErrorModal`
+If `generateMap` fails, `MapErrorModal` appears with a 🌧️ illustration, a bilingual title and body explaining what to check (API key, connection), and two actions:
+
+- **Try Again** (primary) — calls `handleStorySubmit(initialStory)` again, re-running `generateMap` followed by the level-1 `generateProblem`.
+- **Open Settings** (ghost) — opens `SettingsModal` so the player can fix or replace their API key.
+
+The modal is **non-dismissible**: `onClose={() => {}}` and there is no ✕ button. Escape and backdrop click do nothing. The player must pick one of the two actions to proceed.
+> Alternatives considered: a dismissible error modal was rejected because dismissing would leave the player in the workspace with no map and no clear way to get one — the same broken state the modal exists to prevent.
 
 ## Invariants
 
@@ -58,3 +64,5 @@ INV-09: `WelcomeStoryModal` reopens whenever `initialStory` becomes falsy in the
 INV-10: Clicking any chip (static example or AI-generated idea) fills the textarea with the chip's full text via `setStory`. The chip's display text may be truncated for layout, but the value written to the textarea is always the full string.
 
 INV-11: Errors from `generateStoryIdeas` are caught silently in `handleGetIdeas`. The loading state is always cleared (try/finally); no error UI is rendered. The button remains usable for retry.
+
+INV-12: `MapErrorModal` is non-dismissible. `onClose` is a no-op and no ✕ button is rendered. The only exits are "Try Again" (re-runs `handleStorySubmit`) and "Open Settings" (opens `SettingsModal`).
