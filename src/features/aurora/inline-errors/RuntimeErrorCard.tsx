@@ -4,8 +4,47 @@ interface RuntimeErrorCardProps {
   language: 'it' | 'en';
 }
 
+function translateMessage(message: string, language: 'it' | 'en'): string {
+  if (language === 'en') return message;
+
+  // Exact matches
+  const exact: Record<string, string> = {
+    'Invalid assignment':                      'Assegnazione non valida',
+    'Print statement has no expression':       'SCRIVI ha bisogno di qualcosa da stampare',
+    'Loop count cannot be negative':           'Il numero di ripetizioni non può essere negativo',
+    'Loop count must be an integer':           'Il numero di ripetizioni deve essere un numero intero',
+    'Empty expression':                        'Espressione vuota',
+    'Invalid expression structure':            'Struttura dell\'espressione non valida',
+    'Cannot use text in an arithmetic operation': 'Non puoi usare un testo in un\'operazione matematica',
+    'Division by zero':                        'Non si può dividere per zero!',
+    'Empty term':                              'Termine vuoto',
+    'Invalid condition':                       'Condizione non valida',
+  };
+  if (exact[message]) return exact[message];
+
+  // Prefix matches (messages with dynamic suffixes)
+  if (message.startsWith('Undefined variable:')) {
+    const name = message.slice('Undefined variable:'.length).trim();
+    return `Variabile non trovata: ${name}`;
+  }
+  if (message.startsWith('Loop count too large')) {
+    const max = message.match(/\d+/)?.[0] ?? '';
+    return `Troppe ripetizioni! Il massimo è ${max}`;
+  }
+  if (message.startsWith('Unknown comparison operator:')) {
+    const op = message.slice('Unknown comparison operator:'.length).trim();
+    return `Operatore sconosciuto: ${op}`;
+  }
+  if (message.startsWith('Cannot evaluate:')) {
+    return 'Espressione non valida';
+  }
+
+  return message;
+}
+
 export function RuntimeErrorCard({ message, line, language }: RuntimeErrorCardProps) {
-  const lineLabel = language === 'it' ? 'riga' : 'line';
+  const lineLabel = language === 'it' ? 'Riga' : 'Line';
+  const translated = translateMessage(message, language);
   return (
     <div
       style={{
@@ -17,9 +56,10 @@ export function RuntimeErrorCard({ message, line, language }: RuntimeErrorCardPr
         color: 'var(--aurora-text-primary)',
         fontSize: '13.5px',
         lineHeight: 1.5,
+        fontFamily: 'var(--aurora-font-ui)',
       }}
     >
-      🤔 {lineLabel.charAt(0).toUpperCase() + lineLabel.slice(1)} {line}: {message}
+      🤔 {lineLabel} {line}: {translated}
     </div>
   );
 }
