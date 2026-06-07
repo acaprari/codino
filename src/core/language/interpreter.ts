@@ -181,9 +181,12 @@ function executePrint(
     child = child.nextSibling;
   }
 
-  if (segments.length === 0 || segments[0].length === 0) {
+  // No arguments at all: WRITE with nothing after it.
+  if (segments.length === 1 && segments[0].length === 0) {
     throw new RuntimeError('Print statement has no expression', line);
   }
+  // Any other empty segment means a stray comma (defense-in-depth — the
+  // grammar should already reject trailing/leading commas).
   for (const seg of segments) {
     if (seg.length === 0) {
       throw new RuntimeError('Empty argument in print statement', line);

@@ -265,7 +265,7 @@ describe('Interpreter', () => {
     expect(result.output).toEqual(['Animals: 5']);
   });
 
-  it('multi-arg WRITE with three parts joins with two spaces', () => {
+  it('multi-arg WRITE with three arguments joins segments with single space', () => {
     const code = 'coins = 30\nSCRIVI "Hai", coins, "monete"';
     const tree = parse(code);
     const result = execute(tree, code);
