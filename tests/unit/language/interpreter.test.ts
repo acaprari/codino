@@ -284,4 +284,49 @@ describe('Interpreter', () => {
     expect(printSteps).toHaveLength(1);
     expect(printSteps[0].output).toBe('a b c');
   });
+
+  it('REPEAT with variable count executes that many times', () => {
+    const code = 'n = 4\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['x', 'x', 'x', 'x']);
+  });
+
+  it('REPEAT with sum expression count works', () => {
+    const code = 'RIPETI 1 + 2 VOLTE\nSCRIVI "a"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['a', 'a', 'a']);
+  });
+
+  it('REPEAT with non-integer expression throws RuntimeError', () => {
+    const code = 'REPEAT 2.5 TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+  });
+
+  it('REPEAT with negative expression throws RuntimeError', () => {
+    const code = 'n = 0 - 3\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/negative/i);
+  });
+
+  it('REPEAT count over 1000 throws RuntimeError', () => {
+    const code = 'REPEAT 1001 TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/1000|too large/i);
+  });
 });

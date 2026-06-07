@@ -16,7 +16,7 @@ Print {
 }
 
 Loop {
-  (kw<"RIPETI"> | kw<"REPEAT">) Number (kw<"VOLTE"> | kw<"TIMES">) statement* (kw<"FINE"> | kw<"END">)
+  (kw<"RIPETI"> | kw<"REPEAT">) expression (kw<"VOLTE"> | kw<"TIMES">) statement* (kw<"FINE"> | kw<"END">)
 }
 
 Conditional {

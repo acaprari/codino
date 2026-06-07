@@ -132,6 +132,21 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('WRITE "x",');
     expect(errors.length).toBeGreaterThan(0);
   });
+
+  it('parses REPEAT with variable count', () => {
+    const { errors } = parseWithErrors('monsters = 5\nREPEAT monsters TIMES\nWRITE "x"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses RIPETI with sum expression count', () => {
+    const { errors } = parseWithErrors('RIPETI 2 + 3 VOLTE\nSCRIVI "x"\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses literal-count REPEAT unchanged', () => {
+    const { errors } = parseWithErrors('REPEAT 3 TIMES\nWRITE "ok"\nEND');
+    expect(errors).toHaveLength(0);
+  });
 });
 
 describe('parseWithErrors', () => {

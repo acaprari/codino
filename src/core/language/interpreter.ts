@@ -216,48 +216,54 @@ function executeLoop(
 ): void {
   const line = getLineNumber(code, node.from);
 
-  // Find the number of iterations
-  let iterations = 0;
+  // Collect expression parts (count) before VOLTE/TIMES, then body statements
+  // until FINE/END.
+  const countParts: SyntaxNode[] = [];
   const bodyStatements: SyntaxNode[] = [];
-
-  let child = node.firstChild;
-  let foundNumber = false;
   let inBody = false;
 
+  let child = node.firstChild;
   while (child) {
-    if (child.type.name === 'Number') {
-      iterations = parseFloat(code.substring(child.from, child.to));
-      foundNumber = true;
-    } else if (
-      foundNumber &&
-      (child.type.name === 'VOLTE' ||
-        child.type.name === 'TIMES')
-    ) {
+    const name = child.type.name;
+    if (name === 'RIPETI' || name === 'REPEAT' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'VOLTE' || name === 'TIMES') {
       inBody = true;
-    } else if (
-      inBody &&
-      child.type.name !== 'FINE' &&
-      child.type.name !== 'END' &&
-      child.type.name !== '⚠'
-    ) {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'FINE' || name === 'END') {
+      break;
+    }
+    if (!inBody) {
+      countParts.push(child);
+    } else {
       bodyStatements.push(child);
     }
     child = child.nextSibling;
   }
 
-  // Validate loop count
-  if (iterations < 0) {
+  if (countParts.length === 0) {
+    throw new RuntimeError('Loop has no count', line);
+  }
+
+  const countValue = evaluateFlatExpression(countParts, env, code, line);
+  if (typeof countValue !== 'number') {
+    throw new RuntimeError('Loop count must be a number', line);
+  }
+  if (countValue < 0) {
     throw new RuntimeError('Loop count cannot be negative', line);
   }
-  if (!Number.isInteger(iterations)) {
+  if (!Number.isInteger(countValue)) {
     throw new RuntimeError('Loop count must be an integer', line);
   }
-  if (iterations > MAX_LOOP_ITERATIONS) {
+  if (countValue > MAX_LOOP_ITERATIONS) {
     throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
   }
 
-  // Execute the loop body iterations times
-  for (let i = 0; i < iterations; i++) {
+  for (let i = 0; i < countValue; i++) {
     for (const statement of bodyStatements) {
       executeNode(statement, env, code, steps, output);
     }
