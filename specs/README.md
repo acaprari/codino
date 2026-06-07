@@ -15,6 +15,7 @@ Each capability spec describes the current state of one functional area: the dec
 - [editor.md](editor.md) — CodeMirror integration, syntax highlighting, theme, autocomplete
 - [story-onboarding.md](story-onboarding.md) — Welcome screen, story input, map generation loading flow
 - [settings.md](settings.md) — API key management, language preference, progress reset
+- [visual-system.md](visual-system.md) — Aurora background, glass tokens, color roles, typography, buttons, labels
 
 ## Architectural decisions (ADRs)
 
