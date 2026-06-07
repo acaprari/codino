@@ -12,7 +12,7 @@ Assignment {
 }
 
 Print {
-  (kw<"SCRIVI"> | kw<"WRITE">) expression
+  (kw<"SCRIVI"> | kw<"WRITE">) expression (Comma expression)*
 }
 
 Loop {
@@ -59,6 +59,7 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
   Greater { ">" }
   Less { "<" }
   Equal { "=" }
+  Comma { "," }
 
   space { $[ \t\n\r]+ }
 }

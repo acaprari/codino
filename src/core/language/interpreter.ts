@@ -162,26 +162,36 @@ function executePrint(
 ): void {
   const line = getLineNumber(code, node.from);
 
-  // Collect all expression parts (everything that's not a keyword)
-  const expressionParts: SyntaxNode[] = [];
+  // Group children into argument segments split by Comma.
+  // Skip the SCRIVI/WRITE keyword and any error markers.
+  const segments: SyntaxNode[][] = [[]];
   let child = node.firstChild;
   while (child) {
-    if (
-      child.type.name !== 'SCRIVI' &&
-      child.type.name !== 'WRITE' &&
-      child.type.name !== '⚠'
-    ) {
-      expressionParts.push(child);
+    const name = child.type.name;
+    if (name === 'SCRIVI' || name === 'WRITE' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
     }
+    if (name === 'Comma') {
+      segments.push([]);
+      child = child.nextSibling;
+      continue;
+    }
+    segments[segments.length - 1].push(child);
     child = child.nextSibling;
   }
 
-  if (expressionParts.length === 0) {
+  if (segments.length === 0 || segments[0].length === 0) {
     throw new RuntimeError('Print statement has no expression', line);
   }
+  for (const seg of segments) {
+    if (seg.length === 0) {
+      throw new RuntimeError('Empty argument in print statement', line);
+    }
+  }
 
-  const value = evaluateFlatExpression(expressionParts, env, code, line);
-  const outputStr = String(value);
+  const parts = segments.map((seg) => String(evaluateFlatExpression(seg, env, code, line)));
+  const outputStr = parts.join(' ');
   output.push(outputStr);
 
   steps.push({

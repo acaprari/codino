@@ -112,6 +112,26 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('xa = 10\nx2 = 20');
     expect(errors).toHaveLength(0);
   });
+
+  it('parses multi-arg WRITE with comma separator (English)', () => {
+    const { errors } = parseWithErrors('WRITE "Animals:", apples');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses multi-arg SCRIVI with three arguments (Italian)', () => {
+    const { errors } = parseWithErrors('SCRIVI "Hai", monete, "monete"');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses single-arg WRITE unchanged', () => {
+    const { errors } = parseWithErrors('WRITE 42');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('trailing comma in WRITE is a parse error', () => {
+    const { errors } = parseWithErrors('WRITE "x",');
+    expect(errors.length).toBeGreaterThan(0);
+  });
 });
 
 describe('parseWithErrors', () => {

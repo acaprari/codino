@@ -255,4 +255,33 @@ describe('Interpreter', () => {
     expect(result.error?.message).toContain('Undefined variable: w');
     expect(result.error?.line).toBe(3);
   });
+
+  it('multi-arg WRITE joins with single space', () => {
+    const code = 'apples = 5\nWRITE "Animals:", apples';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['Animals: 5']);
+  });
+
+  it('multi-arg WRITE with three parts joins with two spaces', () => {
+    const code = 'coins = 30\nSCRIVI "Hai", coins, "monete"';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['Hai 30 monete']);
+  });
+
+  it('multi-arg WRITE produces one execution step per Print', () => {
+    const code = 'WRITE "a", "b", "c"';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    const printSteps = result.steps.filter((s) => s.output !== undefined);
+    expect(printSteps).toHaveLength(1);
+    expect(printSteps[0].output).toBe('a b c');
+  });
 });
