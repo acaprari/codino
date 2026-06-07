@@ -1,51 +1,49 @@
 # Story / Onboarding
 
-The onboarding flow is the path a new player takes before reaching the map: a welcome screen, a story creation screen, and a loading screen while the AI generates the map. For returning players with saved progress the flow is skipped entirely and they land directly on the map (or editor if mid-level).
+A first-time player creates a story through the WelcomeStoryModal, which appears as a glass overlay over the workspace. Submitting the story closes the modal, triggers map generation, and immediately generates the first problem — so the player lands in a ready workspace.
 
 ## Decisions
 
-### On load, skip onboarding for players with saved progress
-The initial screen is derived from the store's persisted state, not hardcoded to `'welcome'`:
-- If `currentProblem` is set (restored from `codino_current_level`) → start on `'editor'`
-- If `initialStory` is set → start on `'map'`
-- Otherwise → start on `'welcome'`
+### Single first-launch modal
+`WelcomeStoryModal` combines the previously-separate welcome screen and story input into one modal. It appears whenever `initialStory` is empty (first launch, after Clear Progress).
 
-This ensures a player who refreshes mid-game returns exactly where they left off.
+### No dismiss before submitting
+The modal has no close button, no backdrop click, no Escape. The player must enter a story to proceed.
 
-### Onboarding has four reachable states: welcome → story input → generating → map (or map-error)
-After the player submits a story, the screen transitions to `'generating'` immediately so feedback is instant, while `generateMap` runs in the background. On success the screen transitions to `'map'` with the AI-generated branches available. On failure (API error, invalid response, or empty `mapStructure`) the screen transitions to `'map-error'`, which shows a friendly bilingual explanation with two actions: "Try Again" (calls `generateMap` again with the same story) or "Open Settings" (so the player can fix their API key). The map screen is never shown with an empty `mapStructure` — the player would have nothing to click.
+### Story is capped at 500 characters
+The textarea has `maxLength={500}` for hard browser-level enforcement; the API layer also validates length before any Claude call. Counter shown below the textarea.
 
-### Story is capped at 500 characters, enforced at two layers
-The `<textarea>` carries `maxLength={500}` to prevent overflow in the UI. `validateStoryInput` in the API layer enforces the same limit and throws on violation. The character counter (`story.length / 500`) gives the child live feedback. The "Start Adventure" button is disabled until at least one non-whitespace character is entered.
+### API key required before submitting
+The "Start adventure" button is disabled when no API key is set. An amber note below the button directs the player to ⚙️ Settings. This prevents landing in a broken state where the map cannot generate.
 
-### Example prompts fill the textarea with a single click
-Three bilingual example chips appear below the textarea. Clicking one sets the full example text as the story value. The chip label is truncated to the first clause (`...`-split) to save space while the full text is inserted. The player can edit after clicking.
+### Settings accessible from the modal
+A ⚙️ ghost button in the modal header opens SettingsModal, allowing the player to set an API key and change language without dismissing the welcome flow.
 
-### Inline bilingual text, no translation library
-Both `WelcomeScreen` and `StoryInput` carry their own `{ it: {...}, en: {...} }` text map and read `language` from the store. This avoids a translation library dependency for a two-language app with a small and stable string set.
+### Example chips and AI ideas
+Three static bilingual example chips are always shown. The "Give me ideas 💡" button is also always shown but disabled (with a tooltip) when no API key is set. When active, clicking it calls `generateStoryIdeas` and renders the returned ideas as green chips. Keeping the button visible even when disabled preserves discoverability.
 
-### Language toggle is always visible during onboarding
-The toggle lives in `Navbar` (rendered by `AppLayout`), which wraps all screens including welcome and story input. The player can switch language at any point — the text updates immediately because both components derive their display strings from the store's `language` field.
+### Generation phase
+After story submission, `generateMap` and then `generateProblem(level 1)` run in sequence. The modal closes immediately. The workspace shows a "Preparing your adventure…" loading state until both calls complete, at which point the first problem appears in the main area automatically — no player interaction required.
 
-### "Give me ideas" calls `generateStoryIdeas` and renders AI idea chips
-`StoryInput` accepts an optional `onGetIdeas?: () => Promise<string[]>` prop. When provided (i.e., an API client is available in `App.tsx`), a "Give me ideas 💡" / "Dammi un'idea 💡" link appears next to the character counter. Clicking it calls `generateStoryIdeas({ language })`, shows a brief loading label, and on success renders the returned ideas as green chips above the static example chips. Clicking any chip fills the textarea with that idea (editable). If the call fails it is swallowed silently and the button resets.
-
-`ClaudeAPIClient.generateStoryIdeas` sends no user-provided content — the `user` message is the fixed string "Generate 4 story ideas." The system prompt specifies language, age-appropriateness, and the JSON output format. Because no user data is in the prompt, no injection protection is required for this call.
+### Error path
+If `generateMap` fails, `MapErrorModal` appears with "Try Again" and "Open Settings" actions. Retry calls `handleStorySubmit(initialStory)` again.
 
 ## Invariants
 
-INV-01: The `'welcome'` and `'story'` screens are only shown when `initialStory` is empty and `currentProblem` is null. A player with saved progress never sees the onboarding screens on reload.
+INV-01: WelcomeStoryModal appears whenever the store has no `initialStory`. It is the only path to set an `initialStory`.
 
-INV-02: The `'generating'` screen is shown between the player clicking "Start Adventure" and the map (or map-error) appearing. It is never skipped, even when the API key is missing (in which case the call is omitted and the transition to `'map'` happens immediately).
+INV-02: The story submitted is `.trim()`-ed.
 
-INV-08: When `generateMap` returns an empty array, throws, or rejects, the screen transitions to `'map-error'`, never to `'map'`. The map is never shown with `mapStructure.length === 0`.
+INV-03: The submit button is disabled until the textarea contains non-whitespace.
 
-INV-03: The story passed to `onSubmit` is `.trim()`-ed before leaving `StoryInput`. The raw textarea value is never used.
+INV-04: 500 characters is enforced at both the browser level (textarea maxLength) and the API layer.
 
-INV-04: The "Start Adventure" button is disabled (`disabled={!story.trim()}`) when the textarea is empty or whitespace-only.
+INV-05: Map generation failure routes to MapErrorModal, never to a silently-empty map.
 
-INV-05: `StoryInput` enforces 500 characters via both `maxLength` on the textarea (hard browser limit) and `validateStoryInput` in the API layer (throws before the API call).
+INV-06: The "Give me ideas" button is always rendered. It is disabled (not hidden) when `apiClient` is null, so the player can see the feature exists and understands an API key is needed.
 
-INV-06: The "Give me ideas" button is hidden when `onGetIdeas` is `undefined` (no API key set). It is never shown in a broken state.
+INV-07: The "Start adventure" button is disabled when `apiClient` is null. Submitting a story without an API key would leave the player in a broken state.
 
-INV-07: `generateStoryIdeas` contains no user-provided content in the `user` message — the call is fixed text and requires no prompt injection protection.
+INV-08: After successful story submission, `generateProblem` for level 1 is called immediately and automatically. The player never needs to interact with the map to start the game.
+
+INV-09: `WelcomeStoryModal` reopens whenever `initialStory` becomes falsy in the store (e.g. after Clear Progress). This is enforced via a `useEffect` in `AuroraApp`, not by requiring every progress-clearing call site to explicitly set `welcomeOpen`.

@@ -1,0 +1,58 @@
+/* Aurora redesign — global design tokens (see specs/adr/ADR-001) */
+
+:root {
+  /* Background base colors */
+  --aurora-bg-deep:    #1e1b4b;
+  --aurora-bg-mid:     #4c1d95;
+  --aurora-bg-accent:  #831843;
+
+  /* Text colors */
+  --aurora-text-primary:   #f8fafc;
+  --aurora-text-secondary: rgba(248, 250, 252, 0.72);
+  --aurora-text-tertiary:  rgba(248, 250, 252, 0.45);
+
+  /* Accent colors — strict role assignments (see ADR-001) */
+  --aurora-accent-purple:  #c084fc;
+  --aurora-accent-pink:    #f0abfc;
+  --aurora-accent-amber:   #fde047;
+  --aurora-accent-success: #6ee7b7;
+  --aurora-accent-error:   #fda4af;
+
+  /* Glass surfaces */
+  --aurora-glass-surface:  rgba(255, 255, 255, 0.07);
+  --aurora-glass-elevated: rgba(255, 255, 255, 0.12);
+  --aurora-glass-border:   rgba(255, 255, 255, 0.16);
+  --aurora-glass-blur:     blur(28px) saturate(160%);
+  --aurora-shadow-glass:   0 12px 40px rgba(0, 0, 0, 0.30);
+
+  /* Editor syntax (consumed by codemirror/theme.ts in a later task) */
+  --aurora-code-keyword:    #93c5fd;
+  --aurora-code-number:     var(--aurora-accent-amber);
+  --aurora-code-string:     var(--aurora-accent-success);
+  --aurora-code-identifier: var(--aurora-accent-pink);
+  --aurora-code-operator:   var(--aurora-text-secondary);
+
+  /* Typography */
+  --aurora-font-ui:   'Lexend', system-ui, sans-serif;
+  --aurora-font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Geometry */
+  --aurora-pane-padding: 16px;
+  --aurora-pane-gap:     14px;
+  --aurora-pane-radius:  14px;
+  --aurora-button-radius: 11px;
+  --aurora-modal-radius:  16px;
+  --aurora-card-radius:    9px;
+}
+
+/* Aurora base — static background handled by AuroraBackground component */
+body.aurora-mode {
+  font-family: var(--aurora-font-ui);
+  color: var(--aurora-text-primary);
+  min-height: 100vh;
+}
+
+/* Reduced-motion: disable decorative transitions on aurora surfaces */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-anim { animation: none !important; transition: none !important; }
+}

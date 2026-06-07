@@ -34,15 +34,15 @@ Both functions wrap `JSON.parse` in a `try/catch`. A corrupted or unreadable loc
 
 ## Invariants
 
-INV-01: `chosenElements.length === currentLevel` whenever `currentLevel > 0`.
+INV-01: `chosenElements.length === completedLevels.length` at all times. One element is appended per completed level via `selectElement`. Level 1 starts with no chosen element (`chosenElements = []`).
 
 INV-02: For every `n` in `completedLevels`, `stars[n]` is a number in `[1, 3]`.
 
-INV-03: `currentLevel` is in `[0, 10]`. The game ends when level 10 is completed.
+INV-03: `currentLevel` is in `[1, 10]`. Initialized to 1, clamped via `Math.max(1, ...)` on load, reset to 1 by `resetProgress`. The game ends when level 10 is completed.
 
 INV-04: `saveSettings` writes exactly `{ language, apiKey }` — no other fields.
 
-INV-05: `saveProgress` writes exactly `{ initialStory, currentLevel, completedLevels, mapStructure, chosenElements, stars }` — no other fields.
+INV-05: `saveProgress` writes exactly `{ initialStory, currentLevel, completedLevels, mapStructure, mapStartEmoji, chosenElements, stars }` — no other fields.
 
 INV-06: `loadSettings()` and `loadProgress()` never throw. On any parse failure they return `{ language: 'en', apiKey: null }` and `{}` respectively.
 

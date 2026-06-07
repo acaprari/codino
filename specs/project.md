@@ -17,6 +17,7 @@ Codino teaches fundamental programming concepts (variables, arithmetic, loops, c
 
 - **React 18 + TypeScript + Vite** — standard SPA setup; Vite chosen for fast dev iteration and straightforward GitHub Pages deployment
 - **Tailwind CSS** — utility-first styling; child-friendly large elements achieved through Tailwind classes
+- **Lexend + JetBrains Mono** (Google Fonts, `display=swap`) — Aurora typography. Loaded via `<link>` in `index.html`. Lexend for UI (designed for reading proficiency; distinctive shapes without being twee), JetBrains Mono for code (no ambiguous characters, strong rhythm for Codino keywords).
 - **Zustand** — minimal state management without Redux ceremony; single global store
 - **CodeMirror 6 + Lezer** — professional code editor with a custom Lezer grammar for the Codino language; chosen over textarea because it provides syntax highlighting, error markers, and autocomplete without heavy implementation cost
 - **Anthropic Claude API** — direct client-side calls using the user's own API key; no proxy needed because there is no backend
@@ -25,6 +26,8 @@ Codino teaches fundamental programming concepts (variables, arithmetic, loops, c
 ## Architecture
 
 Feature-based directory layout under `src/features/`, with shared business logic in `src/core/` and global state in `src/store/`. Each feature (map, editor, execution, story, settings) owns its components and hooks; `core/` holds the language parser/interpreter, API client, and CodeMirror configuration. This keeps features independently navigable without deep cross-directory imports.
+
+Per ADR-001, the UI is organized around a single always-on Workspace with four panes (top bar, main area with problem + editor + run controls, right panel that crossfades between Help and Execution, bottom map strip). Previously-separate screens (welcome, story input, settings, errors, success) are AuroraModal overlays. The map screen is eliminated in favour of the bottom strip.
 
 ## Dev commands
 

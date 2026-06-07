@@ -19,7 +19,7 @@ describe('Game Store', () => {
 
   it('initializes with default state', () => {
     const state = useGameStore.getState();
-    expect(state.currentLevel).toBe(0);
+    expect(state.currentLevel).toBe(1);
     expect(state.completedLevels).toEqual([]);
     expect(state.currentProblem).toBeNull();
     expect(state.currentCode).toBe('');
@@ -63,7 +63,7 @@ describe('Game Store', () => {
     useGameStore.getState().selectElement(ELEMENT);
 
     const state = useGameStore.getState();
-    expect(state.currentLevel).toBe(1);
+    expect(state.currentLevel).toBe(2);
     expect(state.chosenElements).toEqual([ELEMENT]);
     expect(state.currentProblem).toBeNull();
     expect(state.currentCode).toBe('');
