@@ -33,6 +33,16 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, startEmo
         {levels.map((lvl, idx) => {
           const done = isCompleted(lvl);
           const current = isCurrent(lvl);
+
+          // The element that defines level N is chosenElements[N-2] (0-based: idx-1).
+          // Level 1 has no defining element — its completed state shows startEmoji.
+          const definingEmoji: string =
+            idx === 0
+              ? startEmoji
+              : chosenElements[idx - 1]?.emoji ?? '';
+
+          const showEmoji = (done || current) && definingEmoji !== '';
+
           return (
             <span key={lvl} style={{ display: 'contents' }}>
               <div
@@ -55,7 +65,7 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, startEmo
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: done || (current && lvl === 1 && startEmoji) ? '22px' : '13px',
+                    fontSize: showEmoji ? '22px' : '13px',
                     fontWeight: 700,
                     color: done || current ? 'white' : 'var(--aurora-text-tertiary)',
                     background: done
@@ -71,10 +81,8 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, startEmo
                       : 'none',
                   }}
                 >
-                  {done
-                    ? chosenElements[idx]?.emoji ?? ''
-                    : current && lvl === 1 && startEmoji
-                    ? startEmoji
+                  {showEmoji
+                    ? definingEmoji
                     : lvl === 10
                     ? '🏁'
                     : String(lvl)}

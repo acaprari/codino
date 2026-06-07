@@ -4,7 +4,7 @@ import { MapBar } from '../../../../src/features/aurora/workspace/MapBar';
 
 describe('MapBar', () => {
   it('renders exactly 10 level nodes', () => {
-    const { container } = render(<MapBar completedLevels={[]} currentLevel={1} chosenElements={[]} language="it" />);
+    const { container } = render(<MapBar completedLevels={[]} currentLevel={1} chosenElements={[]} startEmoji="" language="it" />);
     const nodes = container.querySelectorAll('[data-node]');
     expect(nodes.length).toBe(10);
   });
@@ -18,6 +18,7 @@ describe('MapBar', () => {
           { emoji: '🏰', name: 'castello' },
           { emoji: '⚔️', name: 'spada' },
         ]}
+        startEmoji="🐉"
         language="it"
       />
     );
@@ -25,8 +26,14 @@ describe('MapBar', () => {
     expect(screen.getByText('⚔️')).toBeInTheDocument();
   });
 
-  it('shows the level number on the current node', () => {
-    render(<MapBar completedLevels={[1]} currentLevel={2} chosenElements={[{ emoji: '🏰', name: 'castle' }]} language="en" />);
+  it('shows the defining emoji on the current node when one exists', () => {
+    render(<MapBar completedLevels={[1]} currentLevel={2} chosenElements={[{ emoji: '🏰', name: 'castle' }]} startEmoji="🐉" language="en" />);
+    const currentNode = screen.getByTestId('node-current');
+    expect(currentNode.textContent).toBe('🏰');
+  });
+
+  it('shows the level number on the current node when no defining emoji exists', () => {
+    render(<MapBar completedLevels={[]} currentLevel={2} chosenElements={[]} startEmoji="" language="en" />);
     const currentNode = screen.getByTestId('node-current');
     expect(currentNode.textContent).toBe('2');
   });
