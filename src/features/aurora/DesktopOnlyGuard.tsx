@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { AuroraBackground } from './AuroraBackground';
 
 interface DesktopOnlyGuardProps {
   language: 'it' | 'en';
@@ -30,6 +31,7 @@ export function DesktopOnlyGuard({ language, children }: DesktopOnlyGuardProps) 
     const t = T[language];
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '20px' }}>
+        <AuroraBackground />
         <div style={{
           background: 'var(--aurora-glass-elevated)',
           border: '1px solid var(--aurora-glass-border)',
@@ -50,5 +52,5 @@ export function DesktopOnlyGuard({ language, children }: DesktopOnlyGuardProps) 
       </div>
     );
   }
-  return <>{children}</>;
+  return <><AuroraBackground />{children}</>;
 }

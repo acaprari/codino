@@ -45,61 +45,70 @@
   --aurora-card-radius:    9px;
 }
 
-/* Blob positions as registered custom properties so the browser can
-   interpolate them smoothly. Each blob gets its own X/Y pair.
-   Requires @property (Chrome 85+, Safari 16.4+, Firefox 128+). */
-@property --blob1-x { syntax: '<percentage>'; inherits: false; initial-value: 15%; }
-@property --blob1-y { syntax: '<percentage>'; inherits: false; initial-value: 20%; }
-@property --blob2-x { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
-@property --blob2-y { syntax: '<percentage>'; inherits: false; initial-value: 80%; }
-@property --blob3-x { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
-@property --blob3-y { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
-
-/* Aurora full-bleed background (applied only when .aurora-mode is on <body>) */
+/* Aurora base — gradient is the static layer; blobs are DOM children
+   of AuroraBackground that animate via transform (hardware-accelerated,
+   works in all browsers without @property). */
 body.aurora-mode {
   font-family: var(--aurora-font-ui);
   color: var(--aurora-text-primary);
-  background:
-    radial-gradient(at var(--blob1-x) var(--blob1-y), rgba(167, 139, 250, 0.42) 0%, transparent 40%),
-    radial-gradient(at var(--blob2-x) var(--blob2-y), rgba(244, 114, 182, 0.38) 0%, transparent 45%),
-    radial-gradient(at var(--blob3-x) var(--blob3-y), rgba(99, 102, 241, 0.28) 0%, transparent 55%),
-    linear-gradient(135deg, var(--aurora-bg-deep) 0%, var(--aurora-bg-mid) 50%, var(--aurora-bg-accent) 100%);
+  background: linear-gradient(135deg, var(--aurora-bg-deep) 0%, var(--aurora-bg-mid) 50%, var(--aurora-bg-accent) 100%);
   min-height: 100vh;
-  animation: aurora-drift 60s ease-in-out infinite;
 }
 
-/* Each blob drifts independently — different amplitudes and timing feel
-   organic rather than mechanically synchronized. */
-@keyframes aurora-drift {
-  0%   {
-    --blob1-x: 15%; --blob1-y: 20%;
-    --blob2-x: 85%; --blob2-y: 80%;
-    --blob3-x: 50%; --blob3-y: 50%;
-  }
-  33%  {
-    --blob1-x: 28%; --blob1-y: 35%;
-    --blob2-x: 68%; --blob2-y: 62%;
-    --blob3-x: 62%; --blob3-y: 38%;
-  }
-  66%  {
-    --blob1-x: 8%;  --blob1-y: 12%;
-    --blob2-x: 92%; --blob2-y: 90%;
-    --blob3-x: 40%; --blob3-y: 64%;
-  }
-  100% {
-    --blob1-x: 15%; --blob1-y: 20%;
-    --blob2-x: 85%; --blob2-y: 80%;
-    --blob3-x: 50%; --blob3-y: 50%;
-  }
+/* Blob shared styles */
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
 }
 
-/* Reduced-motion: disable any decorative animations on aurora surfaces */
+.aurora-blob-1 {
+  width: 60%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.55) 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+  animation: blob-drift-1 22s ease-in-out infinite;
+}
+
+.aurora-blob-2 {
+  width: 55%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.50) 0%, transparent 70%);
+  bottom: -10%;
+  right: -10%;
+  animation: blob-drift-2 28s ease-in-out infinite;
+}
+
+.aurora-blob-3 {
+  width: 50%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.40) 0%, transparent 70%);
+  top: 20%;
+  left: 20%;
+  animation: blob-drift-3 18s ease-in-out infinite;
+}
+
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0,  0); }
+  33%       { transform: translate(18%, 22%); }
+  66%       { transform: translate(-8%, 10%); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0,  0); }
+  33%       { transform: translate(-20%, -18%); }
+  66%       { transform: translate(10%, -14%); }
+}
+
+@keyframes blob-drift-3 {
+  0%, 100% { transform: translate(0,  0); }
+  33%       { transform: translate(14%, -18%); }
+  66%       { transform: translate(-14%, 14%); }
+}
+
+/* Reduced-motion: disable animations */
 @media (prefers-reduced-motion: reduce) {
-  body.aurora-mode {
-    animation: none;
-  }
-  .aurora-anim {
-    animation: none !important;
-    transition: none !important;
-  }
+  .aurora-blob  { animation: none; }
+  .aurora-anim  { animation: none !important; transition: none !important; }
 }
