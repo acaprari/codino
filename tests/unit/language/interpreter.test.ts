@@ -329,4 +329,14 @@ describe('Interpreter', () => {
     expect(result.error).toBeDefined();
     expect(result.error?.message).toMatch(/1000|too large/i);
   });
+
+  it('REPEAT with negative non-integer reports integer error, not negative error', () => {
+    const code = 'n = 0 - 2.5\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+    expect(result.error?.message).not.toMatch(/negative/i);
+  });
 });

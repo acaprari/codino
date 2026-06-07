@@ -216,8 +216,6 @@ function executeLoop(
 ): void {
   const line = getLineNumber(code, node.from);
 
-  // Collect expression parts (count) before VOLTE/TIMES, then body statements
-  // until FINE/END.
   const countParts: SyntaxNode[] = [];
   const bodyStatements: SyntaxNode[] = [];
   let inBody = false;
@@ -253,11 +251,11 @@ function executeLoop(
   if (typeof countValue !== 'number') {
     throw new RuntimeError('Loop count must be a number', line);
   }
-  if (countValue < 0) {
-    throw new RuntimeError('Loop count cannot be negative', line);
-  }
   if (!Number.isInteger(countValue)) {
     throw new RuntimeError('Loop count must be an integer', line);
+  }
+  if (countValue < 0) {
+    throw new RuntimeError('Loop count cannot be negative', line);
   }
   if (countValue > MAX_LOOP_ITERATIONS) {
     throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
