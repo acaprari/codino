@@ -53,7 +53,12 @@ export function ExecutionPanel({ output, variables, language }: ExecutionPanelPr
                 color: 'var(--aurora-text-primary)',
               }}
             >
-              <strong>{name}</strong> = {String(value)}
+              <strong>{name}</strong>
+              {' = '}
+              {typeof value === 'string'
+                ? <span style={{ color: 'var(--aurora-accent-success)' }}>"{value}"</span>
+                : <span style={{ color: 'var(--aurora-accent-amber)' }}>{value}</span>
+              }
             </div>
           ))}
         </div>
