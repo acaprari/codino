@@ -39,6 +39,15 @@ export function AuroraApp() {
   const [mode, setMode] = useState<Mode>('idle');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(!initialStory);
+  const [isPreparingGame, setIsPreparingGame] = useState(false);
+
+  // Reopen welcome modal whenever the store has no story (covers Clear Progress in Settings)
+  useEffect(() => {
+    if (!initialStory) {
+      setWelcomeOpen(true);
+      setMode('idle');
+    }
+  }, [initialStory]);
 
   // Execution state
   const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
@@ -81,14 +90,24 @@ export function AuroraApp() {
   const handleStorySubmit = async (story: string) => {
     setStory(story);
     setWelcomeOpen(false);
+    setIsPreparingGame(true);
     if (!apiClient) return;
     try {
       const result = await apiClient.generateMap({ story, language });
       const ms = result.mapStructure;
       if (!Array.isArray(ms) || ms.length === 0) throw new Error('empty');
       setMapStructure(ms);
+      const problem = await apiClient.generateProblem({
+        story,
+        chosenElements: [],
+        level: 1,
+        language,
+      });
+      setProblem(problem);
     } catch {
       setMode('gen-error');
+    } finally {
+      setIsPreparingGame(false);
     }
   };
 
@@ -254,8 +273,30 @@ export function AuroraApp() {
                 language={language}
               />
             ) : (
-              <div style={{ color: 'var(--aurora-text-tertiary)', fontFamily: 'var(--aurora-font-ui)' }}>
-                {language === 'it' ? 'Scegli un elemento dalla mappa per iniziare.' : 'Pick an element on the map to start.'}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                gap: '10px',
+                color: 'var(--aurora-text-secondary)',
+                fontFamily: 'var(--aurora-font-ui)',
+                fontSize: '14px',
+                textAlign: 'center',
+                padding: '20px',
+              }}>
+                {isPreparingGame ? (
+                  <>
+                    <span style={{ fontSize: '28px' }}>⏳</span>
+                    <span>{language === 'it' ? 'Preparo la tua avventura…' : 'Preparing your adventure…'}</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: '28px' }}>✨</span>
+                    <span>{language === 'it' ? 'La tua avventura sta per cominciare!' : 'Your adventure is about to begin!'}</span>
+                  </>
+                )}
               </div>
             )}
             <EditorPane
