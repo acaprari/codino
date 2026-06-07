@@ -17,10 +17,11 @@ interface CategoryDef {
 const CATEGORIES: CategoryDef[] = [
   {
     key: 'print',
-    iconAndTitle: { it: '📝 Stampare', en: '📝 Printing' },
+    iconAndTitle: { it: '✏️ Scrivere', en: '✏️ Writing' },
     cards: [
-      { kw: 'SCRIVI x', ex: { it: 'mostra un valore', en: 'print a value' } },
-      { kw: 'WRITE x',  ex: { it: 'lo stesso in inglese', en: 'same in English' } },
+      { kw: 'SCRIVI x',    ex: { it: 'mostra un numero o variabile', en: 'show a number or variable' } },
+      { kw: 'SCRIVI "ciao"', ex: { it: 'mostra un testo tra virgolette', en: 'show text in quotes' } },
+      { kw: 'WRITE x',     ex: { it: 'lo stesso in inglese', en: 'same in English' } },
     ],
   },
   {
@@ -71,7 +72,7 @@ export function HelpPanel({ language, currentLevel }: HelpPanelProps) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflow: 'auto', flex: 1, minHeight: 0 }}>
       <Label>{PANEL_TITLE[language]}</Label>
       {CATEGORIES.map((cat) => {
         const isOpen = expanded.has(cat.key);
@@ -93,7 +94,7 @@ export function HelpPanel({ language, currentLevel }: HelpPanelProps) {
               }}
             >
               <span>{cat.iconAndTitle[language]}</span>
-              <span style={{ fontSize: '11px', color: 'var(--aurora-text-tertiary)' }}>{isOpen ? '▾' : '▸'}</span>
+              <span style={{ fontSize: '16px', color: 'var(--aurora-text-secondary)', lineHeight: 1 }}>{isOpen ? '▾' : '▸'}</span>
             </div>
             {isOpen && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>

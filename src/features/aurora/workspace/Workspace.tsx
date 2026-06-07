@@ -22,8 +22,8 @@ export function Workspace({ topBar, mainArea, rightPanel, bottomBar }: Workspace
       }}
     >
       <div style={{ gridColumn: '1 / -1' }}>{topBar}</div>
-      <div style={{ gridRow: 2, minHeight: 0 }}>{mainArea}</div>
-      <div style={{ gridRow: 2, minHeight: 0 }}>{rightPanel}</div>
+      <div style={{ gridRow: 2, minHeight: 0, overflow: 'hidden' }}>{mainArea}</div>
+      <div style={{ gridRow: 2, minHeight: 0, overflow: 'hidden' }}>{rightPanel}</div>
       <div style={{ gridColumn: '1 / -1' }}>{bottomBar}</div>
     </div>
   );

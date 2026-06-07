@@ -9,8 +9,8 @@ interface RunControlsProps {
 }
 
 const T = {
-  it: { help: '❓ Aiuto', helpWait: '⏳ Pensando…', run: '▶ ESEGUI', running: '▶ Eseguendo…' },
-  en: { help: '❓ Help',   helpWait: '⏳ Thinking…', run: '▶ RUN',     running: '▶ Running…'  },
+  it: { help: '❓ AIUTO', helpWait: '⏳ PENSANDO…', run: '▶ ESEGUI', running: '▶ ESEGUENDO…' },
+  en: { help: '❓ HELP',  helpWait: '⏳ THINKING…', run: '▶ RUN',    running: '▶ RUNNING…'   },
 };
 
 export function RunControls({ onRun, onHelp, running = false, helpLoading = false, language }: RunControlsProps) {

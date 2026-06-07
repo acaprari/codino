@@ -246,7 +246,7 @@ export function AuroraApp() {
           />
         }
         mainArea={
-          <GlassPane style={{ display: 'flex', flexDirection: 'column', gap: '14px', minHeight: 0 }}>
+          <GlassPane style={{ display: 'flex', flexDirection: 'column', gap: '14px', height: '100%', minHeight: 0, overflow: 'hidden', boxSizing: 'border-box' }}>
             {currentProblem ? (
               <ProblemCard
                 narrative={currentProblem.narrative}

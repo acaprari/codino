@@ -18,11 +18,12 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, language
     <>
       <span
         style={{
-          fontSize: '10px',
+          fontSize: '12px',
           fontWeight: 700,
           textTransform: 'uppercase' as const,
-          letterSpacing: '0.8px',
-          color: 'var(--aurora-text-tertiary)',
+          letterSpacing: '0.9px',
+          color: 'var(--aurora-accent-pink)',
+          flexShrink: 0,
         }}
       >
         {LABEL[language]}
@@ -47,13 +48,13 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, language
               >
                 <div
                   style={{
-                    width: current ? '27px' : '22px',
-                    height: current ? '27px' : '22px',
+                    width: current ? '38px' : '32px',
+                    height: current ? '38px' : '32px',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '11px',
+                    fontSize: done ? '18px' : '13px',
                     fontWeight: 700,
                     color: done || current ? 'white' : 'var(--aurora-text-tertiary)',
                     background: done

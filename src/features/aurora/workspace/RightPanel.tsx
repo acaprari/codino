@@ -9,7 +9,7 @@ interface RightPanelProps {
 
 export function RightPanel({ mode, help, execution }: RightPanelProps) {
   return (
-    <GlassPane style={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
+    <GlassPane style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden', boxSizing: 'border-box', position: 'relative' }}>
       <div
         className="aurora-anim"
         style={{

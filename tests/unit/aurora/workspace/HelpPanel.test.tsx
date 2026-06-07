@@ -5,7 +5,7 @@ import { HelpPanel } from '../../../../src/features/aurora/workspace/HelpPanel';
 describe('HelpPanel', () => {
   it('renders all four category headers in Italian', () => {
     render(<HelpPanel language="it" currentLevel={3} />);
-    expect(screen.getByText(/Stampare/)).toBeInTheDocument();
+    expect(screen.getByText(/Scrivere/)).toBeInTheDocument();
     expect(screen.getByText(/Matematica/)).toBeInTheDocument();
     expect(screen.getByText(/Ripetizioni/)).toBeInTheDocument();
     expect(screen.getByText(/Condizioni/)).toBeInTheDocument();
@@ -13,7 +13,7 @@ describe('HelpPanel', () => {
 
   it('renders all four category headers in English', () => {
     render(<HelpPanel language="en" currentLevel={1} />);
-    expect(screen.getByText(/Printing/)).toBeInTheDocument();
+    expect(screen.getByText(/Writing/)).toBeInTheDocument();
     expect(screen.getByText(/Math/)).toBeInTheDocument();
     expect(screen.getByText(/Loops/)).toBeInTheDocument();
     expect(screen.getByText(/Conditions/)).toBeInTheDocument();

@@ -9,7 +9,7 @@ export function Label({ children, muted = false }: LabelProps) {
   return (
     <span
       style={{
-        fontSize: '11px',
+        fontSize: '12px',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.9px',
