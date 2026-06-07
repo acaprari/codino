@@ -11,9 +11,9 @@ Each capability spec describes the current state of one functional area: the dec
 - [ai-integration.md](ai-integration.md) — Claude API usage: map generation, problem generation, hints, ratings, prompt injection protection
 - [game-state.md](game-state.md) — Zustand store, level progression, localStorage persistence
 - [execution-engine.md](execution-engine.md) — Code execution pipeline, step-by-step animation, output validation
-- [map-visualization.md](map-visualization.md) — Winding path map, branching structure, level nodes
+- [map-visualization.md](map-visualization.md) — Horizontal bottom-bar map strip, 10 node states, emoji assignment per level
 - [editor.md](editor.md) — CodeMirror integration, syntax highlighting, theme, autocomplete
-- [story-onboarding.md](story-onboarding.md) — Welcome screen, story input, map generation loading flow
+- [story-onboarding.md](story-onboarding.md) — WelcomeStoryModal, story submission, map and first problem generation
 - [settings.md](settings.md) — API key management, language preference, progress reset
 - [visual-system.md](visual-system.md) — Aurora background, glass tokens, color roles, typography, buttons, labels
 
