@@ -29,7 +29,7 @@ Player presses RUN
 `generateProblem` is called for level 1 (with empty `chosenElements`) immediately after `generateMap` completes during story submission. The map is not interactive — the player never clicks a node to start. Subsequent problems are generated in `handleBranchPick` after the player picks a branch.
 
 ### Mode state machine drives the workspace
-`AuroraApp` holds a `Mode` enum (`'idle' | 'executing' | 'awaiting-rating' | 'celebrating' | 'wrong-output' | 'gen-error' | 'game-complete'`). The right panel's visual mode is derived: `'execution'` only when `mode === 'executing'`; otherwise `'help'`.
+`AuroraApp` holds a `Mode` enum (`'idle' | 'executing' | 'awaiting-rating' | 'celebrating' | 'wrong-output' | 'gen-error' | 'game-complete'`). The right panel shows `'execution'` mode for every state except `idle`, `gen-error`, and `game-complete` — i.e. the output stays visible from when RUN is pressed until the player takes an explicit action (Try Again → `idle`, or branch pick → `idle`). This gives the player time to read the output before the panel reverts to Help.
 
 ### Animation pace
 Each execution step is displayed for 1500 ms via the module-level constant `STEP_DURATION_MS`.
