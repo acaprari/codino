@@ -36,6 +36,19 @@ Section markers throughout the UI use a single Label component: 11 px, weight 70
 
 There is no third variant. This replaces the previous primary/secondary/success/warning button palette.
 
+### `AuroraModal` primitive
+`AuroraModal` is the shared modal primitive used by every modal in the app (`WelcomeStoryModal`, `SettingsModal`, `MapErrorModal`, `WrongOutputModal`, `BranchSuccessPopup`, `GameCompleteModal`). It owns the overlay, the elevated-glass container, and optional dismissibility. It does **not** own any close affordance — consumers add their own ✕ where they want one.
+
+API:
+- `open: boolean` — when `false`, renders nothing.
+- `onClose: () => void` — called by the dismissibility wiring; consumers also call it from their own close affordances.
+- `dismissible?: boolean` — defaults to `false`. When `true`, the primitive wires Escape (via a window `keydown` listener) and backdrop click to `onClose`. When `false`, neither fires; the consumer must provide an explicit exit.
+- `maxWidth?: number` — defaults to `560` (pixels).
+
+The content `<div>` calls `e.stopPropagation()` so clicking inside the modal does not bubble up to the backdrop's `onClose`. The overlay always renders with `role="dialog"` and `aria-modal="true"`.
+
+Each consumer modal sets its own `dismissible` value — they are documented in their respective capability specs ([[story-onboarding]], [[execution-engine]], [[map-visualization]], [[settings]]) so the dismissibility contract is visible per modal, not just at the primitive.
+
 ### Desktop-only guard at 900 px
 `DesktopOnlyGuard` wraps the app and short-circuits to a fallback card when `window.innerWidth < 900`. The threshold is a single module-level constant `MIN_WIDTH = 900`. A resize listener updates the width on every viewport change so the guard activates and deactivates live. The fallback card uses the elevated glass surface (per INV-03), contains a 💻 emoji header, and renders bilingual title + body strings. ADR-001 carries the rationale: coding requires a physical keyboard, and a half-working tablet layout would hurt perceived polish more than a clean refusal.
 > The 900 px cutoff was picked because it cleanly excludes tablets in portrait while leaving room for typical laptop widths. The threshold is not load-bearing — moving it by 50–100 px would not change which devices are blocked.
@@ -55,3 +68,7 @@ INV-05: All section markers use the `Label` component. Inline elements that dupl
 INV-06: The Aurora gradient is applied unconditionally via `body.aurora-mode` set in `src/main.tsx`.
 
 INV-07: `DesktopOnlyGuard` short-circuits the app render when `window.innerWidth < 900`, replacing children with the elevated-glass fallback card. The threshold lives in a single `MIN_WIDTH` constant in `DesktopOnlyGuard.tsx`. A `resize` event listener keeps the guard live; entering or leaving the threshold during a session flips the rendered tree without reload.
+
+INV-08: `AuroraModal.dismissible` defaults to `false`. When `false`, neither Escape nor backdrop click invoke `onClose` — the consumer must wire its own exit. When `true`, both are wired via the primitive.
+
+INV-09: `AuroraModal` does not render any close affordance (no ✕ button, no "Close" link). Consumer modals add their own when needed. The primitive only owns the overlay, the glass container, the dismissibility wiring, and the `role="dialog"`/`aria-modal="true"` attributes.
