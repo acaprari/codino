@@ -71,7 +71,7 @@ export const useGameStore = create<GameState>((set, get) => {
     language: settings.language,
     apiKey: settings.apiKey,
     initialStory: progress.initialStory ?? '',
-    currentLevel: progress.currentLevel ?? 0,
+    currentLevel: Math.max(1, progress.currentLevel ?? 1),
     completedLevels: progress.completedLevels ?? [],
     mapStructure: progress.mapStructure ?? [],
     chosenElements: progress.chosenElements ?? [],
@@ -146,7 +146,7 @@ export const useGameStore = create<GameState>((set, get) => {
       clearCurrentLevel();
       set({
         initialStory: '',
-        currentLevel: 0,
+        currentLevel: 1,
         completedLevels: [],
         mapStructure: [],
         chosenElements: [],

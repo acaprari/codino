@@ -59,3 +59,7 @@ INV-04: Output comparison trims both sides; no other normalization.
 INV-05: A rateCode or analyzeError failure shows a fallback; the player never sees an empty or broken popup.
 
 INV-06: Editor is read-only when `mode === 'executing'` or `mode === 'awaiting-rating'`.
+
+INV-07: `currentLevel` is always ≥ 1. The store initializes to 1 (not 0) and `resetProgress` resets to 1. Any saved progress with `currentLevel < 1` is clamped to 1 on load via `Math.max(1, ...)`.
+
+INV-08: No initial element pick is required before level 1. The first problem is generated with `chosenElements: []`. The first element choice happens after completing level 1 via BranchSuccessPopup.
