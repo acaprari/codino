@@ -404,4 +404,13 @@ describe('Interpreter', () => {
     expect(result.error).toBeDefined();
     expect(result.error?.message).toMatch(/integer/i);
   });
+
+  it('iteration loop with span exactly 1000 passes', () => {
+    const code = 'REPEAT i FROM 1 TO 1000\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toHaveLength(1000);
+  });
 });

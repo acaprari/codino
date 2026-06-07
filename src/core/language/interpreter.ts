@@ -291,7 +291,6 @@ function executeRangeLoop(
     | 'awaiting-id'
     | 'awaiting-from-kw'
     | 'collecting-from'
-    | 'awaiting-to-kw'
     | 'collecting-to'
     | 'in-body' = 'awaiting-id';
 
