@@ -45,39 +45,62 @@
   --aurora-card-radius:    9px;
 }
 
+/* Blob positions as registered custom properties so the browser can
+   interpolate them smoothly. Each blob gets its own X/Y pair.
+   Requires @property (Chrome 85+, Safari 16.4+, Firefox 128+). */
+@property --blob1-x { syntax: '<percentage>'; inherits: false; initial-value: 15%; }
+@property --blob1-y { syntax: '<percentage>'; inherits: false; initial-value: 20%; }
+@property --blob2-x { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
+@property --blob2-y { syntax: '<percentage>'; inherits: false; initial-value: 80%; }
+@property --blob3-x { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+@property --blob3-y { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+
 /* Aurora full-bleed background (applied only when .aurora-mode is on <body>) */
 body.aurora-mode {
   font-family: var(--aurora-font-ui);
   color: var(--aurora-text-primary);
   background:
-    radial-gradient(at 15% 20%, rgba(167, 139, 250, 0.42) 0%, transparent 40%),
-    radial-gradient(at 85% 80%, rgba(244, 114, 182, 0.38) 0%, transparent 45%),
-    radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.28) 0%, transparent 55%),
+    radial-gradient(at var(--blob1-x) var(--blob1-y), rgba(167, 139, 250, 0.42) 0%, transparent 40%),
+    radial-gradient(at var(--blob2-x) var(--blob2-y), rgba(244, 114, 182, 0.38) 0%, transparent 45%),
+    radial-gradient(at var(--blob3-x) var(--blob3-y), rgba(99, 102, 241, 0.28) 0%, transparent 55%),
     linear-gradient(135deg, var(--aurora-bg-deep) 0%, var(--aurora-bg-mid) 50%, var(--aurora-bg-accent) 100%);
   background-attachment: fixed;
   min-height: 100vh;
+  animation: aurora-drift 60s ease-in-out infinite;
+}
+
+/* Each blob drifts independently — different amplitudes and timing feel
+   organic rather than mechanically synchronized. */
+@keyframes aurora-drift {
+  0%   {
+    --blob1-x: 15%; --blob1-y: 20%;
+    --blob2-x: 85%; --blob2-y: 80%;
+    --blob3-x: 50%; --blob3-y: 50%;
+  }
+  33%  {
+    --blob1-x: 20%; --blob1-y: 28%;
+    --blob2-x: 78%; --blob2-y: 72%;
+    --blob3-x: 55%; --blob3-y: 44%;
+  }
+  66%  {
+    --blob1-x: 10%; --blob1-y: 15%;
+    --blob2-x: 90%; --blob2-y: 88%;
+    --blob3-x: 46%; --blob3-y: 57%;
+  }
+  100% {
+    --blob1-x: 15%; --blob1-y: 20%;
+    --blob2-x: 85%; --blob2-y: 80%;
+    --blob3-x: 50%; --blob3-y: 50%;
+  }
 }
 
 /* Reduced-motion: disable any decorative animations on aurora surfaces */
 @media (prefers-reduced-motion: reduce) {
+  body.aurora-mode {
+    animation: none;
+  }
   .aurora-anim {
     animation: none !important;
     transition: none !important;
-  }
-}
-
-@keyframes aurora-drift {
-  0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
-  50%  { background-position: 5% 3%, 95% 97%, 52% 48%, 0% 0%; }
-  100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
-}
-
-body.aurora-mode {
-  animation: aurora-drift 60s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.aurora-mode {
-    animation: none;
   }
 }
