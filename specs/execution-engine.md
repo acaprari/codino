@@ -25,6 +25,9 @@ Player presses RUN
 
 ## Decisions
 
+### Level 1 problem generated automatically after map
+`generateProblem` is called for level 1 (with empty `chosenElements`) immediately after `generateMap` completes during story submission. The map is not interactive — the player never clicks a node to start. Subsequent problems are generated in `handleBranchPick` after the player picks a branch.
+
 ### Mode state machine drives the workspace
 `AuroraApp` holds a `Mode` enum (`'idle' | 'executing' | 'awaiting-rating' | 'celebrating' | 'wrong-output' | 'gen-error' | 'game-complete'`). The right panel's visual mode is derived: `'execution'` only when `mode === 'executing'`; otherwise `'help'`.
 
