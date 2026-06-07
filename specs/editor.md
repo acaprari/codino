@@ -39,3 +39,5 @@ INV-03: Read-only mode (`readOnly=true`) suppresses both editing and the `onChan
 INV-04: Error cards appear below the editor; they do not change the editor's height.
 
 INV-05: Only the first parse error is shown in the UI. The complete error list is still returned by `parseWithErrors`.
+
+INV-06: The interpreter (`interpreter.ts`) emits error messages in English only. Translation to Italian is the responsibility of `RuntimeErrorCard`, which maintains a `translateMessage()` map covering all known message strings. Unknown messages fall through unchanged.
