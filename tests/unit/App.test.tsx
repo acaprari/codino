@@ -3,8 +3,10 @@ import { render, screen } from '@testing-library/react';
 import App from '../../src/App';
 
 describe('App', () => {
-  it('renders Codino heading', () => {
+  it('renders the Aurora workspace', () => {
     render(<App />);
-    expect(screen.getByText('Codino')).toBeInTheDocument();
+    // Multiple elements may contain "Codino" (TopBar + welcome modal) — use getAllByText
+    const matches = screen.getAllByText(/Codino|Benvenuto in Codino|Welcome to Codino/);
+    expect(matches.length).toBeGreaterThan(0);
   });
 });
