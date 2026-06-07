@@ -47,8 +47,13 @@ Every statement execution appends an `ExecutionStep` to the trace. Each step cap
 ### Errors are returned, not thrown, at the top level
 `execute()` catches all `RuntimeError` instances and returns `{ steps, output, error }`. Callers do not need try/catch. Errors during a partially-executed program include the steps and output accumulated before the error.
 
-### `grammar.ts` is a placeholder
-`src/core/language/grammar.ts` exports `codinoLanguage = null`. The CodeMirror language extension (syntax highlighting wired to CodeMirror via `@codemirror/language`) is not yet implemented; the Lezer parser is compiled to `parser.ts` and used directly for execution. Syntax highlighting for the editor is handled separately.
+### One Lezer grammar, two consumers
+The Codino grammar (`src/core/language/codino.grammar`) is compiled to `src/core/language/parser.ts` and consumed in two places:
+
+- `interpreter.ts` parses source via the Lezer parser and walks the resulting tree to execute the program.
+- `grammar.ts` wraps the same parser in `LRLanguage.define({ parser: parser.configure({ props: [styleTags({...})] }) })` and exposes it as `codinoLanguageSupport()` for CodeMirror. Style tags map keywords, numbers, strings, identifiers, and operators to the `@lezer/highlight` tag namespace.
+
+There is no separate highlighting tokenizer or per-language grammar. Both Italian and English keywords live in the single grammar via `@specialize` and are tagged identically.
 
 ## Invariants
 

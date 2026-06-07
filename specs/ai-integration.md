@@ -19,18 +19,35 @@ Every prompt instructs Claude to "Return ONLY a valid JSON object, no other text
 If parsing fails after fence stripping, the call throws `'Invalid JSON in AI response'`. There is no fallback regex that searches prose for `{...}` substrings — that approach was rejected because it is fragile, masks model instruction failures, and makes malformed responses silently succeed.
 > Alternatives considered: regex extraction `\{[\s\S]*\}` was the initial (wrong) implementation; it could match embedded JSON inside a prose response, producing subtly incorrect data without surfacing a failure.
 
-### Five AI call types; all five implemented
-1. **Story → Map generation** — `generateMap` — Sonnet
-2. **Element selection → Problem generation** — `generateProblem` — Sonnet
-3. **Code failure → Error analysis** — `analyzeError` — **Haiku** (fast, cheap, no deep reasoning needed)
-4. **Code success → Star rating + narrative bridge** — `rateCode` — Sonnet
-5. **"Need Help?" → AI hint** — `generateHint` — Sonnet
+### Seven AI call types; all seven implemented
+**Game-content calls (Sonnet, for higher reasoning quality):**
+1. **Story → Map generation** — `generateMap`
+2. **Element selection → Problem generation** — `generateProblem`
+3. **Code success → Star rating + narrative bridge** — `rateCode`
+4. **"Need Help?" → AI hint** — `generateHint`
+5. **"Give me ideas" → 4 bilingual story starters** — `generateStoryIdeas`
+
+**Lightweight calls (Haiku, for speed and cost):**
+6. **Code failure → Error analysis** — `analyzeError`
+7. **Key validation ping** — `testConnection`
 
 ### Star rating and narrative bridge are bundled into one call
 `rateCode` returns `{ stars, explanation, narrativeBridge }` in a single API call. The narrative bridge (2-3 sentences connecting the completed level to the next part of the adventure) requires the same context as the star rating (story, code, chosen element) and is shown on the same screen. Bundling saves a round trip.
 
-### Error analysis uses Haiku; all other calls use Sonnet
-`analyzeError` uses `claude-haiku-4-5-20251001` because it runs on every failed submission and needs to be fast and low-cost. The other four calls happen at natural pauses (start, element selection, completion) where latency is acceptable; they use `claude-sonnet-4-6` for higher reasoning quality.
+### Haiku for `analyzeError` and `testConnection`; Sonnet for the five game-content calls
+Two calls use `claude-haiku-4-5-20251001`:
+
+- `analyzeError` runs on every failed submission. Latency matters (the child is waiting) and the explanation is short — Haiku is fast and cheap enough to keep the cost-per-attempt negligible.
+- `testConnection` is purely a key-validity ping (`"Hi"`, `max_tokens: 10`). The model's reasoning is irrelevant; only the HTTP response code matters. Haiku is the cheapest model that can answer.
+
+The other five calls (`generateMap`, `generateProblem`, `rateCode`, `generateHint`, `generateStoryIdeas`) use `claude-sonnet-4-6`. They produce content the child reads — narrative, problems, ratings, ideas — where reasoning quality is visible to the player. They also happen at natural pauses (start, element selection, completion), so latency is acceptable.
+
+### `generateStoryIdeas` regenerates fresh on every tap
+The prompt asks for exactly 4 bilingual story starters (`"idea 1...","idea 2...","idea 3...","idea 4..."`). No caching, no fallback list. If the player taps "Give me ideas 💡" again, a new batch is generated.
+> Alternatives considered: a hardcoded bilingual list of story starters was rejected because the player may not like the first batch — regenerating produces fresh suggestions every time at the cost of one API call, which is acceptable given how rarely the button is tapped. A static list would surface the same suggestions on every tap.
+
+### `testConnection` does not persist the key
+`testConnection` makes the API call and returns `void` on success or throws on failure. It does **not** call `setApiKey` or write to localStorage. Persistence is the caller's responsibility — `SettingsModal` writes the key to the store only after `testConnection` resolves successfully. This keeps the validation step idempotent and allows it to be used without side effects.
 
 ### Input validation before every call
 `validateStoryInput` and `validateCodeInput` are called in the client before constructing prompts. They enforce:
@@ -65,4 +82,10 @@ INV-06: Stars returned by `rateCode` are clamped to `[1, 3]` before being return
 
 INV-07: `useClaudeAPI()` returns `null` when no API key is set. Callers must handle `null`.
 
-INV-08: `analyzeError` uses `claude-haiku-4-5-20251001`. All other methods use `claude-sonnet-4-6`. Model constants are defined once in `claude.ts` and not duplicated.
+INV-08: `analyzeError` and `testConnection` use `claude-haiku-4-5-20251001`. `generateMap`, `generateProblem`, `rateCode`, `generateHint`, and `generateStoryIdeas` use `claude-sonnet-4-6`. Model constants are defined once in `claude.ts` and not duplicated.
+
+INV-09: `testConnection` and `generateStoryIdeas` carry no user-provided content. They bypass `validateStoryInput`/`validateCodeInput` because there is nothing to validate. The system/messages split (INV-01) still applies: `generateStoryIdeas` puts its instructions in `system` and a fixed user message; `testConnection` sends a fixed `"Hi"` payload.
+
+INV-10: `testConnection` resolves with no return value on success and throws on failure. It never persists the API key. Persistence is performed by the caller (`SettingsModal`) only after `testConnection` resolves successfully.
+
+INV-11: `generateStoryIdeas` returns exactly 4 ideas. The prompt is explicit ("Generate exactly 4 short, imaginative story starters"). Callers may assume `ideas.length === 4` on success.

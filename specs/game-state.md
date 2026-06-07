@@ -13,9 +13,15 @@ All game state — settings, progress, and current-level state — lives in one 
 ### Settings and progress save only their own fields
 Each `saveSettings` call writes exactly `{ language, apiKey }`. Each `saveProgress` call writes exactly the six Progress fields. Spreading the full Zustand state (which includes React callbacks and non-serialisable values) into these keys is a bug — it stores unnecessary data and risks `JSON.stringify` silently dropping fields that happen to shadow serialisable ones.
 
-### `currentLevel` is 0 before any game starts; `selectElement` advances it
-`currentLevel` starts at 0 (the "no game in progress" sentinel). Calling `selectElement(element)` appends the element to `chosenElements` and increments `currentLevel` by 1. After selecting the first element, `currentLevel === 1`, meaning "level 1 is in progress". `completeLevel` records stars and adds the level to `completedLevels` but does not change `currentLevel` — the next `selectElement` call advances it again.
-> Invariant: `chosenElements.length === currentLevel` whenever `currentLevel > 0`.
+### `currentLevel` starts at 1; `selectElement` advances it after each completed level
+`currentLevel` initializes to **1** — level 1 is in progress from first launch. There is no "no game in progress" sentinel; the welcome flow is gated by `initialStory` being empty, not by `currentLevel`. The value is clamped via `Math.max(1, ...)` on load (so any legacy persisted `0` becomes `1`) and reset to `1` by `resetProgress`.
+
+Level 1 is played with `chosenElements: []`. The first element choice happens only after completing level 1, via the BranchSuccessPopup. The sequence per level is:
+
+1. `completeLevel(n, stars)` — records stars and appends `n` to `completedLevels`; does not change `currentLevel`.
+2. `selectElement(element)` — appends `element` to `chosenElements` and increments `currentLevel` by 1.
+
+Between (1) and (2) the level is "completed, awaiting branch pick"; the relationship `chosenElements.length === currentLevel - 1` still holds because neither has changed.
 
 ### `currentProblem` and `currentCode` are persisted together under a separate key
 A third localStorage key, `codino_current_level`, stores `{ problem, code }` while a level is in progress. `setProblem` writes it immediately. `setCode` writes it debounced (2-second delay) so every keystroke does not thrash localStorage. Both fields are stored atomically — they are always written together to guarantee the stored code always matches the stored problem.
@@ -34,7 +40,11 @@ Both functions wrap `JSON.parse` in a `try/catch`. A corrupted or unreadable loc
 
 ## Invariants
 
-INV-01: `chosenElements.length === completedLevels.length` at all times. One element is appended per completed level via `selectElement`. Level 1 starts with no chosen element (`chosenElements = []`).
+INV-01: `chosenElements.length ∈ {completedLevels.length - 1, completedLevels.length}` at all times:
+- Equal during active play of a level and at game start (`chosenElements = []`, `completedLevels = []`).
+- One less only in the transient window **between** `completeLevel(N)` and the subsequent `selectElement(E)` — `completeLevel` extends `completedLevels` first; `selectElement` then appends to `chosenElements`. Element choice always trails level completion by one step.
+
+One element is appended per completed level via `selectElement`. Level 1 starts with no chosen element.
 
 INV-02: For every `n` in `completedLevels`, `stars[n]` is a number in `[1, 3]`.
 
@@ -53,3 +63,5 @@ INV-08: `currentProblem` and `currentCode` are persisted together under `codino_
 INV-09: The `codino_current_level` key is cleared atomically with `completeLevel`, `selectElement`, and `resetProgress`. After any of these calls the key does not exist in localStorage.
 
 INV-10: The debounce timer for `setCode` is always cancelled before `clearCurrentLevel` is called, so a pending save can never overwrite a cleared key after a level ends.
+
+INV-11: `chosenElements.length === currentLevel - 1` at all times. `selectElement` is the only call that mutates either side and it advances both in lockstep, so the difference is invariant. The level numbered `currentLevel` is the level currently in progress (or just completed, awaiting an element pick). `completedLevels.length`, by contrast, lives in `{currentLevel - 1, currentLevel}` depending on whether `completeLevel` has run for the current level yet (see INV-01).

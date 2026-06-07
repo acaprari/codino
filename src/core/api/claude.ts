@@ -48,7 +48,7 @@ export class ClaudeAPIClient {
 
   async testConnection(): Promise<void> {
     await this.client.messages.create({
-      model: MODEL_SONNET,
+      model: MODEL_HAIKU,
       max_tokens: 10,
       messages: [{ role: 'user', content: 'Hi' }],
     });

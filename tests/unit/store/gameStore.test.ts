@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useGameStore } from '../../../src/store/gameStore';
+import { loadSettings, loadProgress } from '../../../src/store/persistence';
 
 const PROBLEM = { narrative: 'Find the treasure!', expectedOutput: '42' };
 const ELEMENT = { emoji: '🏰', name: 'castle' };
@@ -173,5 +174,75 @@ describe('Game Store', () => {
     expect(state.language).toBe('it');
     expect(state.apiKey).toBe('my-key');
     expect(state.completedLevels).toEqual([]);
+  });
+
+  // ─── invariant relationships (game-state INV-01, INV-11) ────────────────────
+
+  it('maintains INV-11 (chosenElements.length === currentLevel - 1) and INV-01 (chosenElements lags completedLevels by 0 or 1) across a full level cycle', () => {
+    const store = useGameStore.getState;
+    const inv01OK = () => {
+      const diff = store().completedLevels.length - store().chosenElements.length;
+      expect(diff === 0 || diff === 1).toBe(true);
+    };
+
+    // Initial state: level 1 in progress, nothing completed, no elements picked.
+    expect(store().chosenElements.length).toBe(0);
+    expect(store().completedLevels.length).toBe(0);
+    expect(store().currentLevel).toBe(1);
+    expect(store().chosenElements.length).toBe(store().currentLevel - 1);
+    inv01OK();
+
+    // Complete level 1 — completedLevels grows, others unchanged.
+    // INV-11 holds (cE=0, curL-1=0). INV-01 is now in the lag state (diff=1).
+    useGameStore.getState().completeLevel(1, 3);
+    expect(store().chosenElements.length).toBe(0);
+    expect(store().completedLevels.length).toBe(1);
+    expect(store().currentLevel).toBe(1);
+    expect(store().chosenElements.length).toBe(store().currentLevel - 1);
+    inv01OK();
+
+    // Player picks a branch element — currentLevel and chosenElements advance together.
+    // Now cE=1, cL=1, curL=2. INV-11 holds; INV-01 back to equal.
+    useGameStore.getState().selectElement(ELEMENT);
+    expect(store().chosenElements.length).toBe(1);
+    expect(store().completedLevels.length).toBe(1);
+    expect(store().currentLevel).toBe(2);
+    expect(store().chosenElements.length).toBe(store().currentLevel - 1);
+    expect(store().chosenElements.length).toBe(store().completedLevels.length);
+    inv01OK();
+
+    // One more full cycle.
+    useGameStore.getState().completeLevel(2, 2);
+    inv01OK();
+    useGameStore.getState().selectElement({ emoji: '🐉', name: 'dragon' });
+    expect(store().currentLevel).toBe(3);
+    expect(store().chosenElements.length).toBe(2);
+    expect(store().completedLevels.length).toBe(2);
+    expect(store().chosenElements.length).toBe(store().currentLevel - 1);
+    inv01OK();
+  });
+
+  // ─── safe-defaults on corrupted localStorage (game-state INV-06) ────────────
+
+  it('loadSettings returns safe defaults when codino_settings is malformed JSON', () => {
+    localStorage.setItem('codino_settings', '{not valid json');
+    expect(() => loadSettings()).not.toThrow();
+    expect(loadSettings()).toEqual({ language: 'en', apiKey: null });
+  });
+
+  it('loadProgress returns an empty object when codino_progress is malformed JSON', () => {
+    localStorage.setItem('codino_progress', '{not valid json');
+    expect(() => loadProgress()).not.toThrow();
+    expect(loadProgress()).toEqual({});
+  });
+
+  it('loadSettings returns defaults when codino_settings is missing', () => {
+    localStorage.removeItem('codino_settings');
+    expect(loadSettings()).toEqual({ language: 'en', apiKey: null });
+  });
+
+  it('loadProgress returns an empty object when codino_progress is missing', () => {
+    localStorage.removeItem('codino_progress');
+    expect(loadProgress()).toEqual({});
   });
 });

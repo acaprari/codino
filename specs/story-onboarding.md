@@ -17,10 +17,17 @@ The textarea has `maxLength={500}` for hard browser-level enforcement; the API l
 The "Start adventure" button is disabled when no API key is set. An amber note below the button directs the player to ⚙️ Settings. This prevents landing in a broken state where the map cannot generate.
 
 ### Settings accessible from the modal
-A ⚙️ ghost button in the modal header opens SettingsModal, allowing the player to set an API key and change language without dismissing the welcome flow.
+An icon-only ⚙️ button (translucent fill, hairline border — the icon-only exception to visual-system INV-04) sits in the modal header and opens SettingsModal, allowing the player to set an API key and change language without dismissing the welcome flow.
 
 ### Example chips and AI ideas
-Three static bilingual example chips are always shown. The "Give me ideas 💡" button is also always shown but disabled (with a tooltip) when no API key is set. When active, clicking it calls `generateStoryIdeas` and renders the returned ideas as green chips. Keeping the button visible even when disabled preserves discoverability.
+**Static examples (always shown).** Three bilingual example chips below the textarea fill the textarea via click. They are hardcoded in WelcomeStoryModal's language map — no API call, always available regardless of API-key state.
+
+**AI-generated ideas (button always visible).** The "Give me ideas 💡" button is always rendered. It is disabled (with a tooltip "Set an API key to use this feature") when no API key is set. When active, clicking it calls `generateStoryIdeas` (Sonnet, 4 ideas, see [[ai-integration]] INV-11) and renders the returned strings as green chips, each truncated to 40 characters for display. Clicking a chip fills the textarea with the full idea text.
+
+Keeping the button visible-but-disabled preserves discoverability — the player can see the feature exists and understands what unlocks it.
+
+### Idea generation is fire-and-forget
+Errors from `generateStoryIdeas` are silently swallowed: a `catch {}` clears the loading state and renders no error UI. The player can simply retry or fall back to the static examples. This is acceptable because the feature is purely additive — failure costs nothing.
 
 ### Generation phase
 After story submission, `generateMap` and then `generateProblem(level 1)` run in sequence. The modal closes immediately. The workspace shows a "Preparing your adventure…" loading state until both calls complete, at which point the first problem appears in the main area automatically — no player interaction required.
@@ -47,3 +54,7 @@ INV-07: The "Start adventure" button is disabled when `apiClient` is null. Submi
 INV-08: After successful story submission, `generateProblem` for level 1 is called immediately and automatically. The player never needs to interact with the map to start the game.
 
 INV-09: `WelcomeStoryModal` reopens whenever `initialStory` becomes falsy in the store (e.g. after Clear Progress). This is enforced via a `useEffect` in `AuroraApp`, not by requiring every progress-clearing call site to explicitly set `welcomeOpen`.
+
+INV-10: Clicking any chip (static example or AI-generated idea) fills the textarea with the chip's full text via `setStory`. The chip's display text may be truncated for layout, but the value written to the textarea is always the full string.
+
+INV-11: Errors from `generateStoryIdeas` are caught silently in `handleGetIdeas`. The loading state is always cleared (try/finally); no error UI is rendered. The button remains usable for retry.
