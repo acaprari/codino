@@ -9,16 +9,20 @@ The map is rendered as 10 nodes connected by hairline lines spread across the fu
 
 ### Three node states, all visually distinct
 - **Completed**: gradient purple→pink circle with the chosen emoji; soft purple glow
-- **Current**: gradient amber→orange circle; amber glow; slightly larger. Shows the level number, except node 1 which shows the `startEmoji` when available (see below)
+- **Current**: gradient amber→orange circle; amber glow; slightly larger. Shows the defining emoji when one exists (see INV-02), otherwise the level number
 - **Locked**: translucent white circle with the level number; no glow
 
 The current node is defined as the level currently being played (`currentLevel` from the store, when not in `completedLevels`).
 
-### Node 1 shows a story-derived startEmoji
-`generateMap` returns a `startEmoji` alongside the level structure — one emoji chosen by the AI to represent the story's opening scene (e.g. 🐉 for a dragon story, 🚀 for space, 🧙 for magic). This emoji is shown on node 1 when it is the current amber node, replacing the plain "1". It is persisted in `mapStartEmoji` in progress storage.
+### Node emoji assignment: one emoji per level, derived from what defines that level
+Each level has a "defining emoji" — the emoji the player associates with it:
+- Level 1: `startEmoji` from `generateMap` (a story-derived emoji like 🐉, 🚀, 🧙; no element is chosen before level 1)
+- Level N (N ≥ 2): `chosenElements[N-2]` — the branch element chosen after completing level N-1, which shapes level N's problem
 
-No initial element pick is required. The `startEmoji` is purely visual — it represents where the story begins, not a chosen branch element. The first actual element choice happens via BranchSuccessPopup after completing level 1.
-> Alternatives considered: (A) omit node 1 — breaks visual consistency; (B) fixed number — not playful; (C) fixed generic emoji — works but generic for every player; (D) dynamic startEmoji from generateMap — personalised, free (same API call), chosen.
+This emoji appears on the node in both **completed** and **current** states. On a completed node it shows what that level was about; on the current node it reminds the player which element they are playing with now.
+
+`generateMap` returns `startEmoji` alongside the level structure. It is persisted in `mapStartEmoji` in progress storage.
+> Alternatives considered for node 1: (A) omit node — breaks visual consistency; (B) fixed number — not playful; (C) fixed generic emoji — generic for every player; (D) dynamic startEmoji from generateMap — personalised, free (same API call), chosen.
 
 ### Map is NOT clickable
 Branch selection happens via the BranchSuccessPopup that appears after a level is completed. The map nodes themselves have no `onClick` handlers. This is a deliberate change from the original design where map nodes were the navigation primary.
@@ -31,7 +35,7 @@ Branch selection happens via the BranchSuccessPopup that appears after a level i
 
 INV-01: Exactly 10 nodes are rendered, one per level.
 
-INV-02: The chosen-element emoji on a completed node comes from `chosenElements[levelIndex]` (zero-based index).
+INV-02: The defining emoji for level N is: `startEmoji` for N=1; `chosenElements[N-2]` for N≥2. This emoji is shown on both completed and current nodes; falls back to the level number when absent.
 
 INV-03: At most one node has the 'current' state at any time.
 
@@ -39,4 +43,4 @@ INV-04: The map is not interactive. No node has `onClick`, `cursor: pointer`, or
 
 INV-05: Level 10 locked node shows 🏁 instead of the level number.
 
-INV-06: Node 1 in current state shows `mapStartEmoji` when it is non-empty, otherwise falls back to "1".
+INV-06: `mapStartEmoji` is set by `generateMap` and persisted in progress storage; it is the defining emoji for level 1 in both completed and current states.

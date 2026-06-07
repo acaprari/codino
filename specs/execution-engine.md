@@ -63,3 +63,7 @@ INV-06: Editor is read-only when `mode === 'executing'` or `mode === 'awaiting-r
 INV-07: `currentLevel` is always ≥ 1. The store initializes to 1 (not 0) and `resetProgress` resets to 1. Any saved progress with `currentLevel < 1` is clamped to 1 on load via `Math.max(1, ...)`.
 
 INV-08: No initial element pick is required before level 1. The first problem is generated with `chosenElements: []`. The first element choice happens after completing level 1 via BranchSuccessPopup.
+
+INV-09: Variable values in `ExecutionPanel` are displayed with type-aware formatting: strings are wrapped in double quotes and coloured green (`--aurora-accent-success`); numbers are coloured amber (`--aurora-accent-amber`). This prevents string values from being visually confused with variable names.
+
+INV-10: `HelpPanel` auto-expands the category matching the current level's concept on mount, aligned with `LEVEL_CONCEPTS` in `claude.ts` (1-based): level 1 = Writing, levels 2–3 = Math, levels 4–5 = Loops, levels 6+ = Conditions. The player can manually toggle any category.
