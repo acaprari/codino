@@ -331,7 +331,7 @@ export function AuroraApp() {
         }
         rightPanel={
           <RightPanel
-            mode={mode === 'executing' ? 'execution' : 'help'}
+            mode={mode === 'idle' || mode === 'gen-error' || mode === 'game-complete' ? 'help' : 'execution'}
             help={<HelpPanel language={language} currentLevel={Math.max(1, currentLevel)} />}
             execution={<ExecutionPanel output={output} variables={variables} language={language} />}
           />
