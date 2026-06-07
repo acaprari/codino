@@ -275,25 +275,22 @@ export function AuroraApp() {
             ) : (
               <div style={{
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                flex: 1,
                 gap: '10px',
                 color: 'var(--aurora-text-secondary)',
                 fontFamily: 'var(--aurora-font-ui)',
                 fontSize: '14px',
-                textAlign: 'center',
-                padding: '20px',
+                minHeight: '90px',
               }}>
                 {isPreparingGame ? (
                   <>
-                    <span style={{ fontSize: '28px' }}>⏳</span>
+                    <span style={{ fontSize: '20px' }}>⏳</span>
                     <span>{language === 'it' ? 'Preparo la tua avventura…' : 'Preparing your adventure…'}</span>
                   </>
                 ) : (
                   <>
-                    <span style={{ fontSize: '28px' }}>✨</span>
+                    <span style={{ fontSize: '20px' }}>✨</span>
                     <span>{language === 'it' ? 'La tua avventura sta per cominciare!' : 'Your adventure is about to begin!'}</span>
                   </>
                 )}
