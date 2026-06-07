@@ -316,6 +316,7 @@ export function AuroraApp() {
         onSubmit={handleStorySubmit}
         onGetIdeas={apiClient ? handleStoryIdeas : undefined}
         onOpenSettings={() => setSettingsOpen(true)}
+        hasApiKey={!!apiClient}
       />
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <MapErrorModal

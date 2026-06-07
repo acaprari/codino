@@ -8,6 +8,7 @@ interface WelcomeStoryModalProps {
   onSubmit: (story: string) => void;
   onGetIdeas?: () => Promise<string[]>;
   onOpenSettings: () => void;
+  hasApiKey: boolean;
 }
 
 const T = {
@@ -16,6 +17,7 @@ const T = {
     subtitle: 'Racconta la tua avventura.',
     settings: 'Impostazioni',
     ideasDisabled: 'Imposta la chiave API per usare questa funzione',
+    noApiKey: 'Serve una chiave API per giocare. Tocca ⚙️ per aggiungerla.',
     placeholder: "C'era una volta…",
     examples: [
       'Un coraggioso cavaliere alla ricerca del tesoro…',
@@ -33,6 +35,7 @@ const T = {
     subtitle: 'Tell your adventure.',
     settings: 'Settings',
     ideasDisabled: 'Set an API key to use this feature',
+    noApiKey: 'An API key is needed to play. Tap ⚙️ to add one.',
     placeholder: 'Once upon a time…',
     examples: [
       'A brave knight searches for treasure…',
@@ -47,7 +50,7 @@ const T = {
   },
 };
 
-export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpenSettings }: WelcomeStoryModalProps) {
+export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpenSettings, hasApiKey }: WelcomeStoryModalProps) {
   const t = T[language];
   const [story, setStory] = useState('');
   const [ideasLoading, setIdeasLoading] = useState(false);
@@ -185,11 +188,22 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
       <div style={{ marginTop: '22px', textAlign: 'center' }}>
         <AuroraButton
           variant="primary"
-          onClick={() => story.trim() && onSubmit(story.trim())}
-          disabled={!story.trim()}
+          onClick={() => story.trim() && hasApiKey && onSubmit(story.trim())}
+          disabled={!story.trim() || !hasApiKey}
         >
           {t.submit}
         </AuroraButton>
+        {!hasApiKey && (
+          <p style={{
+            marginTop: '10px',
+            fontSize: '13px',
+            color: 'var(--aurora-accent-amber)',
+            fontFamily: 'var(--aurora-font-ui)',
+            lineHeight: 1.4,
+          }}>
+            {t.noApiKey}
+          </p>
+        )}
       </div>
     </AuroraModal>
   );
