@@ -22,9 +22,3 @@ Each capability spec describes the current state of one functional area: the dec
 Cross-cutting decisions that span multiple capabilities. ADRs capture **durable** decisions and the alternatives that were rejected.
 
 - [ADR-001](adr/ADR-001-single-workspace-redesign.md) — Single-workspace, glass-aesthetic UI redesign · *Accepted 2026-06-06*
-
-## Forward-looking design docs
-
-Transient implementation guidance for in-flight redesigns. These docs are not specs of current state — they are deleted or archived once the work ships and the capability specs are updated.
-
-- [redesigns/2026-06-06-aurora-redesign.md](redesigns/2026-06-06-aurora-redesign.md) — Detailed implementation companion to ADR-001. Layout, color tokens, surface inventory, behavior tables.
