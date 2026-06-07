@@ -8,10 +8,12 @@ interface HelpPanelProps {
   currentLevel: number;
 }
 
+interface Bilingual { it: string; en: string }
+
 interface CategoryDef {
   key: CategoryKey;
-  iconAndTitle: { it: string; en: string };
-  cards: Array<{ kw: string; ex: { it: string; en: string } }>;
+  iconAndTitle: Bilingual;
+  cards: Array<{ kw: Bilingual; ex: Bilingual }>;
 }
 
 const CATEGORIES: CategoryDef[] = [
@@ -19,31 +21,31 @@ const CATEGORIES: CategoryDef[] = [
     key: 'print',
     iconAndTitle: { it: '✏️ Scrivere', en: '✏️ Writing' },
     cards: [
-      { kw: 'SCRIVI x',    ex: { it: 'mostra un numero o variabile', en: 'show a number or variable' } },
-      { kw: 'SCRIVI "ciao"', ex: { it: 'mostra un testo tra virgolette', en: 'show text in quotes' } },
-      { kw: 'WRITE x',     ex: { it: 'lo stesso in inglese', en: 'same in English' } },
+      { kw: { it: 'SCRIVI x',         en: 'WRITE x' },          ex: { it: 'mostra un numero o variabile', en: 'show a number or variable' } },
+      { kw: { it: 'SCRIVI "ciao"',    en: 'WRITE "hello"' },    ex: { it: 'mostra un testo tra virgolette', en: 'show text in quotes' } },
+      { kw: { it: 'WRITE x',          en: 'SCRIVI x' },         ex: { it: 'lo stesso in inglese',          en: 'same in Italian' } },
     ],
   },
   {
     key: 'math',
     iconAndTitle: { it: '➕ Matematica', en: '➕ Math' },
     cards: [
-      { kw: '+   –   x   :', ex: { it: 'somma · sottrai · moltiplica · dividi', en: 'add · subtract · multiply · divide' } },
+      { kw: { it: '+   –   x   :',    en: '+   –   x   :' },    ex: { it: 'somma · sottrai · moltiplica · dividi', en: 'add · subtract · multiply · divide' } },
     ],
   },
   {
     key: 'loops',
     iconAndTitle: { it: '🔁 Ripetizioni', en: '🔁 Loops' },
     cards: [
-      { kw: 'RIPETI 5 VOLTE … FINE', ex: { it: 'ripete 5 volte', en: 'repeats 5 times' } },
+      { kw: { it: 'RIPETI 5 VOLTE … FINE', en: 'REPEAT 5 TIMES … END' }, ex: { it: 'ripete 5 volte', en: 'repeats 5 times' } },
     ],
   },
   {
     key: 'conditions',
     iconAndTitle: { it: '🤔 Condizioni', en: '🤔 Conditions' },
     cards: [
-      { kw: 'SE x > 5 … FINE',                ex: { it: 'esegue se la condizione è vera', en: 'runs if true' } },
-      { kw: 'SE … ALTRIMENTI … FINE',         ex: { it: 'oppure questo se è falsa',        en: 'or this if false' } },
+      { kw: { it: 'SE x > 5 … FINE',         en: 'IF x > 5 … END' },         ex: { it: 'esegue se la condizione è vera', en: 'runs if true' } },
+      { kw: { it: 'SE … ALTRIMENTI … FINE',  en: 'IF … ELSE … END' },        ex: { it: 'oppure questo se è falsa',       en: 'or this if false' } },
     ],
   },
 ];
@@ -111,7 +113,7 @@ export function HelpPanel({ language, currentLevel }: HelpPanelProps) {
                     }}
                   >
                     <div style={{ fontFamily: 'var(--aurora-font-code)', fontSize: '12.5px', color: 'var(--aurora-text-primary)', fontWeight: 600 }}>
-                      {card.kw}
+                      {card.kw[language]}
                     </div>
                     <div style={{ fontSize: '11.5px', color: 'var(--aurora-text-tertiary)', marginTop: '3px' }}>
                       {card.ex[language]}

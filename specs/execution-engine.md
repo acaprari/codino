@@ -86,6 +86,8 @@ INV-09: Variable values in `ExecutionPanel` are displayed with type-aware format
 
 INV-10: `HelpPanel` auto-expands the category matching the current level's concept on mount, aligned with `LEVEL_CONCEPTS` in `claude.ts` (1-based): level 1 = Writing, levels 2–3 = Math, levels 4–5 = Loops, levels 6+ = Conditions. The player can manually toggle any category.
 
+INV-10a: `HelpPanel` category titles and keyword examples render in the active UI language. Every card's `kw` is a `{ it, en }` pair, never a single string. The Writing category's third card is a cross-language hint: it shows the *opposite* language's keyword (English UI → `SCRIVI x` with caption "same in Italian"; Italian UI → `WRITE x` with caption "lo stesso in inglese") so players see both keyword vocabularies exist.
+
 INV-11: `GameCompleteModal.open === (mode === 'game-complete')`. The modal is open if and only if the mode is `'game-complete'`.
 
 INV-12: `'game-complete'` mode is reachable only from `completeLevel(10, ...)` — specifically, the three branches in `handleRun` that fire after a successful output match on level 10 (rateCode success, rateCode failure fallback, no-API-key fallback). It is never set from `idle`, `gen-error`, `wrong-output`, or a partially-completed run.

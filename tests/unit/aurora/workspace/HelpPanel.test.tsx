@@ -30,4 +30,18 @@ describe('HelpPanel', () => {
     fireEvent.click(loopsHeader);
     expect(screen.getByText(/RIPETI/)).toBeInTheDocument();
   });
+
+  it('renders keyword examples in the active UI language', () => {
+    render(<HelpPanel language="en" currentLevel={5} />);
+    // Loops auto-expands at level 5 → English keyword, not Italian
+    expect(screen.getByText(/REPEAT 5 TIMES … END/)).toBeInTheDocument();
+    expect(screen.queryByText(/RIPETI 5 VOLTE/)).not.toBeInTheDocument();
+  });
+
+  it('shows the opposite-language keyword in the cross-language hint card', () => {
+    render(<HelpPanel language="en" currentLevel={1} />);
+    // Writing auto-expands at level 1; third card hints at the Italian equivalent
+    expect(screen.getByText(/^SCRIVI x$/)).toBeInTheDocument();
+    expect(screen.getByText(/same in Italian/)).toBeInTheDocument();
+  });
 });
