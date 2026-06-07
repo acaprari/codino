@@ -7,12 +7,15 @@ interface WelcomeStoryModalProps {
   language: 'it' | 'en';
   onSubmit: (story: string) => void;
   onGetIdeas?: () => Promise<string[]>;
+  onOpenSettings: () => void;
 }
 
 const T = {
   it: {
     title: 'Benvenuto in Codino!',
     subtitle: 'Racconta la tua avventura.',
+    settings: 'Impostazioni',
+    ideasDisabled: 'Imposta la chiave API per usare questa funzione',
     placeholder: "C'era una volta…",
     examples: [
       'Un coraggioso cavaliere alla ricerca del tesoro…',
@@ -28,6 +31,8 @@ const T = {
   en: {
     title: 'Welcome to Codino!',
     subtitle: 'Tell your adventure.',
+    settings: 'Settings',
+    ideasDisabled: 'Set an API key to use this feature',
     placeholder: 'Once upon a time…',
     examples: [
       'A brave knight searches for treasure…',
@@ -42,7 +47,7 @@ const T = {
   },
 };
 
-export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas }: WelcomeStoryModalProps) {
+export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpenSettings }: WelcomeStoryModalProps) {
   const t = T[language];
   const [story, setStory] = useState('');
   const [ideasLoading, setIdeasLoading] = useState(false);
@@ -62,7 +67,26 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas }: Welc
 
   return (
     <AuroraModal open={open} onClose={() => {}} maxWidth={640}>
-      <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '4px', color: 'var(--aurora-text-primary)', fontFamily: 'var(--aurora-font-ui)' }}>{t.title}</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--aurora-text-primary)', fontFamily: 'var(--aurora-font-ui)', margin: 0 }}>{t.title}</h2>
+        <button
+          onClick={onOpenSettings}
+          aria-label={t.settings}
+          title={t.settings}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '17px',
+            opacity: 0.65,
+            padding: '4px',
+            marginLeft: '12px',
+            flexShrink: 0,
+          }}
+        >
+          ⚙️
+        </button>
+      </div>
       <p style={{ color: 'var(--aurora-text-secondary)', marginBottom: '18px', fontFamily: 'var(--aurora-font-ui)' }}>{t.subtitle}</p>
 
       <textarea
@@ -89,23 +113,23 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas }: Welc
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
         <span style={{ color: 'var(--aurora-text-tertiary)', fontSize: '12px', fontFamily: 'var(--aurora-font-ui)' }}>{story.length} / 500</span>
-        {onGetIdeas && (
-          <button
-            onClick={handleGetIdeas}
-            disabled={ideasLoading}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--aurora-accent-pink)',
-              fontSize: '13px',
-              fontWeight: 600,
-              fontFamily: 'var(--aurora-font-ui)',
-            }}
-          >
-            {ideasLoading ? t.ideasLoading : t.ideasButton}
-          </button>
-        )}
+        <button
+          onClick={handleGetIdeas}
+          disabled={!onGetIdeas || ideasLoading}
+          title={!onGetIdeas ? t.ideasDisabled : undefined}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: onGetIdeas && !ideasLoading ? 'pointer' : 'not-allowed',
+            color: onGetIdeas ? 'var(--aurora-accent-pink)' : 'var(--aurora-text-tertiary)',
+            fontSize: '13px',
+            fontWeight: 600,
+            fontFamily: 'var(--aurora-font-ui)',
+            opacity: onGetIdeas ? 1 : 0.5,
+          }}
+        >
+          {ideasLoading ? t.ideasLoading : t.ideasButton}
+        </button>
       </div>
 
       {aiIdeas.length > 0 && (
