@@ -66,7 +66,10 @@ export class ClaudeAPIClient {
     });
 
     const data = parseJSONResponse(response);
-    return { mapStructure: data.levels as MapGenerationResponse['mapStructure'] };
+    return {
+      mapStructure: data.levels as MapGenerationResponse['mapStructure'],
+      startEmoji: (data.startEmoji as string) ?? '✨',
+    };
   }
 
   async generateProblem(request: ProblemGenerationRequest): Promise<ProblemGenerationResponse> {

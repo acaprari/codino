@@ -14,6 +14,7 @@ export interface MapGenerationRequest {
 
 export interface MapGenerationResponse {
   mapStructure: LevelStructure[];
+  startEmoji: string;
 }
 
 export interface ProblemGenerationRequest {

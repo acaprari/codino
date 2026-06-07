@@ -22,6 +22,7 @@ interface GameState {
   currentLevel: number;
   completedLevels: number[];
   mapStructure: LevelStructure[];
+  mapStartEmoji: string;
   chosenElements: Element[];
   stars: Record<number, number>;
 
@@ -33,7 +34,7 @@ interface GameState {
   setLanguage: (lang: 'it' | 'en') => void;
   setApiKey: (key: string) => void;
   setStory: (story: string) => void;
-  setMapStructure: (map: LevelStructure[]) => void;
+  setMapStructure: (map: LevelStructure[], startEmoji?: string) => void;
   selectElement: (element: Element) => void;
   setProblem: (problem: Problem) => void;
   setCode: (code: string) => void;
@@ -47,6 +48,7 @@ function toProgress(s: GameState): Progress {
     currentLevel: s.currentLevel,
     completedLevels: s.completedLevels,
     mapStructure: s.mapStructure,
+    mapStartEmoji: s.mapStartEmoji,
     chosenElements: s.chosenElements,
     stars: s.stars,
   };
@@ -74,6 +76,7 @@ export const useGameStore = create<GameState>((set, get) => {
     currentLevel: Math.max(1, progress.currentLevel ?? 1),
     completedLevels: progress.completedLevels ?? [],
     mapStructure: progress.mapStructure ?? [],
+    mapStartEmoji: progress.mapStartEmoji ?? '',
     chosenElements: progress.chosenElements ?? [],
     stars: progress.stars ?? {},
     currentProblem: currentLevel?.problem ?? null,
@@ -94,8 +97,8 @@ export const useGameStore = create<GameState>((set, get) => {
       saveProgress(toProgress(get()));
     },
 
-    setMapStructure: (map) => {
-      set({ mapStructure: map });
+    setMapStructure: (map, startEmoji) => {
+      set({ mapStructure: map, ...(startEmoji !== undefined ? { mapStartEmoji: startEmoji } : {}) });
       saveProgress(toProgress(get()));
     },
 
@@ -149,6 +152,7 @@ export const useGameStore = create<GameState>((set, get) => {
         currentLevel: 1,
         completedLevels: [],
         mapStructure: [],
+        mapStartEmoji: '',
         chosenElements: [],
         stars: {},
         currentProblem: null,

@@ -16,6 +16,7 @@ export interface Progress {
   mapStructure: LevelStructure[];
   chosenElements: Element[];
   stars: Record<number, number>;
+  mapStartEmoji: string;
 }
 
 export function loadSettings(): Settings {

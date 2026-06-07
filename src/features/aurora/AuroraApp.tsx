@@ -31,7 +31,7 @@ export function AuroraApp() {
   const {
     currentProblem, currentCode, setCode,
     currentLevel, stars, language, completedLevels, chosenElements,
-    initialStory, mapStructure,
+    initialStory, mapStructure, mapStartEmoji,
     setStory, setMapStructure, setProblem, selectElement, completeLevel,
   } = useGameStore();
   const apiClient = useClaudeAPI();
@@ -96,7 +96,7 @@ export function AuroraApp() {
       const result = await apiClient.generateMap({ story, language });
       const ms = result.mapStructure;
       if (!Array.isArray(ms) || ms.length === 0) throw new Error('empty');
-      setMapStructure(ms);
+      setMapStructure(ms, result.startEmoji);
       const problem = await apiClient.generateProblem({
         story,
         chosenElements: [],
@@ -345,6 +345,7 @@ export function AuroraApp() {
               completedLevels={completedLevels}
               currentLevel={currentLevel}
               chosenElements={chosenElements}
+              startEmoji={mapStartEmoji}
               language={language}
             />
           </BottomBar>

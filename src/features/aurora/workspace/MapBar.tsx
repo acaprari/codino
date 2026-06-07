@@ -4,12 +4,13 @@ interface MapBarProps {
   completedLevels: number[];
   currentLevel: number;
   chosenElements: Element[];
+  startEmoji: string;
   language: 'it' | 'en';
 }
 
 const LABEL = { it: 'Mappa', en: 'Map' };
 
-export function MapBar({ completedLevels, currentLevel, chosenElements, language }: MapBarProps) {
+export function MapBar({ completedLevels, currentLevel, chosenElements, startEmoji, language }: MapBarProps) {
   const levels = Array.from({ length: 10 }, (_, i) => i + 1);
   const isCompleted = (lvl: number) => completedLevels.includes(lvl);
   const isCurrent = (lvl: number) => lvl === currentLevel && !isCompleted(lvl);
@@ -54,7 +55,7 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, language
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: done ? '22px' : '13px',
+                    fontSize: done || (current && lvl === 1 && startEmoji) ? '22px' : '13px',
                     fontWeight: 700,
                     color: done || current ? 'white' : 'var(--aurora-text-tertiary)',
                     background: done
@@ -70,7 +71,13 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, language
                       : 'none',
                   }}
                 >
-                  {done ? chosenElements[idx]?.emoji ?? '' : lvl === 10 ? '🏁' : String(lvl)}
+                  {done
+                    ? chosenElements[idx]?.emoji ?? ''
+                    : current && lvl === 1 && startEmoji
+                    ? startEmoji
+                    : lvl === 10
+                    ? '🏁'
+                    : String(lvl)}
                 </div>
               </div>
               {idx < levels.length - 1 && (
