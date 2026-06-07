@@ -31,5 +31,5 @@ export function CodeEditor({ code, onChange, highlightedLine, readOnly = false }
     });
   }, [highlightedLine]);
 
-  return <div ref={editorRef} className="border-2 border-gray-300 rounded-lg overflow-hidden" />;
+  return <div ref={editorRef} style={{ height: '100%', borderRadius: '10px', overflow: 'hidden' }} />;
 }

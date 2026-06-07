@@ -54,7 +54,7 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, language
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: done ? '18px' : '13px',
+                    fontSize: done ? '22px' : '13px',
                     fontWeight: 700,
                     color: done || current ? 'white' : 'var(--aurora-text-tertiary)',
                     background: done

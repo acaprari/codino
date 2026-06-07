@@ -28,16 +28,19 @@ export function createEditorState(
       codinoTheme,
       EditorView.theme({
         '&': {
-          fontSize: '18px',
-          fontFamily: 'Monaco, Consolas, monospace',
+          fontSize: '15px',
+          fontFamily: 'var(--aurora-font-code, "JetBrains Mono", monospace)',
+          height: '100%',
         },
+        '.cm-editor': { height: '100%' },
+        '.cm-scroller': { overflow: 'auto' },
         '.cm-content': {
-          minHeight: '300px',
           padding: '10px',
         },
         '.cm-gutters': {
-          fontSize: '16px',
-          backgroundColor: '#f3f4f6',
+          fontSize: '13px',
+          backgroundColor: 'rgba(0, 0, 0, 0.18)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
         },
       }),
       ...(readOnly

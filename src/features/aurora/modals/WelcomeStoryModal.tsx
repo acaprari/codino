@@ -77,12 +77,15 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
           aria-label={t.settings}
           title={t.settings}
           style={{
-            background: 'transparent',
-            border: 'none',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--aurora-glass-border)',
+            borderRadius: '8px',
             cursor: 'pointer',
-            fontSize: '17px',
-            opacity: 0.65,
-            padding: '4px',
+            fontSize: '16px',
+            padding: '5px 9px',
+            lineHeight: 1,
+            display: 'flex',
+            alignItems: 'center',
             marginLeft: '12px',
             flexShrink: 0,
           }}

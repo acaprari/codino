@@ -64,7 +64,6 @@ body.aurora-mode {
     radial-gradient(at var(--blob2-x) var(--blob2-y), rgba(244, 114, 182, 0.38) 0%, transparent 45%),
     radial-gradient(at var(--blob3-x) var(--blob3-y), rgba(99, 102, 241, 0.28) 0%, transparent 55%),
     linear-gradient(135deg, var(--aurora-bg-deep) 0%, var(--aurora-bg-mid) 50%, var(--aurora-bg-accent) 100%);
-  background-attachment: fixed;
   min-height: 100vh;
   animation: aurora-drift 60s ease-in-out infinite;
 }
@@ -78,14 +77,14 @@ body.aurora-mode {
     --blob3-x: 50%; --blob3-y: 50%;
   }
   33%  {
-    --blob1-x: 20%; --blob1-y: 28%;
-    --blob2-x: 78%; --blob2-y: 72%;
-    --blob3-x: 55%; --blob3-y: 44%;
+    --blob1-x: 28%; --blob1-y: 35%;
+    --blob2-x: 68%; --blob2-y: 62%;
+    --blob3-x: 62%; --blob3-y: 38%;
   }
   66%  {
-    --blob1-x: 10%; --blob1-y: 15%;
-    --blob2-x: 90%; --blob2-y: 88%;
-    --blob3-x: 46%; --blob3-y: 57%;
+    --blob1-x: 8%;  --blob1-y: 12%;
+    --blob2-x: 92%; --blob2-y: 90%;
+    --blob3-x: 40%; --blob3-y: 64%;
   }
   100% {
     --blob1-x: 15%; --blob1-y: 20%;
