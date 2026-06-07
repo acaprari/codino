@@ -45,70 +45,14 @@
   --aurora-card-radius:    9px;
 }
 
-/* Aurora base — gradient is the static layer; blobs are DOM children
-   of AuroraBackground that animate via transform (hardware-accelerated,
-   works in all browsers without @property). */
+/* Aurora base — static background handled by AuroraBackground component */
 body.aurora-mode {
   font-family: var(--aurora-font-ui);
   color: var(--aurora-text-primary);
-  background: linear-gradient(135deg, var(--aurora-bg-deep) 0%, var(--aurora-bg-mid) 50%, var(--aurora-bg-accent) 100%);
   min-height: 100vh;
 }
 
-/* Blob shared styles */
-.aurora-blob {
-  position: absolute;
-  border-radius: 50%;
-  will-change: transform;
-}
-
-.aurora-blob-1 {
-  width: 60%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.55) 0%, transparent 70%);
-  top: -10%;
-  left: -10%;
-  animation: blob-drift-1 22s ease-in-out infinite;
-}
-
-.aurora-blob-2 {
-  width: 55%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(244, 114, 182, 0.50) 0%, transparent 70%);
-  bottom: -10%;
-  right: -10%;
-  animation: blob-drift-2 28s ease-in-out infinite;
-}
-
-.aurora-blob-3 {
-  width: 50%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.40) 0%, transparent 70%);
-  top: 20%;
-  left: 20%;
-  animation: blob-drift-3 18s ease-in-out infinite;
-}
-
-@keyframes blob-drift-1 {
-  0%, 100% { transform: translate(0,  0); }
-  33%       { transform: translate(18%, 22%); }
-  66%       { transform: translate(-8%, 10%); }
-}
-
-@keyframes blob-drift-2 {
-  0%, 100% { transform: translate(0,  0); }
-  33%       { transform: translate(-20%, -18%); }
-  66%       { transform: translate(10%, -14%); }
-}
-
-@keyframes blob-drift-3 {
-  0%, 100% { transform: translate(0,  0); }
-  33%       { transform: translate(14%, -18%); }
-  66%       { transform: translate(-14%, 14%); }
-}
-
-/* Reduced-motion: disable animations */
+/* Reduced-motion: disable decorative transitions on aurora surfaces */
 @media (prefers-reduced-motion: reduce) {
-  .aurora-blob  { animation: none; }
-  .aurora-anim  { animation: none !important; transition: none !important; }
+  .aurora-anim { animation: none !important; transition: none !important; }
 }
