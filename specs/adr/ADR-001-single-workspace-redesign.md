@@ -64,5 +64,5 @@ Six interlocking decisions, captured here as a single architectural shift. Imple
 
 ## References
 
-- Detailed implementation guidance: `specs/redesigns/2026-06-06-aurora-redesign.md`
+- Implementation companion (archived — shipped): was `specs/redesigns/2026-06-06-aurora-redesign.md`; decisions now live in the capability specs
 - Brainstorming mockups (local-only, gitignored): `.superpowers/brainstorm/`
