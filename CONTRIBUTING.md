@@ -33,7 +33,7 @@ Thank you for your interest in contributing to Codino! This document provides gu
 
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/alessio/codino.git
+   git remote add upstream https://github.com/acaprari/codino.git
    ```
 
 4. **Install dependencies**:
@@ -73,7 +73,7 @@ spec. When you change behaviour, update the spec in the same commit.
 
 ### 1. Pick an Issue
 
-- Browse [open issues](https://github.com/alessio/codino/issues)
+- Browse [open issues](https://github.com/acaprari/codino/issues)
 - Look for labels like `good first issue` or `help wanted`
 - Comment on the issue to claim it
 - If no suitable issue exists, create one first to discuss
@@ -619,8 +619,8 @@ console.log(useGameStore.getState());
 
 ## Getting Help
 
-- **Questions**: [GitHub Discussions](https://github.com/alessio/codino/discussions)
-- **Bugs**: [GitHub Issues](https://github.com/alessio/codino/issues)
+- **Questions**: [GitHub Discussions](https://github.com/acaprari/codino/discussions)
+- **Bugs**: [GitHub Issues](https://github.com/acaprari/codino/issues)
 - **Chat**: (Add Discord/Slack link if available)
 
 ## Code of Conduct

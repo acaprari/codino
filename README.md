@@ -1,246 +1,48 @@
 # Codino
 
-> A narrative-driven coding education game for children aged 7-8
+> A coding game for 7- and 8-year-olds, built around the kid's own story.
 
-Codino is an educational game that teaches fundamental programming concepts through personalized storytelling. Children write real code in a simple mini-language while following their own adventure story, powered by AI-generated challenges.
+![Codino workspace](docs/images/screenshot.png)
 
-## Features
+## ▶ Play it now
 
-- **Personal Story-Driven Learning** - Every playthrough is unique based on the child's own story
-- **Real Text-Based Programming** - Not drag-and-drop blocks, but actual code with syntax
-- **Bilingual Support** - Full Italian/English support with instant language switching
-- **AI-Powered Challenges** - Claude generates personalized coding problems based on the story
-- **Visual Execution** - Animated line-by-line code execution with variable tracking
-- **Child-Friendly Errors** - Helpful, encouraging error messages designed for young learners
-- **Progressive Difficulty** - 10 levels covering variables, math, loops, and conditionals
-- **Star Ratings** - AI-evaluated code quality feedback
-- **No Backend Required** - Pure frontend app, user provides their own Anthropic API key
+**[https://acaprari.github.io/codino/](https://acaprari.github.io/codino/)**
 
-## Screenshots
+You'll need your own Anthropic API key (the $5 free tier covers a full playthrough; expect about $0.10–0.20 per adventure). Add it once in Settings — it stays in your browser's localStorage and is never sent anywhere except directly to Anthropic.
 
-> Note: Screenshots to be added after UI polish is complete. The game features:
-> - A winding map visualization showing progress through 10 levels
-> - A split-screen code editor with problem description and syntax-highlighted editor
-> - Animated execution showing variables updating in real-time
-> - Celebration screens with star ratings and narrative bridges
+## What it is
 
-## Prerequisites
+Codino teaches programming fundamentals — variables, math, loops, conditionals — to children who can read but can't yet code. Two ideas drive the design:
 
-- **Node.js 20+** - [Download here](https://nodejs.org/)
-- **Anthropic API Key** - [Get one here](https://console.anthropic.com/)
-  - Free tier includes $5 credit
-  - Typical cost per game: ~$0.10-0.20
-  - Keys stay in browser localStorage (never sent to our servers)
+- **The kid writes their own story.** One or two sentences ("a brave dragon explores an enchanted castle"). The AI uses that story to generate a 10-level adventure where every problem is themed around what the kid wrote.
+- **Real text-based code, not blocks.** Children type actual programs in a small bilingual language (Italian and English keywords, switchable on the fly). After each level the AI rates their solution 1–3 stars and writes a narrative bridge into the next level.
 
-## Installation
+Other things worth knowing:
 
-### For Development
+- After each level the child picks one of 2–4 story "elements" (a sword, a wand, a wolf…) that shape the next problem — the adventure branches.
+- 100% frontend, no backend, no accounts, no cloud saves. Progress lives in `localStorage`.
+- Desktop or laptop only — a real keyboard is required.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/alessio/codino.git
-   cd codino
-   ```
+## How to play
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+1. Open [the live app](https://acaprari.github.io/codino/).
+2. Click ⚙️ Settings and paste your Anthropic API key ([get one here](https://console.anthropic.com/)).
+3. Type a one-or-two-sentence story (or hit "Give me ideas 💡") and start the adventure.
 
-3. **Set up environment** (optional for development)
+## A spec-driven development experiment
 
-   Create a `.env.local` file in the project root:
-   ```bash
-   # Optional: Add your API key here for testing
-   # Note: Production users will enter their own key in the Settings screen
-   VITE_ANTHROPIC_API_KEY=your-api-key-here
-   ```
+Codino is also a personal experiment in **spec-driven development**: `specs/` is the source of truth, and code is treated as a derivative. Every capability — the map, the editor, the execution pipeline, onboarding — has a markdown spec listing the decisions and invariants that govern it. Before any change to that area, the spec is read; after the change, the spec is updated in the same commit. Architectural decisions land in `specs/adr/`.
 
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
+To enforce the discipline alongside an AI pair-programmer, I wrote a set of Claude Code skills — `spec:core`, `spec:bootstrap`, `spec:maintain`, `spec:capture`, `spec:infer`, `spec:validate` — that gate code changes on spec presence and reconcile drift. They live in their own repo:
 
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
+**[github.com/acaprari/specdriven-skills](https://github.com/acaprari/specdriven-skills)**
 
-### For Production Use
+The verdict so far is promising. The full Aurora workspace redesign ([ADR-001](specs/adr/ADR-001-single-workspace-redesign.md)) was carried out with the AI doing most of the editing, kept honest by specs that pinned every visible invariant. See [`CLAUDE.md`](CLAUDE.md) for the project-side workflow, [`specs/README.md`](specs/README.md) for the spec index.
 
-Visit the deployed app at: [https://alessio.github.io/codino/](https://alessio.github.io/codino/)
+## The Codino language
 
-You'll need your own Anthropic API key (enter in Settings).
+A short, bilingual language with keywords children can pronounce. Italian and English are interchangeable per session; switch in Settings.
 
-## Configuration
-
-### API Key Setup
-
-1. Get an API key from [Anthropic Console](https://console.anthropic.com/)
-2. Click the Settings icon in Codino
-3. Paste your API key in the password field
-4. Click "Test Connection" to verify
-5. Your key is stored in browser localStorage only
-
-### Language Selection
-
-Use the language toggle (🇮🇹/🇬🇧) in the navigation bar to switch between Italian and English. Everything updates instantly:
-- UI text
-- Keywords (RIPETI ↔ REPEAT)
-- AI-generated content
-
-## Running the Project
-
-### Development Commands
-
-```bash
-# Start development server with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-
-# Run unit tests with Vitest
-npm test
-
-# Run unit tests in watch mode
-npm run test
-
-# Run unit tests with UI
-npm run test:ui
-
-# Run end-to-end tests with Playwright
-npm run test:e2e
-
-# Build the Lezer grammar (after modifying grammar file)
-npm run build:grammar
-```
-
-### Running Tests
-
-**Unit Tests:**
-```bash
-npm test
-```
-
-Tests cover:
-- Codino language parser
-- Interpreter execution
-- State management
-- API validation
-
-**E2E Tests:**
-```bash
-npm run test:e2e
-```
-
-Tests cover:
-- Complete user flows (onboarding, level completion)
-- Error handling
-- Settings and API key management
-
-## Deployment
-
-### GitHub Pages (Automatic)
-
-The project deploys automatically to GitHub Pages on every push to `main`:
-
-1. Push to `main` branch
-2. GitHub Actions builds and tests
-3. Deploys to `gh-pages` branch
-4. Live at `https://<username>.github.io/codino/`
-
-### Manual Deployment
-
-```bash
-# Build for production
-npm run build
-
-# The dist/ folder contains the static files
-# Deploy dist/ to any static hosting service (Vercel, Netlify, etc.)
-```
-
-## Project Structure
-
-```
-codino/
-├── src/
-│   ├── features/          # Feature modules
-│   │   ├── map/          # Winding path visualization
-│   │   ├── editor/       # Code editor with execution
-│   │   ├── execution/    # Animation and feedback
-│   │   ├── story/        # Onboarding flow
-│   │   └── settings/     # API key and preferences
-│   ├── core/             # Core business logic
-│   │   ├── language/     # Lezer parser + interpreter
-│   │   ├── api/          # Claude API client
-│   │   └── codemirror/   # Editor configuration
-│   ├── store/            # Zustand state management
-│   ├── components/       # Reusable UI components
-│   ├── types/            # TypeScript types
-│   └── utils/            # Helper functions
-├── tests/                # Unit and E2E tests
-│   ├── unit/            # Vitest unit tests
-│   └── e2e/             # Playwright E2E tests
-├── specs/               # Design specifications (source of truth)
-│   ├── project.md       # Project overview and architecture
-│   └── <capability>.md  # One file per capability area
-├── docs/                # User-facing documentation
-│   └── USER_GUIDE.md    # End-user guide (for players)
-├── CONTRIBUTING.md      # Contribution workflow
-└── public/              # Static assets
-
-```
-
-## Tech Stack
-
-### Frontend
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Styling
-
-### Code Editor
-- **CodeMirror 6** - Professional code editor
-- **Lezer** - Custom grammar for Codino language
-- Syntax highlighting and autocomplete
-
-### State Management
-- **Zustand** - Lightweight state management
-- **localStorage** - Persistence (no backend)
-
-### AI Integration
-- **Anthropic Claude API** - Direct client-side calls
-- Used for: map generation, problem generation, hints, code rating
-
-### Testing
-- **Vitest** - Unit tests
-- **Playwright** - E2E tests
-- **React Testing Library** - Component tests
-
-## The Codino Language
-
-Codino is a simple bilingual programming language designed for 7-8 year olds.
-
-### Example (Italian)
-```codino
-mele = 5
-pere = 3
-totale = mele + pere
-SCRIVI totale
-
-RIPETI 3 VOLTE
-  SCRIVI "Ciao!"
-FINE
-
-SE totale > 7
-  SCRIVI "Tante!"
-ALTRIMENTI
-  SCRIVI "Poche"
-FINE
-```
-
-### Example (English)
 ```codino
 apples = 5
 pears = 3
@@ -258,43 +60,57 @@ ELSE
 END
 ```
 
-See [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for complete language reference.
+The Italian equivalents are `SCRIVI`, `RIPETI … VOLTE … FINE`, `SE … ALTRIMENTI … FINE`. Full reference: [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
 
-## Contributing
+## Under the hood
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- Custom **Lezer** grammar + a small tree-walking interpreter for the Codino language. Execution is recorded as a sequence of steps that the UI then animates line-by-line (1.5 s per step) so kids can watch variables update.
+- **CodeMirror 6** for the editor — syntax highlighting, autocomplete, inline error markers.
+- **Anthropic Claude** is called directly from the browser for five things: map generation, problem generation, hints, code rating, and story-idea suggestions. Sonnet for the heavier prompts, Haiku for error explanations.
+- **Zustand** for the single global store; **localStorage** is the only persistence layer.
+- Validation is exact-match-after-trim on the printed output. Wrong output routes to a Haiku-generated explanation modal; correct output triggers Sonnet rating + a branch-pick popup.
 
-### Quick Start for Contributors
+## Development
 
-1. Read [specs/](specs/) to understand the project's design decisions and architecture
-2. Check open issues or propose new features
-3. Write tests for new features
-4. Follow the existing code style
-5. Submit a pull request
+**Stack:** React 19 + TypeScript + Vite, Tailwind, CodeMirror 6 + Lezer, Zustand, Anthropic SDK. Node 20+ required.
+
+```bash
+git clone https://github.com/acaprari/codino.git
+cd codino
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Optional: drop `VITE_ANTHROPIC_API_KEY=...` into `.env.local` so you don't have to enter the key through Settings each time.
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server with HMR |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright end-to-end tests |
+| `npm run build:grammar` | Regenerate the Lezer parser after editing `codino.grammar` |
+
+### Project layout
+
+```
+src/
+  features/          # aurora/, editor/  — UI surfaces
+  core/              # language/ (Lezer + interpreter), api/ (Claude client), codemirror/
+  store/             # Zustand store + localStorage persistence
+  components/        # shared aurora UI primitives (GlassPane, Label, AuroraButton…)
+  types/             # shared TS types
+specs/               # the source of truth — capability specs, ADRs, invariants
+docs/                # USER_GUIDE.md and other user-facing docs
+tests/               # unit/ (Vitest) and e2e/ (Playwright)
+```
+
+Before contributing, read [`specs/README.md`](specs/README.md) and the capability spec for whatever you're touching — then [`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow.
 
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/alessio/codino/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/alessio/codino/discussions)
-
-## Credits
-
-Built with:
-- Claude AI by Anthropic (for challenge generation)
-- CodeMirror (code editor)
-- Lezer (parser generator)
-- React ecosystem
-
-## Privacy & Safety
-
-- **No data collection** - Everything runs in the browser
-- **No cloud saves** - Progress stored in localStorage only
-- **API keys never leave your browser** - Direct calls to Anthropic
-- **Child-safe content** - AI prompts include safety guardrails
 
 ---
 

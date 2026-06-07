@@ -34,11 +34,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alessio/codino.git"
+    "url": "https://github.com/acaprari/codino.git"
   },
-  "homepage": "https://alessio.github.io/codino/",
+  "homepage": "https://acaprari.github.io/codino/",
   "bugs": {
-    "url": "https://github.com/alessio/codino/issues"
+    "url": "https://github.com/acaprari/codino/issues"
   },
   "engines": {
     "node": ">=24.0.0"
