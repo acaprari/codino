@@ -21,6 +21,8 @@ const ALL_KEYWORDS = [
   'FINE', 'END',
   'FROM', 'TO',
   'DA', 'A',
+  'PARI', 'EVEN',
+  'DISPARI', 'ODD',
 ];
 
 // Regex: tokens that look like attempted keywords — 2+ uppercase letters (possibly with digits)

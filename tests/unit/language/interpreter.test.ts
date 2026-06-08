@@ -413,4 +413,66 @@ describe('Interpreter', () => {
     expect(result.error).toBeUndefined();
     expect(result.output).toHaveLength(1000);
   });
+
+  it('IF EVEN is true for even integer', () => {
+    const code = 'n = 4\nIF n EVEN\nWRITE "even"\nELSE\nWRITE "odd"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['even']);
+  });
+
+  it('IF EVEN is false for odd integer', () => {
+    const code = 'n = 5\nIF n EVEN\nWRITE "even"\nELSE\nWRITE "odd"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['odd']);
+  });
+
+  it('IF ODD is true for odd integer', () => {
+    const code = 'IF 7 ODD\nWRITE "yes"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('PARI is true for 0', () => {
+    const code = 'SE 0 PARI\nSCRIVI "yes"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('EVEN is true for negative even integer', () => {
+    const code = 'n = 0 - 4\nIF n EVEN\nWRITE "yes"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('PARI/EVEN on non-integer throws RuntimeError', () => {
+    const code = 'IF 5.5 EVEN\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer|whole/i);
+  });
+
+  it('PARI/EVEN on string throws RuntimeError', () => {
+    const code = 'name = "hi"\nIF name EVEN\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+  });
 });

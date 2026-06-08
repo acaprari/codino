@@ -655,54 +655,48 @@ function evaluateCondition(
   }
 
   // Find operator position
-  let operatorIdx = -1;
+  let kind: 'compare' | 'parity' | null = null;
   let operator: string | null = null;
+  let operatorIdx = -1;
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    if (part.type.name === 'Greater') {
-      operator = '>';
-      operatorIdx = i;
-      break;
-    } else if (part.type.name === 'Less') {
-      operator = '<';
-      operatorIdx = i;
-      break;
-    } else if (part.type.name === 'Equal') {
-      operator = '==';
-      operatorIdx = i;
-      break;
-    }
+    const t = parts[i].type.name;
+    if (t === 'Greater') { kind = 'compare'; operator = '>';  operatorIdx = i; break; }
+    if (t === 'Less')    { kind = 'compare'; operator = '<';  operatorIdx = i; break; }
+    if (t === 'Equal')   { kind = 'compare'; operator = '=='; operatorIdx = i; break; }
+    if (t === 'EVEN' || t === 'PARI')    { kind = 'parity'; operator = 'even'; operatorIdx = i; break; }
+    if (t === 'ODD'  || t === 'DISPARI') { kind = 'parity'; operator = 'odd';  operatorIdx = i; break; }
   }
 
-  if (operatorIdx === -1 || !operator) {
+  if (kind === null || operatorIdx === -1) {
     throw new RuntimeError('Invalid condition', line);
   }
 
-  // Parts before operator are left side, parts after are right side
   const leftParts = parts.slice(0, operatorIdx);
-  const rightParts = parts.slice(operatorIdx + 1);
+  if (leftParts.length === 0) throw new RuntimeError('Invalid condition', line);
+  const leftValue = evaluateFlatExpression(leftParts, env, code, line);
 
-  if (leftParts.length === 0 || rightParts.length === 0) {
-    throw new RuntimeError('Invalid condition', line);
+  if (kind === 'parity') {
+    if (typeof leftValue !== 'number') {
+      throw new RuntimeError('Parity check requires a number', line);
+    }
+    if (!Number.isInteger(leftValue)) {
+      throw new RuntimeError('Parity check requires a whole number (integer)', line);
+    }
+    return operator === 'even' ? leftValue % 2 === 0 : leftValue % 2 !== 0;
   }
 
-  const leftValue = evaluateFlatExpression(leftParts, env, code, line);
+  // compare path
+  const rightParts = parts.slice(operatorIdx + 1);
+  if (rightParts.length === 0) throw new RuntimeError('Invalid condition', line);
   const rightValue = evaluateFlatExpression(rightParts, env, code, line);
-
-  // Convert to numbers for comparison
-  const leftNum = typeof leftValue === 'number' ? leftValue : parseFloat(String(leftValue));
+  const leftNum  = typeof leftValue  === 'number' ? leftValue  : parseFloat(String(leftValue));
   const rightNum = typeof rightValue === 'number' ? rightValue : parseFloat(String(rightValue));
-
   switch (operator) {
-    case '>':
-      return leftNum > rightNum;
-    case '<':
-      return leftNum < rightNum;
-    case '==':
-      return leftNum === rightNum;
-    default:
-      throw new RuntimeError(`Unknown comparison operator: ${operator}`, line);
+    case '>':  return leftNum >  rightNum;
+    case '<':  return leftNum <  rightNum;
+    case '==': return leftNum === rightNum;
+    default:   throw new RuntimeError(`Unknown comparison operator: ${operator}`, line);
   }
 }
 

@@ -46,7 +46,8 @@ Term {
 }
 
 condition {
-  expression (Greater | Less | Equal) expression
+  expression (Greater | Less | Equal) expression |
+  expression (kw<"PARI"> | kw<"EVEN"> | kw<"DISPARI"> | kw<"ODD">)
 }
 
 // XMul: the letter x as a multiplication operator alias.

@@ -173,6 +173,33 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('a = 5');
     expect(errors).toHaveLength(0);
   });
+
+  it('parses parity condition (English EVEN)', () => {
+    const { errors } = parseWithErrors('IF apples EVEN\nWRITE "ok"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses parity condition (Italian PARI)', () => {
+    const { errors } = parseWithErrors('SE mele PARI\nSCRIVI "ok"\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses ODD/DISPARI condition', () => {
+    const { errors: en } = parseWithErrors('IF n ODD\nWRITE "ok"\nEND');
+    const { errors: it } = parseWithErrors('SE n DISPARI\nSCRIVI "ok"\nFINE');
+    expect(en).toHaveLength(0);
+    expect(it).toHaveLength(0);
+  });
+
+  it('parity in condition with ELSE branch parses', () => {
+    const { errors } = parseWithErrors('IF n EVEN\nWRITE "e"\nELSE\nWRITE "o"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('uppercase EVEN as variable name is a parse error', () => {
+    const { errors } = parseWithErrors('EVEN = 5');
+    expect(errors.length).toBeGreaterThan(0);
+  });
 });
 
 describe('parseWithErrors', () => {

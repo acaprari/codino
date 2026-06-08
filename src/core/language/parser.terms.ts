@@ -33,5 +33,9 @@ export const
   IF = 32,
   Greater = 33,
   Less = 34,
-  ALTRIMENTI = 35,
-  ELSE = 36
+  PARI = 35,
+  EVEN = 36,
+  DISPARI = 37,
+  ODD = 38,
+  ALTRIMENTI = 39,
+  ELSE = 40
