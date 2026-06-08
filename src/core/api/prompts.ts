@@ -77,6 +77,33 @@ This problem MUST exercise: ${levelConcept.required}
 The problem must have a single deterministic expected output value.
 Write for a 7-8 year old in ${lang} — simple sentences, fun, tied to their story.
 
+## Constraints on the problem you generate
+
+1. The narrative must NOT contain any Codino code. Forbidden: code blocks
+   (triple-backtick fences), variable assignments (e.g. \`x = 5\`), Codino
+   keywords used as code examples (e.g. \`WRITE "hi"\` or \`IF n > 5\`), and
+   partial or complete solutions. Describe the situation in natural
+   language only. Specific values needed (like "set apples to 8") must
+   be stated in natural language.
+
+2. Every literal string the player must print MUST appear in the narrative
+   inside double quotes, exactly as it should be printed. Example: if the
+   expected output is "Watch out!", the narrative must contain the words
+   "Watch out!" literally — the player must be able to read the string off
+   the narrative without paraphrasing.
+
+3. The expectedOutput field must contain ONLY: letters a-z, A-Z, the
+   accented Latin vowels à á è é ì í ò ó ù ú and their uppercase
+   counterparts, digits 0-9, single spaces, and basic punctuation:
+   . , ! ? : ; ' " - ( ). NO emojis. NO smart quotes. NO em or en dashes.
+   NO arrows or math symbols. Emojis are encouraged in the narrative for
+   engagement but never in expectedOutput.
+
+4. The narrative must end with one clear, unambiguous instruction telling
+   the player what to print. Format: \`Print "<exact text>"\` or \`Print the
+   value of <variable>\`. No metaphor, no ambiguity. The player must know
+   the final output just from reading the narrative.
+
 Return ONLY a valid JSON object, no other text:
 {"narrative":"2-3 sentence story incorporating the elements","expectedOutput":"the exact output the program must print"}`,
     user: `${wrapInDelimiters(story, 'story')}\n${wrapInDelimiters(JSON.stringify(chosenElements), 'elements')}`,

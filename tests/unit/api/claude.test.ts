@@ -502,6 +502,65 @@ describe('ClaudeAPIClient', () => {
     });
   });
 
+  // ─── problem-generation constraints ────────────────────────────────────────
+
+  describe('problem-generation constraints', () => {
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    async function genProblem(level: number = 1, language: 'it' | 'en' = 'en') {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level, language,
+      });
+    }
+
+    it('generateProblem prompt contains the constraints section header', async () => {
+      await genProblem();
+      expect(lastSystemPrompt()).toContain('Constraints on the problem you generate');
+    });
+
+    it('generateProblem prompt forbids code/keywords in the narrative (rule 1)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/narrative must NOT contain any Codino code/i);
+    });
+
+    it('generateProblem prompt requires literal output strings quoted verbatim (rule 2)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/literal string the player must print/i);
+      expect(p).toMatch(/inside double quotes, exactly as it should be printed/i);
+    });
+
+    it('generateProblem prompt forbids emojis in expectedOutput (rule 3)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toContain('expectedOutput');
+      expect(p).toMatch(/NO emojis/);
+    });
+
+    it('generateProblem prompt lists the accented-Latin-vowel allowlist (rule 3)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toContain('à');
+      expect(p).toContain('è');
+      expect(p).toContain('ì');
+      expect(p).toContain('ò');
+      expect(p).toContain('ù');
+    });
+
+    it('generateProblem prompt requires an unambiguous print instruction (rule 4)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/narrative must end with one clear, unambiguous instruction/i);
+      expect(p).toMatch(/Print "<exact text>"/);
+    });
+  });
+
   // ─── Prompt injection protection ────────────────────────────────────────────
 
   describe('Prompt injection protection', () => {
