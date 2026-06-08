@@ -28,7 +28,7 @@ describe('HelpPanel', () => {
     render(<HelpPanel language="it" currentLevel={3} />);
     const loopsHeader = screen.getByText(/Ripetizioni/);
     fireEvent.click(loopsHeader);
-    expect(screen.getByText(/RIPETI/)).toBeInTheDocument();
+    expect(screen.getByText(/RIPETI 5 VOLTE/)).toBeInTheDocument();
   });
 
   it('renders keyword examples in the active UI language', () => {
