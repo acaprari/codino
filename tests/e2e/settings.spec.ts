@@ -1,21 +1,12 @@
 import { test, expect } from '@playwright/test';
-
-const PROGRESS = JSON.stringify({
-  initialStory: 'A brave knight',
-  currentLevel: 1,
-  completedLevels: [],
-  mapStructure: [],
-  mapStartEmoji: '🏰',
-  chosenElements: [],
-  stars: {},
-});
+import { SEEDED_PROGRESS } from './fixtures';
 
 test.describe('Settings', () => {
   test.beforeEach(async ({ page }) => {
     // Seed localStorage before React initialises so the welcome modal is bypassed
     await page.addInitScript((progress) => {
       localStorage.setItem('codino_progress', progress);
-    }, PROGRESS);
+    }, SEEDED_PROGRESS);
     await page.goto('/');
     // Only the TopBar settings button exists (welcome modal is closed)
     await page.getByRole('button', { name: /^(Impostazioni|Settings)$/i }).click();

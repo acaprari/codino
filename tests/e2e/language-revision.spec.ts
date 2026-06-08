@@ -1,14 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-
-const PROGRESS = JSON.stringify({
-  initialStory: 'A brave knight',
-  currentLevel: 1,
-  completedLevels: [],
-  mapStructure: [],
-  mapStartEmoji: '🏰',
-  chosenElements: [],
-  stars: {},
-});
+import { SEEDED_PROGRESS } from './fixtures';
 
 // A minimal problem. expectedOutput is a sentinel that won't match any test
 // program, so no modal fires before we can assert.  The actual output of each
@@ -28,12 +19,16 @@ const CURRENT_LEVEL = JSON.stringify({
  * These tests do not require an API key — they only exercise the
  * parser/interpreter/animation pipeline locally.
  */
+// Animation step duration is 1500 ms (STEP_DURATION_MS in execution-engine).
+// Budget for up to ~7 sequential animation steps plus page load.
+const OUTPUT_TIMEOUT_MS = 15_000;
+
 test.describe('Codino language revision — happy paths', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(({ progress, currentLevel }) => {
       localStorage.setItem('codino_progress', progress);
       localStorage.setItem('codino_current_level', currentLevel);
-    }, { progress: PROGRESS, currentLevel: CURRENT_LEVEL });
+    }, { progress: SEEDED_PROGRESS, currentLevel: CURRENT_LEVEL });
     await page.goto('/');
   });
 
@@ -43,12 +38,15 @@ test.describe('Codino language revision — happy paths', () => {
   }
 
   async function runAndAssertOutput(page: Page, code: string, expectedOutput: string) {
-    // Click into CodeMirror editor, select all existing content, replace with test code
-    await page.locator('.cm-content').click();
-    await page.keyboard.press('Control+a');
-    await page.keyboard.insertText(code);
-    await page.getByRole('button', { name: /▶\s*(RUN|ESEGUI)/i }).click();
-    await expect(outputBox(page)).toContainText(expectedOutput, { timeout: 15000 });
+    await test.step('type code into editor', async () => {
+      await page.locator('.cm-content').click();
+      await page.keyboard.press('Control+a');
+      await page.keyboard.insertText(code);
+    });
+    await test.step('press run', async () => {
+      await page.getByRole('button', { name: /▶\s*(RUN|ESEGUI)/i }).click();
+    });
+    await expect(outputBox(page)).toContainText(expectedOutput, { timeout: OUTPUT_TIMEOUT_MS });
   }
 
   test('multi-arg WRITE prints a single joined line', async ({ page }) => {
