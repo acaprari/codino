@@ -66,8 +66,8 @@ A React hook creates and memoises a `ClaudeAPIClient` instance using the `apiKey
 ### API errors propagate to callers
 `ClaudeAPIClient` does not catch or translate API errors. User-visible copy for rate limits, network errors, and invalid keys is a presentation concern handled in the UI layer.
 
-### Single Codino reference card for all code-reading prompts
-A `CODINO_REFERENCE` constant in `prompts.ts` is injected into the system prompt of every call that examines the player's code: `buildProblemGenerationPrompt`, `buildStarRatingPrompt`, `buildHintPrompt`, `buildErrorAnalysisPrompt`. The card names the language, lists bilingual keywords and operators, explains the `=` dual meaning, lists what is not in the language, and forbids referencing Python/JavaScript/etc. by name. Map-generation and story-ideas calls do not see code and are not injected.
+### Single Codino reference card for code-generating and code-evaluating prompts
+A `CODINO_REFERENCE` constant in `prompts.ts` is injected into the system prompt of every call that either generates or evaluates Codino code: `buildProblemGenerationPrompt` (so generated problems use only valid Codino constructs), `buildStarRatingPrompt`, `buildHintPrompt`, `buildErrorAnalysisPrompt` (so evaluations reference only Codino constructs, never Python or other languages). The card names the language, lists bilingual keywords and operators, explains the `=` dual meaning, lists what is not in the language, and forbids referencing Python/JavaScript/etc. by name. Map-generation and story-ideas calls do not generate or evaluate code and are not injected.
 > Alternatives considered: inlining gating per prompt without a shared constant — rejected because drift across prompts is inevitable as the language evolves.
 
 ### Per-level construct gating is prescriptive, not permissive

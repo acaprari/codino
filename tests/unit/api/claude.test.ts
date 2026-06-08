@@ -468,38 +468,32 @@ describe('ClaudeAPIClient', () => {
 
     it('level 4 prompt requires REPEAT N TIMES', async () => {
       await genProblem(4);
-      expect(lastSystemPrompt()).toMatch(/REPEAT.*TIMES|RIPETI.*VOLTE/i);
+      expect(lastSystemPrompt()).toContain('N may be a variable');
     });
 
     it('level 5 prompt requires the FROM/TO range loop', async () => {
       await genProblem(5);
-      expect(lastSystemPrompt()).toMatch(/FROM.*TO|DA.*A/);
+      expect(lastSystemPrompt()).toContain('REPEAT i FROM a TO b');
     });
 
     it('level 6 prompt requires a comparison condition', async () => {
       await genProblem(6);
-      const p = lastSystemPrompt();
-      expect(p).toMatch(/[<>=]/);
-      expect(p).toMatch(/IF|SE/);
+      expect(lastSystemPrompt()).toContain('IF <var>');
     });
 
     it('level 7 prompt requires a parity condition', async () => {
       await genProblem(7);
-      expect(lastSystemPrompt()).toMatch(/EVEN|ODD|PARI|DISPARI/);
+      expect(lastSystemPrompt()).toContain('IF <var> EVEN');
     });
 
     it('level 8 prompt requires comparison inside a loop', async () => {
       await genProblem(8);
-      const p = lastSystemPrompt();
-      expect(p).toMatch(/[<>=]/);
-      expect(p).toMatch(/REPEAT|RIPETI/);
+      expect(lastSystemPrompt()).toMatch(/comparison condition .* inside a REPEAT/i);
     });
 
     it('level 9 prompt requires parity inside a loop', async () => {
       await genProblem(9);
-      const p = lastSystemPrompt();
-      expect(p).toMatch(/EVEN|ODD|PARI|DISPARI/);
-      expect(p).toMatch(/REPEAT|RIPETI/);
+      expect(lastSystemPrompt()).toMatch(/parity condition .* inside a REPEAT/i);
     });
 
     it('level prompt lists not-yet-introduced constructs as forbidden', async () => {
