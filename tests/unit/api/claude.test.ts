@@ -162,7 +162,7 @@ describe('ClaudeAPIClient', () => {
 
       await client.generateProblem({ story: STORY, chosenElements: [], level: 4, language: 'en' });
 
-      expect(mockCreate.mock.calls[0][0].system).toContain('Simple Loops');
+      expect(mockCreate.mock.calls[0][0].system).toContain('Simple loops');
     });
 
     it('wraps elements in delimiters in user message', async () => {
@@ -440,6 +440,71 @@ describe('ClaudeAPIClient', () => {
       });
       await client.generateStoryIdeas({ language: 'en' });
       expect(lastSystemPrompt()).not.toContain(REF_MARKER);
+    });
+  });
+
+  // ─── per-level prescriptive gating ─────────────────────────────────────────
+
+  describe('per-level prescriptive gating', () => {
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    async function genProblem(level: number, language: 'it' | 'en' = 'en') {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level, language,
+      });
+    }
+
+    it('level 1 prompt requires a WRITE statement', async () => {
+      await genProblem(1);
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/must exercise|MUST exercise|must use|MUST/i);
+      expect(p).toContain('WRITE');
+    });
+
+    it('level 4 prompt requires REPEAT N TIMES', async () => {
+      await genProblem(4);
+      expect(lastSystemPrompt()).toMatch(/REPEAT.*TIMES|RIPETI.*VOLTE/i);
+    });
+
+    it('level 5 prompt requires the FROM/TO range loop', async () => {
+      await genProblem(5);
+      expect(lastSystemPrompt()).toMatch(/FROM.*TO|DA.*A/);
+    });
+
+    it('level 6 prompt requires a comparison condition', async () => {
+      await genProblem(6);
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/[<>=]/);
+      expect(p).toMatch(/IF|SE/);
+    });
+
+    it('level 7 prompt requires a parity condition', async () => {
+      await genProblem(7);
+      expect(lastSystemPrompt()).toMatch(/EVEN|ODD|PARI|DISPARI/);
+    });
+
+    it('level 8 prompt requires comparison inside a loop', async () => {
+      await genProblem(8);
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/[<>=]/);
+      expect(p).toMatch(/REPEAT|RIPETI/);
+    });
+
+    it('level 9 prompt requires parity inside a loop', async () => {
+      await genProblem(9);
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/EVEN|ODD|PARI|DISPARI/);
+      expect(p).toMatch(/REPEAT|RIPETI/);
+    });
+
+    it('level prompt lists not-yet-introduced constructs as forbidden', async () => {
+      await genProblem(2);
+      expect(lastSystemPrompt()).toMatch(/not yet|do NOT use|forbidden/i);
     });
   });
 

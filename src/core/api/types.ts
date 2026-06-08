@@ -73,3 +73,11 @@ export interface StoryIdeasRequest {
 export interface StoryIdeasResponse {
   ideas: string[];
 }
+
+export interface LevelConcept {
+  concept: string;
+  /** Constructs unlocked at this level (additive across levels). */
+  unlocks: string[];
+  /** Construct the generated problem MUST exercise at this level. */
+  required: string;
+}

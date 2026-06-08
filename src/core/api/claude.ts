@@ -21,19 +21,60 @@ import type {
   ErrorAnalysisResponse,
   StoryIdeasRequest,
   StoryIdeasResponse,
+  LevelConcept,
 } from './types';
 
-const LEVEL_CONCEPTS = [
-  'Print & Variables',
-  'Basic Math (+, -)',
-  'Basic Math (x, :)',
-  'Simple Loops',
-  'Simple Loops (practice)',
-  'Conditions (IF)',
-  'Conditions (IF/ELSE)',
-  'Loops + Conditions',
-  'Loops + Conditions (practice)',
-  'All Concepts Combined',
+export const LEVEL_CONCEPTS: LevelConcept[] = [
+  {
+    concept: 'Variables & Print',
+    unlocks: ['WRITE/SCRIVI', 'variable assignment with =', 'multi-arg WRITE with comma'],
+    required: 'A WRITE/SCRIVI statement',
+  },
+  {
+    concept: 'Math — add / subtract',
+    unlocks: ['+', '-'],
+    required: 'An expression using + or -',
+  },
+  {
+    concept: 'Math — multiply / divide',
+    unlocks: ['x (or *)', ': (or /)'],
+    required: 'An expression using x or :',
+  },
+  {
+    concept: 'Simple loops',
+    unlocks: ['REPEAT N TIMES … END / RIPETI N VOLTE … FINE (N may be a variable)'],
+    required: 'A REPEAT N TIMES … END block (N may be a variable)',
+  },
+  {
+    concept: 'Counted loops',
+    unlocks: ['REPEAT i FROM a TO b … END / RIPETI i DA a A b … FINE'],
+    required: 'A REPEAT i FROM a TO b … END block',
+  },
+  {
+    concept: 'Conditions — comparison',
+    unlocks: ['IF … END / SE … FINE', '>', '<', '=', 'ALTRIMENTI/ELSE'],
+    required: 'A condition of the form IF <var> > <num>, IF <var> < <num>, or IF <var> = <num>. Pick one; vary across levels — do not always choose >.',
+  },
+  {
+    concept: 'Conditions — parity',
+    unlocks: ['EVEN / PARI', 'ODD / DISPARI'],
+    required: 'A condition of the form IF <var> EVEN or IF <var> ODD (or PARI/DISPARI in Italian)',
+  },
+  {
+    concept: 'Loops + Conditions — comparison in loop',
+    unlocks: [],
+    required: 'A comparison condition (>, <, or =) used inside a REPEAT … END loop',
+  },
+  {
+    concept: 'Loops + Conditions — parity in loop',
+    unlocks: [],
+    required: 'A parity condition (EVEN/ODD/PARI/DISPARI) used inside a REPEAT … END loop',
+  },
+  {
+    concept: 'Final challenge',
+    unlocks: [],
+    required: 'At least one condition (any form: comparison or parity)',
+  },
 ];
 
 const MODEL_SONNET = 'claude-sonnet-4-6';
@@ -74,12 +115,23 @@ export class ClaudeAPIClient {
 
   async generateProblem(request: ProblemGenerationRequest): Promise<ProblemGenerationResponse> {
     const validatedStory = validateStoryInput(request.story);
-    const concept = LEVEL_CONCEPTS[request.level - 1] ?? 'Basic concepts';
+    const levelConcept = LEVEL_CONCEPTS[request.level - 1] ?? {
+      concept: 'Basic concepts', unlocks: [], required: '',
+    };
+    const allowedCumulative = LEVEL_CONCEPTS
+      .slice(0, request.level)
+      .flatMap((lc) => lc.unlocks);
+    const notYetIntroduced = LEVEL_CONCEPTS
+      .slice(request.level)
+      .flatMap((lc) => lc.unlocks);
+
     const { system, user } = buildProblemGenerationPrompt(
       validatedStory,
       request.chosenElements,
       request.level,
-      concept,
+      levelConcept,
+      allowedCumulative,
+      notYetIntroduced,
       request.language
     );
 

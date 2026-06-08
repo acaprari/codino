@@ -66,6 +66,13 @@ A React hook creates and memoises a `ClaudeAPIClient` instance using the `apiKey
 ### API errors propagate to callers
 `ClaudeAPIClient` does not catch or translate API errors. User-visible copy for rate limits, network errors, and invalid keys is a presentation concern handled in the UI layer.
 
+### Single Codino reference card for all code-reading prompts
+A `CODINO_REFERENCE` constant in `prompts.ts` is injected into the system prompt of every call that examines the player's code: `buildProblemGenerationPrompt`, `buildStarRatingPrompt`, `buildHintPrompt`, `buildErrorAnalysisPrompt`. The card names the language, lists bilingual keywords and operators, explains the `=` dual meaning, lists what is not in the language, and forbids referencing Python/JavaScript/etc. by name. Map-generation and story-ideas calls do not see code and are not injected.
+> Alternatives considered: inlining gating per prompt without a shared constant — rejected because drift across prompts is inevitable as the language evolves.
+
+### Per-level construct gating is prescriptive, not permissive
+`LEVEL_CONCEPTS` is a structured per-level table with `{ concept, unlocks, required }`. `buildProblemGenerationPrompt` emits three paragraphs derived from it: the cumulative allowed set, the not-yet-introduced (forbidden) set, and the construct the generated problem must exercise. This addresses the observed gap where comparison operators got little airtime even at levels nominally teaching conditions — the prompt now requires a specific construct rather than merely allowing it.
+
 ## Invariants
 
 INV-01: Every API method that accepts user-provided content **must** use the `system` parameter for all instructions and pass user data only in `messages`. Merging system instructions and user data into a single message is not permitted.
@@ -89,3 +96,7 @@ INV-09: `testConnection` and `generateStoryIdeas` carry no user-provided content
 INV-10: `testConnection` resolves with no return value on success and throws on failure. It never persists the API key. Persistence is performed by the caller (`SettingsModal`) only after `testConnection` resolves successfully.
 
 INV-11: `generateStoryIdeas` returns exactly 4 ideas. The prompt is explicit ("Generate exactly 4 short, imaginative story starters"). Callers may assume `ideas.length === 4` on success.
+
+INV-12: Every prompt that examines the player's code (`generateProblem`, `rateCode`, `generateHint`, `analyzeError`) includes the `CODINO_REFERENCE` block in its system prompt. Prompts that do not see code (`generateMap`, `generateStoryIdeas`, `testConnection`) do not.
+
+INV-13: `generateProblem` includes per-level construct gating in its system prompt, computed from `LEVEL_CONCEPTS`. The prompt names the allowed constructs (cumulative up to and including this level), the not-yet-introduced constructs (forbidden), and the construct the generated problem must exercise.
