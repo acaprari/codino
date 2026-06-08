@@ -19,6 +19,7 @@ export function ExecutionPanel({ output, variables, language }: ExecutionPanelPr
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <Label>{t.output}</Label>
         <div
+          data-testid="execution-output"
           style={{
             background: 'rgba(110, 231, 183, 0.10)',
             border: '1px solid rgba(110, 231, 183, 0.25)',
