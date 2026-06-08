@@ -27,7 +27,7 @@ The interpreter applies a two-pass evaluation: `*` and `/` are resolved first, t
 The grammar allows `Number { $[0-9]+ ("." $[0-9]+)? }`, so decimals parse anywhere. The interpreter explicitly validates that the loop count is a non-negative integer and throws a `RuntimeError` if it is fractional or negative.
 
 ### Loop count is capped at 1000 iterations
-The interpreter throws a `RuntimeError` if the loop count exceeds 1000. Even though the grammar requires a literal integer (bounding the value to what a child can type), very large numbers (e.g., `RIPETI 9999 VOLTE`) could lock up the browser. The 1000-iteration cap prevents this.
+The interpreter throws a `RuntimeError` if the loop count exceeds 1000. Even though the runtime validates the count as a non-negative integer (per INV-04), very large numbers (e.g., `RIPETI 9999 VOLTE`) could lock up the browser. The 1000-iteration cap prevents this.
 
 ### Arithmetic on string values is a runtime error
 Variables hold either a `number` or a `string`. Using a string-valued variable in arithmetic (e.g., `"hello" + 5`) throws a `RuntimeError`. This is shown to the player as a child-friendly message. Implicit coercion to `NaN` is not acceptable because it produces silent wrong answers.
@@ -70,7 +70,7 @@ Conditions accept a postfix parity form alongside comparisons: `IF apples EVEN`,
 
 ## Invariants
 
-INV-01: A valid Codino program consists only of `Assignment`, `Print`, `Loop`, and `Conditional` statements at the top level.
+INV-01: A valid Codino program consists only of `Assignment`, `Print`, `CountLoop`, `RangeLoop`, and `Conditional` statements at the top level.
 
 INV-02: `SCRIVI`/`WRITE`, `RIPETI`/`REPEAT`, `VOLTE`/`TIMES`, `SE`/`IF`, `ALTRIMENTI`/`ELSE`, `FINE`/`END`, `PARI`/`EVEN`, `DISPARI`/`ODD`, `DA`/`FROM`, `A`/`TO` are reserved keywords and cannot be used as variable names. All keywords are uppercase; the lowercase spelling of any keyword (e.g. `a`, `even`, `from`) remains a valid identifier.
 
@@ -88,11 +88,11 @@ INV-08: Each statement that successfully executes appends exactly one `Execution
 
 INV-09: String output from `SCRIVI`/`WRITE` is the `String()` coercion of the evaluated expression — numbers print without trailing `.0`.
 
-INV-10: Using a string value as an operand in an arithmetic operation (`+`, `-`, `x`/`*`, `/`, `:`) or a parity check (`EVEN`/`PARI`/`ODD`/`DISPARI`) throws a `RuntimeError`. String values may only be used with `SCRIVI`/`WRITE`.
+INV-10: Using a string value as an operand in an arithmetic operation (`+`, `-`, `x`/`*`, `/`, `:`) throws a `RuntimeError`. Using a string value or a non-integer number as an operand in a parity check (`EVEN`/`PARI`/`ODD`/`DISPARI`) throws a `RuntimeError`. String values may only be used with `SCRIVI`/`WRITE`.
 
 INV-11: `getParseErrors()` returns a `ParseError[]` — structured, message-free error data. The array is empty when the program has no parse errors.
 
-INV-12: Parity checks (`EVEN`/`PARI`/`ODD`/`DISPARI`) require an integer operand; non-integer numbers and string values throw `RuntimeError`.
+INV-12: Parity checks (`EVEN`/`PARI`/`ODD`/`DISPARI`) require an integer operand at runtime. (Strings and non-integer numbers are rejected per INV-10.)
 
 INV-13: A `RangeLoop`'s iteration variable lives in the single flat scope; its final value (= `to`) remains visible after the loop ends. A pre-existing variable with the same name is overwritten.
 
