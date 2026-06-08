@@ -100,9 +100,7 @@ Write for a 7-8 year old in ${lang} — simple sentences, fun, tied to their sto
    engagement but never in expectedOutput.
 
 4. The narrative must end with one clear, unambiguous instruction telling
-   the player what to print. Format: \`Print "<exact text>"\` or \`Print the
-   value of <variable>\`. No metaphor, no ambiguity. The player must know
-   the final output just from reading the narrative.
+   the player what to print. Format: \`Print "<exact text>"\` or \`Print the value of <variable>\`. No metaphor, no ambiguity. The player must know the final output just from reading the narrative.
 
 Return ONLY a valid JSON object, no other text:
 {"narrative":"2-3 sentence story incorporating the elements","expectedOutput":"the exact output the program must print"}`,

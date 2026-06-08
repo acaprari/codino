@@ -546,11 +546,10 @@ describe('ClaudeAPIClient', () => {
     it('generateProblem prompt lists the accented-Latin-vowel allowlist (rule 3)', async () => {
       await genProblem();
       const p = lastSystemPrompt();
-      expect(p).toContain('à');
-      expect(p).toContain('è');
-      expect(p).toContain('ì');
-      expect(p).toContain('ò');
-      expect(p).toContain('ù');
+      // Full grave + acute vowel set as listed in the prompt — checked as a
+      // single substring so future edits that drop or reorder any vowel fail
+      // this test loudly rather than silently.
+      expect(p).toContain('à á è é ì í ò ó ù ú');
     });
 
     it('generateProblem prompt requires an unambiguous print instruction (rule 4)', async () => {
