@@ -24,6 +24,7 @@ const CATEGORIES: CategoryDef[] = [
       { kw: { it: 'SCRIVI x',         en: 'WRITE x' },          ex: { it: 'mostra un numero o variabile', en: 'show a number or variable' } },
       { kw: { it: 'SCRIVI "ciao"',    en: 'WRITE "hello"' },    ex: { it: 'mostra un testo tra virgolette', en: 'show text in quotes' } },
       { kw: { it: 'WRITE x',          en: 'SCRIVI x' },         ex: { it: 'lo stesso in inglese',          en: 'same in Italian' } },
+      { kw: { it: 'SCRIVI "Hai", monete, "monete"', en: 'WRITE "You have", coins, "coins"' }, ex: { it: 'più cose, separate da spazi', en: 'multiple parts, joined with spaces' } },
     ],
   },
   {
@@ -38,6 +39,7 @@ const CATEGORIES: CategoryDef[] = [
     iconAndTitle: { it: '🔁 Ripetizioni', en: '🔁 Loops' },
     cards: [
       { kw: { it: 'RIPETI 5 VOLTE … FINE', en: 'REPEAT 5 TIMES … END' }, ex: { it: 'ripete 5 volte', en: 'repeats 5 times' } },
+      { kw: { it: 'RIPETI i DA 1 A 5 … FINE', en: 'REPEAT i FROM 1 TO 5 … END' }, ex: { it: 'i conta da inizio a fine', en: 'i counts from start to end' } },
     ],
   },
   {
@@ -46,6 +48,7 @@ const CATEGORIES: CategoryDef[] = [
     cards: [
       { kw: { it: 'SE x > 5 … FINE',         en: 'IF x > 5 … END' },         ex: { it: 'esegue se la condizione è vera', en: 'runs if true' } },
       { kw: { it: 'SE … ALTRIMENTI … FINE',  en: 'IF … ELSE … END' },        ex: { it: 'oppure questo se è falsa',       en: 'or this if false' } },
+      { kw: { it: 'SE x PARI … FINE', en: 'IF x EVEN … END' }, ex: { it: 'controlla se è pari (o DISPARI/ODD)', en: 'checks parity (or ODD/DISPARI)' } },
     ],
   },
 ];
