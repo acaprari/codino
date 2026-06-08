@@ -66,6 +66,10 @@ Codino supports both Italian and English keywords. Use the language toggle to sw
 | `SE` | `IF` | Check a condition |
 | `ALTRIMENTI` | `ELSE` | Alternative path |
 | `FINE` | `END` | End a block |
+| `DA` | `FROM` | Range loop start marker |
+| `A` | `TO` | Range loop end marker |
+| `PARI` | `EVEN` | Even-number check |
+| `DISPARI` | `ODD` | Odd-number check |
 
 ### Variables
 
@@ -85,7 +89,7 @@ name = "Mario"
 
 Variable names can be any word except reserved keywords.
 
-**Reserved**: The letter `x` is reserved for multiplication, so don't use it as a variable name!
+**Reserved words**: uppercase keywords like `WRITE`, `IF`, `EVEN`, `FROM`, and the letter `x` are reserved and cannot be used as variable names. Their lowercase versions (`write`, `if`, `even`, `from`, `a`, `to`) are valid variable names if you want them.
 
 ### Math Operators
 
@@ -122,6 +126,32 @@ You can print:
 - Variables: `apples`
 - Math expressions: `apples + pears`
 
+### Print several things on one line
+
+Separate values with commas. They print together, joined by single spaces:
+
+**Italian:**
+```codino
+mele = 5
+SCRIVI "Mele:", mele
+```
+
+**English:**
+```codino
+apples = 5
+WRITE "Apples:", apples
+```
+
+**Output:**
+```
+Mele: 5
+```
+
+You can list more than two parts:
+```codino
+WRITE "You have", coins, "coins"
+```
+
 ### Loops
 
 Repeat code multiple times:
@@ -143,6 +173,41 @@ END
 This prints "Ciao!" (or "Hello!") 5 times.
 
 **Important**: Always end loops with `FINE` or `END`!
+
+### Counted loops
+
+Sometimes you want to count from a number to another number. Use the counted-loop form — the variable `i` (or any name you choose) counts up for you:
+
+**Italian:**
+```codino
+RIPETI i DA 1 A 5
+  SCRIVI i
+FINE
+```
+
+**English:**
+```codino
+REPEAT i FROM 1 TO 5
+  WRITE i
+END
+```
+
+**Output:**
+```
+1
+2
+3
+4
+5
+```
+
+The start and end can also be variables:
+```codino
+apples = 4
+REPEAT i FROM 1 TO apples
+  WRITE i
+END
+```
 
 ### Conditions
 
@@ -172,6 +237,26 @@ END
 - `=` - Equal to
 
 **Note**: Use `=` for both assignment and comparison. Codino knows the difference!
+
+### Even and odd
+
+Ask whether a number is even or odd:
+
+**Italian:**
+```codino
+SE mele PARI
+  SCRIVI "Numero pari!"
+FINE
+```
+
+**English:**
+```codino
+IF apples EVEN
+  WRITE "Even number!"
+END
+```
+
+`DISPARI` (Italian) / `ODD` (English) work the same way for odd numbers.
 
 ### Combining Concepts
 
@@ -491,12 +576,16 @@ Here's what you'll learn at each level:
 
 | Level | Concept | Keywords |
 |-------|---------|----------|
-| 1 | Variables & Print | `SCRIVI`/`WRITE`, `=` |
-| 2-3 | Basic Math | `+`, `-`, `x`/`*`, `:`/`/` |
-| 4-5 | Simple Loops | `RIPETI`/`REPEAT`, `VOLTE`/`TIMES`, `FINE`/`END` |
-| 6-7 | Conditions | `SE`/`IF`, `ALTRIMENTI`/`ELSE`, `>`, `<`, `=` |
-| 8-9 | Loops + Conditions | Combined usage |
-| 10 | Final Challenge | All concepts together |
+| 1 | Variables & Print | `SCRIVI`/`WRITE`, `=`, multi-arg `WRITE` |
+| 2 | Math — add/subtract | `+`, `-` |
+| 3 | Math — multiply/divide | `x`/`*`, `:`/`/` |
+| 4 | Simple loops | `RIPETI N VOLTE`/`REPEAT N TIMES` |
+| 5 | Counted loops | `RIPETI i DA a A b`/`REPEAT i FROM a TO b` |
+| 6 | Conditions — comparison | `SE`/`IF`, `>`, `<`, `=`, `ALTRIMENTI`/`ELSE` |
+| 7 | Conditions — parity | `PARI`/`EVEN`, `DISPARI`/`ODD` |
+| 8 | Loops + Conditions — comparison in loop | combined |
+| 9 | Loops + Conditions — parity in loop | combined |
+| 10 | Final challenge | all concepts together |
 
 ## Next Steps
 
