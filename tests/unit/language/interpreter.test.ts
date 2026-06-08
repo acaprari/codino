@@ -474,5 +474,15 @@ describe('Interpreter', () => {
     const result = execute(tree, code);
 
     expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/requires a number/i);
+  });
+
+  it('ODD is false for 0', () => {
+    const code = 'IF 0 ODD\nWRITE "yes"\nELSE\nWRITE "no"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['no']);
   });
 });

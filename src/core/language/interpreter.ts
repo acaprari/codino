@@ -686,7 +686,6 @@ function evaluateCondition(
     return operator === 'even' ? leftValue % 2 === 0 : leftValue % 2 !== 0;
   }
 
-  // compare path
   const rightParts = parts.slice(operatorIdx + 1);
   if (rightParts.length === 0) throw new RuntimeError('Invalid condition', line);
   const rightValue = evaluateFlatExpression(rightParts, env, code, line);

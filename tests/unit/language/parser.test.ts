@@ -200,6 +200,11 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('EVEN = 5');
     expect(errors.length).toBeGreaterThan(0);
   });
+
+  it('double parity keywords in a condition is a parse error', () => {
+    const { errors } = parseWithErrors('IF n EVEN ODD\nWRITE "x"\nEND');
+    expect(errors.length).toBeGreaterThan(0);
+  });
 });
 
 describe('parseWithErrors', () => {
