@@ -558,6 +558,18 @@ describe('ClaudeAPIClient', () => {
       expect(p).toMatch(/narrative must end with one clear, unambiguous instruction/i);
       expect(p).toMatch(/Print "<exact text>"/);
     });
+
+    it('generateProblem prompt forbids prescriptive step-by-step narratives (rule 5)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/Describe the situation, not the solution/i);
+    });
+
+    it('generateProblem prompt includes the situation-vs-solution contrast example (rule 5)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toContain('The knight has 6 bags with 8 coins each. Print the total number of coins.');
+    });
   });
 
   // ─── Prompt injection protection ────────────────────────────────────────────

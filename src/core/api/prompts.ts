@@ -83,8 +83,8 @@ Write for a 7-8 year old in ${lang} — simple sentences, fun, tied to their sto
    (triple-backtick fences), variable assignments (e.g. \`x = 5\`), Codino
    keywords used as code examples (e.g. \`WRITE "hi"\` or \`IF n > 5\`), and
    partial or complete solutions. Describe the situation in natural
-   language only. Specific values needed (like "set apples to 8") must
-   be stated in natural language.
+   language only. Specific values must appear in natural language —
+   say "the knight has 8 apples", not "set apples to 8".
 
 2. Every literal string the player must print MUST appear in the narrative
    inside double quotes, exactly as it should be printed. Example: if the
@@ -101,6 +101,16 @@ Write for a 7-8 year old in ${lang} — simple sentences, fun, tied to their sto
 
 4. The narrative must end with one clear, unambiguous instruction telling
    the player what to print. Format: \`Print "<exact text>"\` or \`Print the value of <variable>\`. No metaphor, no ambiguity. The player must know the final output just from reading the narrative.
+
+5. Describe the situation, not the solution. The narrative tells the
+   player WHAT the program should achieve and what literal text or
+   computed value to print — never HOW. Forbidden: naming variables for
+   the player, breaking the solution into steps, telling the player
+   which Codino construct to use (REPEAT, IF, etc.), or translating
+   constructs into prose (e.g. "ripeti 4 volte la stampa di X" is just
+   REPEAT in prose and is forbidden).
+   Bad: "Use a variable called totale and multiply 6 by 8, then print totale."
+   Good: "The knight has 6 bags with 8 coins each. Print the total number of coins."
 
 Return ONLY a valid JSON object, no other text:
 {"narrative":"2-3 sentence story incorporating the elements","expectedOutput":"the exact output the program must print"}`,
