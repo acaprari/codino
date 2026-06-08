@@ -84,7 +84,7 @@ INV-08: No initial element pick is required before level 1. The first problem is
 
 INV-09: Variable values in `ExecutionPanel` are displayed with type-aware formatting: strings are wrapped in double quotes and coloured green (`--aurora-accent-success`); numbers are coloured amber (`--aurora-accent-amber`). This prevents string values from being visually confused with variable names.
 
-INV-10: `HelpPanel` auto-expands the category matching the current level's concept on mount, aligned with `LEVEL_CONCEPTS` in `claude.ts` (1-based): level 1 = Writing, levels 2–3 = Math, levels 4–5 = Loops, levels 6+ = Conditions. The player can manually toggle any category.
+INV-10: `HelpPanel` auto-expands the category matching the current level's concept on mount, aligned with `LEVEL_CONCEPTS` in `claude.ts` (1-based): level 1 = Writing, levels 2–3 = Math, levels 4–5 = Loops, levels 6+ = Conditions. The player can manually toggle any category. (`LEVEL_CONCEPTS` is a structured `LevelConcept[]` table since the Codino language revision; the level → category bucketing is unchanged.)
 
 INV-10a: `HelpPanel` category titles and keyword examples render in the active UI language. Every card's `kw` is a `{ it, en }` pair, never a single string. The Writing category's third card is a cross-language hint: it shows the *opposite* language's keyword (English UI → `SCRIVI x` with caption "same in Italian"; Italian UI → `WRITE x` with caption "lo stesso in inglese") so players see both keyword vocabularies exist.
 
