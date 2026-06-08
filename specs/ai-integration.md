@@ -97,6 +97,6 @@ INV-10: `testConnection` resolves with no return value on success and throws on 
 
 INV-11: `generateStoryIdeas` returns exactly 4 ideas. The prompt is explicit ("Generate exactly 4 short, imaginative story starters"). Callers may assume `ideas.length === 4` on success.
 
-INV-12: Every prompt that examines the player's code (`generateProblem`, `rateCode`, `generateHint`, `analyzeError`) includes the `CODINO_REFERENCE` block in its system prompt. Prompts that do not see code (`generateMap`, `generateStoryIdeas`, `testConnection`) do not.
+INV-12: Every prompt that generates or evaluates Codino code (`generateProblem`, `rateCode`, `generateHint`, `analyzeError`) includes the `CODINO_REFERENCE` block in its system prompt. Prompts that do neither (`generateMap`, `generateStoryIdeas`, `testConnection`) do not.
 
 INV-13: `generateProblem` includes per-level construct gating in its system prompt, computed from `LEVEL_CONCEPTS`. The prompt names the allowed constructs (cumulative up to and including this level), the not-yet-introduced constructs (forbidden), and the construct the generated problem must exercise.

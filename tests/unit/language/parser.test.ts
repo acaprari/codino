@@ -227,4 +227,12 @@ describe('parseWithErrors', () => {
     const missing = errors.find(e => e.type === 'missing-end');
     expect(missing).toBeDefined();
   });
+
+  it('all lowercase keyword spellings are valid identifiers', () => {
+    const lowercaseWords = ['a', 'to', 'from', 'da', 'pari', 'even', 'dispari', 'odd'];
+    for (const word of lowercaseWords) {
+      const { errors } = parseWithErrors(`${word} = 5`);
+      expect(errors, `Expected '${word}' to parse as a valid identifier`).toHaveLength(0);
+    }
+  });
 });

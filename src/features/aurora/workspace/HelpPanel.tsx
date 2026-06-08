@@ -54,7 +54,7 @@ const CATEGORIES: CategoryDef[] = [
 ];
 
 // Matches LEVEL_CONCEPTS in claude.ts (1-based):
-// 1=Print&Vars, 2-3=Math, 4-5=Loops, 6-7=Conditions, 8-10=Mixed
+// 1=Print, 2-3=Math, 4-5=Loops, 6+=Conditions (per execution-engine INV-10)
 function defaultExpanded(level: number): CategoryKey {
   if (level <= 1) return 'print';
   if (level <= 3) return 'math';

@@ -2,7 +2,7 @@ import type { Tree } from '@lezer/common';
 
 export type ParseErrorType =
   | 'typo-keyword'   // input resembles a known keyword but is misspelled
-  | 'missing-end'    // Loop or Conditional node has no FINE/END child
+  | 'missing-end'    // CountLoop, RangeLoop, or Conditional node has no FINE/END child
   | 'syntax-error';  // generic unexpected token
 
 export interface ParseError {
