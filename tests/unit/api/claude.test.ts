@@ -379,6 +379,70 @@ describe('ClaudeAPIClient', () => {
     });
   });
 
+  // ─── CODINO_REFERENCE injection ─────────────────────────────────────────────
+
+  describe('CODINO_REFERENCE injection', () => {
+    const REF_MARKER = 'This is the Codino language';
+
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    it('generateProblem system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level: 1, language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('rateCode system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ stars: 3, explanation: 'x', narrativeBridge: 'y' }) }],
+      });
+      await client.rateCode({
+        story: STORY, problem: 'p', code: 'WRITE 1', level: 1, chosenElement: ELEMENT, language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('generateHint system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ hint: 'try again' }) }],
+      });
+      await client.generateHint({ problem: 'p', code: 'WRITE 1', language: 'en' });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('analyzeError system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ explanation: 'oops' }) }],
+      });
+      await client.analyzeError({
+        problem: 'p', code: 'WRITE 1', expectedOutput: 'a', actualOutput: 'b', language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('generateMap system prompt does NOT contain the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ levels: [] }) }],
+      });
+      await client.generateMap({ story: STORY, language: 'en' });
+      expect(lastSystemPrompt()).not.toContain(REF_MARKER);
+    });
+
+    it('generateStoryIdeas system prompt does NOT contain the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ ideas: ['a','b','c','d'] }) }],
+      });
+      await client.generateStoryIdeas({ language: 'en' });
+      expect(lastSystemPrompt()).not.toContain(REF_MARKER);
+    });
+  });
+
   // ─── Prompt injection protection ────────────────────────────────────────────
 
   describe('Prompt injection protection', () => {
