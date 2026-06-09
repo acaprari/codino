@@ -115,12 +115,10 @@ The prescriptive shift is the most architecturally important piece. Permissive p
 
 ## Postscript: spec-driven discipline and iterative tightening
 
-This change set was carried out as a spec-driven experiment — each commit updated the relevant capability spec alongside the code, and `spec:validate` was run before considering the branch complete. The branch's design and plan docs live under `docs/superpowers/` (specs/ and plans/) as session artifacts of that process.
+This change set was carried out as a spec-driven experiment — each commit updated the relevant capability spec alongside the code, and `spec:validate` was run before considering the branch complete.
 
 The constraint block in §4 of the Decision section reached its final five-rule form in two iterations. The first four rules were drafted from the initial smoke-test findings; rule 5 was added after a second round of smoke testing revealed the AI was being too prescriptive in early-level narratives. The iteration is noted here because it is part of the spec-driven experiment's posture: ship, test against real model output, tighten. The rules are presented as a unified outcome in the Decision because that's what the curriculum and the invariants describe; the iteration trail is for context only.
 
 ## References
 
-- Implementation companions (session artifacts): `docs/superpowers/specs/2026-06-07-codino-language-revision-design.md`, `docs/superpowers/specs/2026-06-08-problem-generation-constraints-design.md`, `docs/superpowers/specs/2026-06-08-narrative-prescription-design.md`
-- Plans for the same: `docs/superpowers/plans/2026-06-07-codino-language-revision.md`, `docs/superpowers/plans/2026-06-08-problem-generation-constraints.md`, `docs/superpowers/plans/2026-06-08-narrative-prescription.md`
-- Pull request: [PR #2 — Codino language revision](https://github.com/acaprari/codino/pull/2)
+- Pull request: [PR #2 — Codino language revision](https://github.com/acaprari/codino/pull/2) — full commit history and the brainstorm/plan session artifacts that preceded the merge live there.
