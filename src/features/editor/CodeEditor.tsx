@@ -23,6 +23,17 @@ export function CodeEditor({ code, onChange, highlightedLine, readOnly = false }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Sync editor content when the prop changes externally (e.g. level reset).
+  // Guard skips when the editor already matches to avoid fighting user input.
+  useEffect(() => {
+    if (!viewRef.current) return;
+    const current = viewRef.current.state.doc.toString();
+    if (current === code) return;
+    viewRef.current.dispatch({
+      changes: { from: 0, to: current.length, insert: code },
+    });
+  }, [code]);
+
   // Dispatch highlight effect whenever the prop changes
   useEffect(() => {
     if (!viewRef.current) return;
