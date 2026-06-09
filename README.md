@@ -47,10 +47,14 @@ A short, bilingual language with keywords children can pronounce. Italian and En
 apples = 5
 pears = 3
 total = apples + pears
-WRITE total
+WRITE "Fruit:", total
 
 REPEAT 3 TIMES
   WRITE "Hello!"
+END
+
+REPEAT i FROM 1 TO 5
+  WRITE i
 END
 
 IF total > 7
@@ -58,15 +62,19 @@ IF total > 7
 ELSE
   WRITE "Few"
 END
+
+IF total EVEN
+  WRITE "even total"
+END
 ```
 
-The Italian equivalents are `SCRIVI`, `RIPETI … VOLTE … FINE`, `SE … ALTRIMENTI … FINE`. Full reference: [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
+The Italian equivalents are `SCRIVI`, `RIPETI … VOLTE … FINE`, `RIPETI … DA … A … FINE`, `SE … ALTRIMENTI … FINE`, with `PARI`/`DISPARI` for even/odd. Full reference: [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
 
 ## Under the hood
 
 - Custom **Lezer** grammar + a small tree-walking interpreter for the Codino language. Execution is recorded as a sequence of steps that the UI then animates line-by-line (1.5 s per step) so kids can watch variables update.
 - **CodeMirror 6** for the editor — syntax highlighting, autocomplete, inline error markers.
-- **Anthropic Claude** is called directly from the browser for five things: map generation, problem generation, hints, code rating, and story-idea suggestions. Sonnet for the heavier prompts, Haiku for error explanations.
+- **Anthropic Claude** is called directly from the browser for five things: map generation, problem generation, hints, code rating, and story-idea suggestions. Sonnet for the heavier prompts, Haiku for error explanations. Per-level prompts are *prescriptive* — each level names the construct the generated problem must exercise, so condition-teaching levels actually require conditions instead of dodging into arithmetic. See [ADR-002](specs/adr/ADR-002-language-revision-and-prescriptive-gating.md) for the architectural shift.
 - **Zustand** for the single global store; **localStorage** is the only persistence layer.
 - Validation is exact-match-after-trim on the printed output. Wrong output routes to a Haiku-generated explanation modal; correct output triggers Sonnet rating + a branch-pick popup.
 

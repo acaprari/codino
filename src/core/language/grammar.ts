@@ -7,13 +7,13 @@ const codinoLRLanguage = LRLanguage.define({
     props: [
       styleTags({
         // All keywords share the keyword tag
-        'SCRIVI WRITE RIPETI REPEAT VOLTE TIMES FINE END SE IF ALTRIMENTI ELSE': tags.keyword,
+        'SCRIVI WRITE RIPETI REPEAT VOLTE TIMES FINE END SE IF ALTRIMENTI ELSE DA FROM A TO PARI EVEN DISPARI ODD': tags.keyword,
         'Number': tags.number,
         'String': tags.string,
         // Identifiers used as variable names
         'Identifier': tags.variableName,
         // Arithmetic and comparison operators
-        'Plus Minus Times XMul Divide Greater Less Equal': tags.operator,
+        'Plus Minus Times XMul Divide Greater Less Equal Comma': tags.operator,
       }),
     ],
   }),

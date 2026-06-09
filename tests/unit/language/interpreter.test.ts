@@ -255,4 +255,234 @@ describe('Interpreter', () => {
     expect(result.error?.message).toContain('Undefined variable: w');
     expect(result.error?.line).toBe(3);
   });
+
+  it('multi-arg WRITE joins with single space', () => {
+    const code = 'apples = 5\nWRITE "Animals:", apples';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['Animals: 5']);
+  });
+
+  it('multi-arg WRITE with three arguments joins segments with single space', () => {
+    const code = 'coins = 30\nSCRIVI "Hai", coins, "monete"';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['Hai 30 monete']);
+  });
+
+  it('multi-arg WRITE produces one execution step per Print', () => {
+    const code = 'WRITE "a", "b", "c"';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    const printSteps = result.steps.filter((s) => s.output !== undefined);
+    expect(printSteps).toHaveLength(1);
+    expect(printSteps[0].output).toBe('a b c');
+  });
+
+  it('REPEAT with variable count executes that many times', () => {
+    const code = 'n = 4\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['x', 'x', 'x', 'x']);
+  });
+
+  it('REPEAT with sum expression count works', () => {
+    const code = 'RIPETI 1 + 2 VOLTE\nSCRIVI "a"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['a', 'a', 'a']);
+  });
+
+  it('REPEAT with non-integer expression throws RuntimeError', () => {
+    const code = 'REPEAT 2.5 TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+  });
+
+  it('REPEAT with negative expression throws RuntimeError', () => {
+    const code = 'n = 0 - 3\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/negative/i);
+  });
+
+  it('REPEAT count over 1000 throws RuntimeError', () => {
+    const code = 'REPEAT 1001 TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/1000|too large/i);
+  });
+
+  it('REPEAT with negative non-integer reports integer error, not negative error', () => {
+    const code = 'n = 0 - 2.5\nREPEAT n TIMES\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+    expect(result.error?.message).not.toMatch(/negative/i);
+  });
+
+  it('iteration loop binds i and counts up inclusively', () => {
+    const code = 'REPEAT i FROM 1 TO 5\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2', '3', '4', '5']);
+  });
+
+  it('iteration loop with from === to runs once', () => {
+    const code = 'REPEAT i FROM 3 TO 3\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['3']);
+  });
+
+  it('iteration loop with from > to throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 5 TO 1\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/FROM|DA|at most/i);
+  });
+
+  it('iteration loop with span > 1000 throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 1 TO 1001\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/1000|too large/i);
+  });
+
+  it('iteration loop variable is visible after the loop ends', () => {
+    const code = 'REPEAT i FROM 1 TO 3\nWRITE i\nEND\nWRITE i';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2', '3', '3']);
+    const last = result.steps[result.steps.length - 1];
+    expect(last.variables.i).toBe(3);
+  });
+
+  it('iteration loop overwrites a pre-existing variable with the same name', () => {
+    const code = 'i = 99\nREPEAT i FROM 1 TO 2\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['1', '2']);
+  });
+
+  it('iteration loop with non-integer bounds throws RuntimeError', () => {
+    const code = 'REPEAT i FROM 1.5 TO 3\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer/i);
+  });
+
+  it('iteration loop with span exactly 1000 passes', () => {
+    const code = 'REPEAT i FROM 1 TO 1000\nWRITE i\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toHaveLength(1000);
+  });
+
+  it('IF EVEN is true for even integer', () => {
+    const code = 'n = 4\nIF n EVEN\nWRITE "even"\nELSE\nWRITE "odd"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['even']);
+  });
+
+  it('IF EVEN is false for odd integer', () => {
+    const code = 'n = 5\nIF n EVEN\nWRITE "even"\nELSE\nWRITE "odd"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['odd']);
+  });
+
+  it('IF ODD is true for odd integer', () => {
+    const code = 'IF 7 ODD\nWRITE "yes"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('PARI is true for 0', () => {
+    const code = 'SE 0 PARI\nSCRIVI "yes"\nFINE';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('EVEN is true for negative even integer', () => {
+    const code = 'n = 0 - 4\nIF n EVEN\nWRITE "yes"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['yes']);
+  });
+
+  it('PARI/EVEN on non-integer throws RuntimeError', () => {
+    const code = 'IF 5.5 EVEN\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/integer|whole/i);
+  });
+
+  it('PARI/EVEN on string throws RuntimeError', () => {
+    const code = 'name = "hi"\nIF name EVEN\nWRITE "x"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toMatch(/requires a number/i);
+  });
+
+  it('ODD is false for 0', () => {
+    const code = 'IF 0 ODD\nWRITE "yes"\nELSE\nWRITE "no"\nEND';
+    const tree = parse(code);
+    const result = execute(tree, code);
+
+    expect(result.error).toBeUndefined();
+    expect(result.output).toEqual(['no']);
+  });
 });

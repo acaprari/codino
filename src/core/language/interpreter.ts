@@ -99,8 +99,11 @@ function executeNode(
     case 'Print':
       executePrint(node, env, code, steps, output);
       break;
-    case 'Loop':
+    case 'CountLoop':
       executeLoop(node, env, code, steps, output);
+      break;
+    case 'RangeLoop':
+      executeRangeLoop(node, env, code, steps, output);
       break;
     case 'Conditional':
       executeConditional(node, env, code, steps, output);
@@ -162,26 +165,39 @@ function executePrint(
 ): void {
   const line = getLineNumber(code, node.from);
 
-  // Collect all expression parts (everything that's not a keyword)
-  const expressionParts: SyntaxNode[] = [];
+  // Group children into argument segments split by Comma.
+  // Skip the SCRIVI/WRITE keyword and any error markers.
+  const segments: SyntaxNode[][] = [[]];
   let child = node.firstChild;
   while (child) {
-    if (
-      child.type.name !== 'SCRIVI' &&
-      child.type.name !== 'WRITE' &&
-      child.type.name !== '⚠'
-    ) {
-      expressionParts.push(child);
+    const name = child.type.name;
+    if (name === 'SCRIVI' || name === 'WRITE' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
     }
+    if (name === 'Comma') {
+      segments.push([]);
+      child = child.nextSibling;
+      continue;
+    }
+    segments[segments.length - 1].push(child);
     child = child.nextSibling;
   }
 
-  if (expressionParts.length === 0) {
+  // No arguments at all: WRITE with nothing after it.
+  if (segments.length === 1 && segments[0].length === 0) {
     throw new RuntimeError('Print statement has no expression', line);
   }
+  // Any other empty segment means a stray comma (defense-in-depth — the
+  // grammar should already reject trailing/leading commas).
+  for (const seg of segments) {
+    if (seg.length === 0) {
+      throw new RuntimeError('Empty argument in print statement', line);
+    }
+  }
 
-  const value = evaluateFlatExpression(expressionParts, env, code, line);
-  const outputStr = String(value);
+  const parts = segments.map((seg) => String(evaluateFlatExpression(seg, env, code, line)));
+  const outputStr = parts.join(' ');
   output.push(outputStr);
 
   steps.push({
@@ -203,48 +219,151 @@ function executeLoop(
 ): void {
   const line = getLineNumber(code, node.from);
 
-  // Find the number of iterations
-  let iterations = 0;
+  const countParts: SyntaxNode[] = [];
   const bodyStatements: SyntaxNode[] = [];
-
-  let child = node.firstChild;
-  let foundNumber = false;
   let inBody = false;
 
+  let child = node.firstChild;
   while (child) {
-    if (child.type.name === 'Number') {
-      iterations = parseFloat(code.substring(child.from, child.to));
-      foundNumber = true;
-    } else if (
-      foundNumber &&
-      (child.type.name === 'VOLTE' ||
-        child.type.name === 'TIMES')
-    ) {
+    const name = child.type.name;
+    if (name === 'RIPETI' || name === 'REPEAT' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'VOLTE' || name === 'TIMES') {
       inBody = true;
-    } else if (
-      inBody &&
-      child.type.name !== 'FINE' &&
-      child.type.name !== 'END' &&
-      child.type.name !== '⚠'
-    ) {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'FINE' || name === 'END') {
+      break;
+    }
+    if (!inBody) {
+      countParts.push(child);
+    } else {
       bodyStatements.push(child);
     }
     child = child.nextSibling;
   }
 
-  // Validate loop count
-  if (iterations < 0) {
-    throw new RuntimeError('Loop count cannot be negative', line);
+  if (countParts.length === 0) {
+    throw new RuntimeError('Loop has no count', line);
   }
-  if (!Number.isInteger(iterations)) {
+
+  const countValue = evaluateFlatExpression(countParts, env, code, line);
+  if (typeof countValue !== 'number') {
+    throw new RuntimeError('Loop count must be a number', line);
+  }
+  if (!Number.isInteger(countValue)) {
     throw new RuntimeError('Loop count must be an integer', line);
   }
-  if (iterations > MAX_LOOP_ITERATIONS) {
+  if (countValue < 0) {
+    throw new RuntimeError('Loop count cannot be negative', line);
+  }
+  if (countValue > MAX_LOOP_ITERATIONS) {
     throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
   }
 
-  // Execute the loop body iterations times
-  for (let i = 0; i < iterations; i++) {
+  for (let i = 0; i < countValue; i++) {
+    for (const statement of bodyStatements) {
+      executeNode(statement, env, code, steps, output);
+    }
+  }
+}
+
+/**
+ * Execute an iteration-variable loop: REPEAT i FROM a TO b ... END
+ */
+function executeRangeLoop(
+  node: SyntaxNode,
+  env: Environment,
+  code: string,
+  steps: ExecutionStep[],
+  output: string[]
+): void {
+  const line = getLineNumber(code, node.from);
+
+  let varName: string | null = null;
+  const fromParts: SyntaxNode[] = [];
+  const toParts: SyntaxNode[] = [];
+  const bodyStatements: SyntaxNode[] = [];
+  let stage:
+    | 'awaiting-id'
+    | 'awaiting-from-kw'
+    | 'collecting-from'
+    | 'collecting-to'
+    | 'in-body' = 'awaiting-id';
+
+  let child = node.firstChild;
+  while (child) {
+    const name = child.type.name;
+
+    if (name === 'RIPETI' || name === 'REPEAT' || name === '⚠') {
+      child = child.nextSibling;
+      continue;
+    }
+    if (name === 'FINE' || name === 'END') break;
+
+    switch (stage) {
+      case 'awaiting-id':
+        if (name === 'Identifier') {
+          varName = code.substring(child.from, child.to);
+          stage = 'awaiting-from-kw';
+        }
+        break;
+      case 'awaiting-from-kw':
+        if (name === 'FROM' || name === 'DA') stage = 'collecting-from';
+        break;
+      case 'collecting-from':
+        if (name === 'TO' || name === 'A') {
+          stage = 'collecting-to';
+        } else {
+          fromParts.push(child);
+        }
+        break;
+      case 'collecting-to':
+        if (
+          name === 'Assignment' ||
+          name === 'Print' ||
+          name === 'CountLoop' ||
+          name === 'RangeLoop' ||
+          name === 'Conditional'
+        ) {
+          bodyStatements.push(child);
+          stage = 'in-body';
+        } else {
+          toParts.push(child);
+        }
+        break;
+      case 'in-body':
+        bodyStatements.push(child);
+        break;
+    }
+    child = child.nextSibling;
+  }
+
+  if (!varName) throw new RuntimeError('Range loop missing iteration variable', line);
+  if (fromParts.length === 0) throw new RuntimeError('Range loop missing FROM/DA value', line);
+  if (toParts.length === 0) throw new RuntimeError('Range loop missing TO/A value', line);
+
+  const fromValue = evaluateFlatExpression(fromParts, env, code, line);
+  const toValue = evaluateFlatExpression(toParts, env, code, line);
+
+  if (typeof fromValue !== 'number' || typeof toValue !== 'number') {
+    throw new RuntimeError('Range loop bounds must be numbers', line);
+  }
+  if (!Number.isInteger(fromValue) || !Number.isInteger(toValue)) {
+    throw new RuntimeError('Range loop bounds must be integers', line);
+  }
+  if (toValue < fromValue) {
+    throw new RuntimeError('Range loop FROM must be at most TO', line);
+  }
+  if (toValue - fromValue + 1 > MAX_LOOP_ITERATIONS) {
+    throw new RuntimeError(`Loop count too large (maximum ${MAX_LOOP_ITERATIONS})`, line);
+  }
+
+  for (let i = fromValue; i <= toValue; i++) {
+    env.set(varName, i);
     for (const statement of bodyStatements) {
       executeNode(statement, env, code, steps, output);
     }
@@ -306,7 +425,8 @@ function executeConditional(
     if (
       child.type.name === 'Assignment' ||
       child.type.name === 'Print' ||
-      child.type.name === 'Loop' ||
+      child.type.name === 'CountLoop' ||
+      child.type.name === 'RangeLoop' ||
       child.type.name === 'Conditional'
     ) {
       seenCondition = true;
@@ -515,7 +635,8 @@ function evaluateCondition(
     if (
       child.type.name === 'Assignment' ||
       child.type.name === 'Print' ||
-      child.type.name === 'Loop' ||
+      child.type.name === 'CountLoop' ||
+      child.type.name === 'RangeLoop' ||
       child.type.name === 'Conditional' ||
       child.type.name === 'ALTRIMENTI' ||
       child.type.name === 'ELSE' ||
@@ -534,54 +655,47 @@ function evaluateCondition(
   }
 
   // Find operator position
-  let operatorIdx = -1;
+  let kind: 'compare' | 'parity' | null = null;
   let operator: string | null = null;
+  let operatorIdx = -1;
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    if (part.type.name === 'Greater') {
-      operator = '>';
-      operatorIdx = i;
-      break;
-    } else if (part.type.name === 'Less') {
-      operator = '<';
-      operatorIdx = i;
-      break;
-    } else if (part.type.name === 'Equal') {
-      operator = '==';
-      operatorIdx = i;
-      break;
-    }
+    const t = parts[i].type.name;
+    if (t === 'Greater') { kind = 'compare'; operator = '>';  operatorIdx = i; break; }
+    if (t === 'Less')    { kind = 'compare'; operator = '<';  operatorIdx = i; break; }
+    if (t === 'Equal')   { kind = 'compare'; operator = '=='; operatorIdx = i; break; }
+    if (t === 'EVEN' || t === 'PARI')    { kind = 'parity'; operator = 'even'; operatorIdx = i; break; }
+    if (t === 'ODD'  || t === 'DISPARI') { kind = 'parity'; operator = 'odd';  operatorIdx = i; break; }
   }
 
-  if (operatorIdx === -1 || !operator) {
+  if (kind === null || operatorIdx === -1) {
     throw new RuntimeError('Invalid condition', line);
   }
 
-  // Parts before operator are left side, parts after are right side
   const leftParts = parts.slice(0, operatorIdx);
-  const rightParts = parts.slice(operatorIdx + 1);
+  if (leftParts.length === 0) throw new RuntimeError('Invalid condition', line);
+  const leftValue = evaluateFlatExpression(leftParts, env, code, line);
 
-  if (leftParts.length === 0 || rightParts.length === 0) {
-    throw new RuntimeError('Invalid condition', line);
+  if (kind === 'parity') {
+    if (typeof leftValue !== 'number') {
+      throw new RuntimeError('Parity check requires a number', line);
+    }
+    if (!Number.isInteger(leftValue)) {
+      throw new RuntimeError('Parity check requires a whole number (integer)', line);
+    }
+    return operator === 'even' ? leftValue % 2 === 0 : leftValue % 2 !== 0;
   }
 
-  const leftValue = evaluateFlatExpression(leftParts, env, code, line);
+  const rightParts = parts.slice(operatorIdx + 1);
+  if (rightParts.length === 0) throw new RuntimeError('Invalid condition', line);
   const rightValue = evaluateFlatExpression(rightParts, env, code, line);
-
-  // Convert to numbers for comparison
-  const leftNum = typeof leftValue === 'number' ? leftValue : parseFloat(String(leftValue));
+  const leftNum  = typeof leftValue  === 'number' ? leftValue  : parseFloat(String(leftValue));
   const rightNum = typeof rightValue === 'number' ? rightValue : parseFloat(String(rightValue));
-
   switch (operator) {
-    case '>':
-      return leftNum > rightNum;
-    case '<':
-      return leftNum < rightNum;
-    case '==':
-      return leftNum === rightNum;
-    default:
-      throw new RuntimeError(`Unknown comparison operator: ${operator}`, line);
+    case '>':  return leftNum >  rightNum;
+    case '<':  return leftNum <  rightNum;
+    case '==': return leftNum === rightNum;
+    default:   throw new RuntimeError(`Unknown comparison operator: ${operator}`, line);
   }
 }
 

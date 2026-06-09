@@ -112,6 +112,99 @@ describe('Parser', () => {
     const { errors } = parseWithErrors('xa = 10\nx2 = 20');
     expect(errors).toHaveLength(0);
   });
+
+  it('parses multi-arg WRITE with comma separator (English)', () => {
+    const { errors } = parseWithErrors('WRITE "Animals:", apples');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses multi-arg SCRIVI with three arguments (Italian)', () => {
+    const { errors } = parseWithErrors('SCRIVI "Hai", monete, "monete"');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses single-arg WRITE unchanged', () => {
+    const { errors } = parseWithErrors('WRITE 42');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('trailing comma in WRITE is a parse error', () => {
+    const { errors } = parseWithErrors('WRITE "x",');
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('parses REPEAT with variable count', () => {
+    const { errors } = parseWithErrors('monsters = 5\nREPEAT monsters TIMES\nWRITE "x"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses RIPETI with sum expression count', () => {
+    const { errors } = parseWithErrors('RIPETI 2 + 3 VOLTE\nSCRIVI "x"\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses literal-count REPEAT unchanged', () => {
+    const { errors } = parseWithErrors('REPEAT 3 TIMES\nWRITE "ok"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses iteration-variable loop (English)', () => {
+    const { errors } = parseWithErrors('REPEAT i FROM 1 TO 5\nWRITE i\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses iteration-variable loop (Italian)', () => {
+    const { errors } = parseWithErrors('RIPETI i DA 1 A 5\nSCRIVI i\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses iteration loop with variable bounds', () => {
+    const code = 'start = 1\nstop = 10\nREPEAT i FROM start TO stop\nWRITE i\nEND';
+    const { errors } = parseWithErrors(code);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('uppercase A as variable name is a parse error', () => {
+    const { errors } = parseWithErrors('A = 5');
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('lowercase a as variable name still parses', () => {
+    const { errors } = parseWithErrors('a = 5');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses parity condition (English EVEN)', () => {
+    const { errors } = parseWithErrors('IF apples EVEN\nWRITE "ok"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses parity condition (Italian PARI)', () => {
+    const { errors } = parseWithErrors('SE mele PARI\nSCRIVI "ok"\nFINE');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('parses ODD/DISPARI condition', () => {
+    const { errors: en } = parseWithErrors('IF n ODD\nWRITE "ok"\nEND');
+    const { errors: it } = parseWithErrors('SE n DISPARI\nSCRIVI "ok"\nFINE');
+    expect(en).toHaveLength(0);
+    expect(it).toHaveLength(0);
+  });
+
+  it('parity in condition with ELSE branch parses', () => {
+    const { errors } = parseWithErrors('IF n EVEN\nWRITE "e"\nELSE\nWRITE "o"\nEND');
+    expect(errors).toHaveLength(0);
+  });
+
+  it('uppercase EVEN as variable name is a parse error', () => {
+    const { errors } = parseWithErrors('EVEN = 5');
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('double parity keywords in a condition is a parse error', () => {
+    const { errors } = parseWithErrors('IF n EVEN ODD\nWRITE "x"\nEND');
+    expect(errors.length).toBeGreaterThan(0);
+  });
 });
 
 describe('parseWithErrors', () => {
@@ -133,5 +226,13 @@ describe('parseWithErrors', () => {
     expect(errors.length).toBeGreaterThan(0);
     const missing = errors.find(e => e.type === 'missing-end');
     expect(missing).toBeDefined();
+  });
+
+  it('all lowercase keyword spellings are valid identifiers', () => {
+    const lowercaseWords = ['a', 'to', 'from', 'da', 'pari', 'even', 'dispari', 'odd'];
+    for (const word of lowercaseWords) {
+      const { errors } = parseWithErrors(`${word} = 5`);
+      expect(errors, `Expected '${word}' to parse as a valid identifier`).toHaveLength(0);
+    }
   });
 });

@@ -2,7 +2,7 @@ import type { Tree } from '@lezer/common';
 
 export type ParseErrorType =
   | 'typo-keyword'   // input resembles a known keyword but is misspelled
-  | 'missing-end'    // Loop or Conditional node has no FINE/END child
+  | 'missing-end'    // CountLoop, RangeLoop, or Conditional node has no FINE/END child
   | 'syntax-error';  // generic unexpected token
 
 export interface ParseError {
@@ -19,6 +19,10 @@ const ALL_KEYWORDS = [
   'SE', 'IF',
   'ALTRIMENTI', 'ELSE',
   'FINE', 'END',
+  'FROM', 'TO',
+  'DA', 'A',
+  'PARI', 'EVEN',
+  'DISPARI', 'ODD',
 ];
 
 // Regex: tokens that look like attempted keywords — 2+ uppercase letters (possibly with digits)
@@ -97,7 +101,7 @@ export function getParseErrors(code: string, tree: Tree): ParseError[] {
   const cursor = tree.cursor();
   do {
     const name = cursor.type.name;
-    if ((name === 'Loop' || name === 'Conditional') && !hasEndKeyword(cursor.node)) {
+    if ((name === 'CountLoop' || name === 'RangeLoop' || name === 'Conditional') && !hasEndKeyword(cursor.node)) {
       const line = getLineNumber(code, cursor.from);
       errors.push({ type: 'missing-end', line });
     }

@@ -66,6 +66,13 @@ A React hook creates and memoises a `ClaudeAPIClient` instance using the `apiKey
 ### API errors propagate to callers
 `ClaudeAPIClient` does not catch or translate API errors. User-visible copy for rate limits, network errors, and invalid keys is a presentation concern handled in the UI layer.
 
+### Single Codino reference card for code-generating and code-evaluating prompts
+A `CODINO_REFERENCE` constant in `prompts.ts` is injected into the system prompt of every call that either generates or evaluates Codino code: `buildProblemGenerationPrompt` (so generated problems use only valid Codino constructs), `buildStarRatingPrompt`, `buildHintPrompt`, `buildErrorAnalysisPrompt` (so evaluations reference only Codino constructs, never Python or other languages). The card names the language, lists bilingual keywords and operators, explains the `=` dual meaning, lists what is not in the language, and forbids referencing Python/JavaScript/etc. by name. Map-generation and story-ideas calls do not generate or evaluate code and are not injected.
+> Alternatives considered: inlining gating per prompt without a shared constant — rejected because drift across prompts is inevitable as the language evolves.
+
+### Per-level construct gating is prescriptive, not permissive
+`LEVEL_CONCEPTS` is a structured per-level table with `{ concept, unlocks, required }`. `buildProblemGenerationPrompt` emits three paragraphs derived from it: the cumulative allowed set, the not-yet-introduced (forbidden) set, and the construct the generated problem must exercise. This addresses the observed gap where comparison operators got little airtime even at levels nominally teaching conditions — the prompt now requires a specific construct rather than merely allowing it.
+
 ## Invariants
 
 INV-01: Every API method that accepts user-provided content **must** use the `system` parameter for all instructions and pass user data only in `messages`. Merging system instructions and user data into a single message is not permitted.
@@ -89,3 +96,9 @@ INV-09: `testConnection` and `generateStoryIdeas` carry no user-provided content
 INV-10: `testConnection` resolves with no return value on success and throws on failure. It never persists the API key. Persistence is performed by the caller (`SettingsModal`) only after `testConnection` resolves successfully.
 
 INV-11: `generateStoryIdeas` returns exactly 4 ideas. The prompt is explicit ("Generate exactly 4 short, imaginative story starters"). Callers may assume `ideas.length === 4` on success.
+
+INV-12: Every prompt that generates or evaluates Codino code (`generateProblem`, `rateCode`, `generateHint`, `analyzeError`) includes the `CODINO_REFERENCE` block in its system prompt. Prompts that do neither (`generateMap`, `generateStoryIdeas`, `testConnection`) do not.
+
+INV-13: `generateProblem` includes per-level construct gating in its system prompt, computed from `LEVEL_CONCEPTS`. The prompt names the allowed constructs (cumulative up to and including this level), the not-yet-introduced constructs (forbidden), and the construct the generated problem must exercise.
+
+INV-14: `generateProblem`'s system prompt (built by `buildProblemGenerationPrompt`) includes a "Constraints on the problem you generate" section listing five rules: (a) the narrative must contain no Codino code, code blocks, or keyword examples; (b) every literal string the player must print appears in the narrative inside double quotes, verbatim; (c) `expectedOutput` is restricted to ASCII letters, the accented Latin vowels `à á è é ì í ò ó ù ú` (and uppercase), digits, single spaces, and basic punctuation — emojis, smart quotes, em/en dashes, and other Unicode symbols are forbidden; (d) the narrative ends with an unambiguous print instruction of the form `Print "<exact text>"` or `Print the value of <variable>`; (e) the narrative describes the situation but never the solution — variables are not named for the player, the solution is not broken into steps, no Codino construct is named (in code or prose form).

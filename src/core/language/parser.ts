@@ -1,18 +1,19 @@
 // @ts-nocheck
 import {LRParser} from "@lezer/lr"
-const spec_Identifier = {__proto__:null,x:24, SCRIVI:30, WRITE:32, RIPETI:36, REPEAT:38, VOLTE:40, TIMES:42, FINE:44, END:46, SE:50, IF:52, ALTRIMENTI:58, ELSE:60}
+const spec_Identifier = {__proto__:null,x:24, SCRIVI:30, WRITE:32, RIPETI:38, REPEAT:40, VOLTE:42, TIMES:44, FINE:46, END:48, DA:52, FROM:54, A:56, TO:58, SE:62, IF:64, PARI:70, EVEN:72, DISPARI:74, ODD:76, ALTRIMENTI:78, ELSE:80}
 export const parser = LRParser.deserialize({
   version: 14,
-  states: "%|QVQPOOOnQPO'#C^OOQO'#DP'#DPOOQO'#C{'#C{QVQPOOOsQPO'#CjO!RQPO'#CmOsQPO'#CtOsQPO,58xOOQO-E6y-E6yOOQO'#Ca'#CaOsQPO'#CaOOQO'#DQ'#DQO!iQPO,59UO#cQPO,59XO#kQPO'#DTO#xQPO,59`O$YQPO1G.dO%SQPO,58{OOQO'#Cg'#CgOsQPO,59lO%ZQPO1G.sOsQPO,59oO%eQPO1G.zOOQO1G.z1G.zO%uQPO1G.zOOQO1G.g1G.gOOQO1G/W1G/WO&PQPO7+$_OOQO7+$_7+$_O&ZQPO1G/ZOOQO7+$f7+$fO'QQPO7+$fO'QQPO7+$fOOQO<<Gy<<GyO'[QPO<<HQOOQO<<HQ<<HQOOQOAN=lAN=l",
-  stateData: "'f~OrOS~ORPO_TO`TObUOcUOiVOjVO~OSWO~ORYOUYOVYOuZO~OU^O~OWdOXdOYdO[cO]dO~OR^a_^a`^ab^ac^ai^aj^ap^af^ag^am^an^a~P!WOdeOeeO~OSfOkfOlfO~P!WOfhOghOmiOniO~PVORQi_Qi`QibQicQiiQijQipQifQigQimQinQi~P!WOvjO~P!WOfmOgmO~PVOfoOgoOmpOnpO~PVOfoOgoO~PVOfrOgrO~PVORwi_wi`wibwicwifwigwiiwijwimwinwi~P!WOftOgtO~PVOfuOguO~PVO",
-  goto: "#nxPPyPP!VPPPPP!aPPyPPyPPPPPPyPPPPPP!hPPP#O#[PP#keQOS`egilpqsY[TVWZfRkdZd]_abnQSOYXSglqsQg`QleQqiRspeROS`egilpqsQ]TQ_VQaWQbZRnfR`V",
-  nodeNames: "⚠ Program Assignment Identifier Equal Term Number String Plus Minus Times XMul XMul Divide Print SCRIVI WRITE Loop RIPETI REPEAT VOLTE TIMES FINE END Conditional SE IF Greater Less ALTRIMENTI ELSE",
-  maxTerm: 39,
+  states: "'nQVQPOOOnQPO'#C^OOQO'#D['#D[OOQO'#DV'#DVQVQPOOOsQPO'#CjO!RQPO'#CnOsQPO'#CzOsQPO,58xOOQO-E7T-E7TOOQO'#Ca'#CaOsQPO'#CaOOQO'#D]'#D]O!rQPO,59UO#oQPO,59aO$^QPO,59YO$hQPO'#D`O%RQPO,59fO%cQPO1G.dO&]QPO,58{OOQO'#Cg'#CgOsQPO,59wOsQPO'#DWO&dQPO1G.pOsQPO1G.{O'_QPO1G.tOsQPO,59zOOQO,59z,59zO'iQPO1G/QOOQO1G/Q1G/QO'yQPO1G/QOOQO1G.g1G.gOOQO1G/c1G/cO(TQPO,59rOOQO-E7U-E7UO)QQPO7+$gO)[QPO7+$`OOQO7+$`7+$`O)fQPO1G/fOOQO7+$l7+$lO*]QPO7+$lO*]QPO7+$lOsQPO<<HROOQO<<Gz<<GzO*gQPO<<HWOOQO<<HW<<HWO*qQPOAN=mOOQOAN=rAN=rO+[QPOG23XOOQOG23XG23XOOQOLD(sLD(s",
+  stateData: "+f~O}OS~ORPO_TO`TOcUOdUOoVOpVO~OSWO~ORYOUYOVYO!QZO~OR^OUYOVYO!QZO~OWeOXeOYeO[dO]eO~OafOR^a_^a`^ac^ad^ao^ap^a{^ag^ah^aw^ax^a~P!aOjhOkhOWTXXTXYTX[TX]TXeTXfTX~OeiOfiO~P!aOSjOqjOrjOskOtkOukOvkO~P!aOgmOhmOwnOxnO~PVORQi_Qi`QicQidQioQipQi{QigQihQiwQixQi~P!aO!RoO~P!aOafOR^i_^i`^ic^id^io^ip^i{^ig^ih^iw^ix^i~OguOhuO~PVOgwOhwOwxOxxO~PVOgwOhwO~PVORza_za`zaazaczadzaozapza{zagzahzawzaxza~P!aOlzOmzO~P!aOg{Oh{O~PVOR!Si_!Si`!Sic!Sid!Sig!Sih!Sio!Sip!Siw!Six!Si~P!aOg}Oh}O~PVOg!POh!PO~PVOWeOXeOYeO[dO]eOg!ROh!RO~PVOg!SOh!SO~PVO",
+  goto: "$m!TPP!UPP!dPPPPP!rPP!UPPP!UPPPPPP!UPPPP!UPPPPPPPPPP!}#iPPP#o#}PP$jiQOSailntxy|!O!Qb[TUVWZfhjzRpece]_`bcqsv!OQSO[XSlty|!QQlaQtiQynQ|xR!Q!OQg]RrgiROSailntxy|!O!QQ]TQ_UQ`VQbWQcZQqfQshQvjR!OzRaV",
+  nodeNames: "⚠ Program Assignment Identifier Equal Term Number String Plus Minus Times XMul XMul Divide Print SCRIVI WRITE Comma CountLoop RIPETI REPEAT VOLTE TIMES FINE END RangeLoop DA FROM A TO Conditional SE IF Greater Less PARI EVEN DISPARI ODD ALTRIMENTI ELSE",
+  maxTerm: 50,
   skippedNodes: [0],
-  repeatNodeCount: 1,
-  tokenData: "%t~RdXY!aYZ!a]^!apq!ars!rwx#axy#yyz$Oz{$T{|$Y}!O$_!P!Q$d!Q![$i![!]$d!^!_%S!_!`%X!`!a%^!c!}%c#R#S%c#T#o%c~!fSr~XY!aYZ!a]^!apq!a~!uTOr!rrs#Us;'S!r;'S;=`#Z<%lO!r~#ZOV~~#^P;=`<%l!r~#dTOw#awx#Ux;'S#a;'S;=`#s<%lO#a~#vP;=`<%l#a~$OOu~~$TOv~~$YOY~~$_OW~~$dOX~~$iO]~~$nQU~!O!P$t!Q![$i~$wP!Q![$z~%PPU~!Q![$z~%XOl~~%^OS~~%cOk~~%hSR~!Q![%c!c!}%c#R#S%c#T#o%c",
+  repeatNodeCount: 2,
+  tokenData: "%|~ReXY!dYZ!d]^!dpq!drs!uwx#dxy#|yz$Rz{$W{|$]|}$b}!O$g!P!Q$l!Q![$q![!]$l!^!_%[!_!`%a!`!a%f!c!}%k#R#S%k#T#o%k~!iS}~XY!dYZ!d]^!dpq!d~!xTOr!urs#Xs;'S!u;'S;=`#^<%lO!u~#^OV~~#aP;=`<%l!u~#gTOw#dwx#Xx;'S#d;'S;=`#v<%lO#d~#yP;=`<%l#d~$RO!Q~~$WO!R~~$]OY~~$bOW~~$gOa~~$lOX~~$qO]~~$vQU~!O!P$|!Q![$q~%PP!Q![%S~%XPU~!Q![%S~%aOr~~%fOS~~%kOq~~%pSR~!Q![%k!c!}%k#R#S%k#T#o%k",
   tokenizers: [0],
   topRules: {"Program":[0,1]},
+  dynamicPrecedences: {"25":1},
   specialized: [{term: 3, get: (value) => spec_Identifier[value] || -1}],
   tokenPrec: 0
 })

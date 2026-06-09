@@ -162,7 +162,7 @@ describe('ClaudeAPIClient', () => {
 
       await client.generateProblem({ story: STORY, chosenElements: [], level: 4, language: 'en' });
 
-      expect(mockCreate.mock.calls[0][0].system).toContain('Simple Loops');
+      expect(mockCreate.mock.calls[0][0].system).toContain('Simple loops');
     });
 
     it('wraps elements in delimiters in user message', async () => {
@@ -376,6 +376,199 @@ describe('ClaudeAPIClient', () => {
       expect(call.system).toContain('Italian');
       // No user-provided content — user message is just the trigger phrase
       expect(call.messages[0].content).toBe('Generate 4 story ideas.');
+    });
+  });
+
+  // ─── CODINO_REFERENCE injection ─────────────────────────────────────────────
+
+  describe('CODINO_REFERENCE injection', () => {
+    const REF_MARKER = 'This is the Codino language';
+
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    it('generateProblem system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level: 1, language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('rateCode system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ stars: 3, explanation: 'x', narrativeBridge: 'y' }) }],
+      });
+      await client.rateCode({
+        story: STORY, problem: 'p', code: 'WRITE 1', level: 1, chosenElement: ELEMENT, language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('generateHint system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ hint: 'try again' }) }],
+      });
+      await client.generateHint({ problem: 'p', code: 'WRITE 1', language: 'en' });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('analyzeError system prompt contains the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ explanation: 'oops' }) }],
+      });
+      await client.analyzeError({
+        problem: 'p', code: 'WRITE 1', expectedOutput: 'a', actualOutput: 'b', language: 'en',
+      });
+      expect(lastSystemPrompt()).toContain(REF_MARKER);
+    });
+
+    it('generateMap system prompt does NOT contain the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ levels: [] }) }],
+      });
+      await client.generateMap({ story: STORY, language: 'en' });
+      expect(lastSystemPrompt()).not.toContain(REF_MARKER);
+    });
+
+    it('generateStoryIdeas system prompt does NOT contain the Codino reference', async () => {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ ideas: ['a','b','c','d'] }) }],
+      });
+      await client.generateStoryIdeas({ language: 'en' });
+      expect(lastSystemPrompt()).not.toContain(REF_MARKER);
+    });
+  });
+
+  // ─── per-level prescriptive gating ─────────────────────────────────────────
+
+  describe('per-level prescriptive gating', () => {
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    async function genProblem(level: number, language: 'it' | 'en' = 'en') {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level, language,
+      });
+    }
+
+    it('level 1 prompt requires a WRITE statement', async () => {
+      await genProblem(1);
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/must exercise|MUST exercise|must use|MUST/i);
+      expect(p).toContain('WRITE');
+    });
+
+    it('level 4 prompt requires REPEAT N TIMES', async () => {
+      await genProblem(4);
+      expect(lastSystemPrompt()).toContain('N may be a variable');
+    });
+
+    it('level 5 prompt requires the FROM/TO range loop', async () => {
+      await genProblem(5);
+      expect(lastSystemPrompt()).toContain('REPEAT i FROM a TO b');
+    });
+
+    it('level 6 prompt requires a comparison condition', async () => {
+      await genProblem(6);
+      expect(lastSystemPrompt()).toContain('IF <var>');
+    });
+
+    it('level 7 prompt requires a parity condition', async () => {
+      await genProblem(7);
+      expect(lastSystemPrompt()).toContain('IF <var> EVEN');
+    });
+
+    it('level 8 prompt requires comparison inside a loop', async () => {
+      await genProblem(8);
+      expect(lastSystemPrompt()).toMatch(/comparison condition .* inside a REPEAT/i);
+    });
+
+    it('level 9 prompt requires parity inside a loop', async () => {
+      await genProblem(9);
+      expect(lastSystemPrompt()).toMatch(/parity condition .* inside a REPEAT/i);
+    });
+
+    it('level prompt lists not-yet-introduced constructs as forbidden', async () => {
+      await genProblem(2);
+      expect(lastSystemPrompt()).toMatch(/not yet|do NOT use|forbidden/i);
+    });
+  });
+
+  // ─── problem-generation constraints ────────────────────────────────────────
+
+  describe('problem-generation constraints', () => {
+    function lastSystemPrompt(): string {
+      return mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0].system;
+    }
+
+    async function genProblem(level: number = 1, language: 'it' | 'en' = 'en') {
+      mockCreate.mockResolvedValue({
+        content: [{ type: 'text', text: JSON.stringify({ narrative: 'n', expectedOutput: 'o' }) }],
+      });
+      await client.generateProblem({
+        story: STORY, chosenElements: [ELEMENT], level, language,
+      });
+    }
+
+    it('generateProblem prompt contains the constraints section header', async () => {
+      await genProblem();
+      expect(lastSystemPrompt()).toContain('Constraints on the problem you generate');
+    });
+
+    it('generateProblem prompt forbids code/keywords in the narrative (rule 1)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/narrative must NOT contain any Codino code/i);
+    });
+
+    it('generateProblem prompt requires literal output strings quoted verbatim (rule 2)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/literal string the player must print/i);
+      expect(p).toMatch(/inside double quotes, exactly as it should be printed/i);
+    });
+
+    it('generateProblem prompt forbids emojis in expectedOutput (rule 3)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toContain('expectedOutput');
+      expect(p).toMatch(/NO emojis/);
+    });
+
+    it('generateProblem prompt lists the accented-Latin-vowel allowlist (rule 3)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      // Full grave + acute vowel set as listed in the prompt — checked as a
+      // single substring so future edits that drop or reorder any vowel fail
+      // this test loudly rather than silently.
+      expect(p).toContain('à á è é ì í ò ó ù ú');
+    });
+
+    it('generateProblem prompt requires an unambiguous print instruction (rule 4)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/narrative must end with one clear, unambiguous instruction/i);
+      expect(p).toMatch(/Print "<exact text>"/);
+    });
+
+    it('generateProblem prompt forbids prescriptive step-by-step narratives (rule 5)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toMatch(/Describe the situation, not the solution/i);
+    });
+
+    it('generateProblem prompt includes the situation-vs-solution contrast example (rule 5)', async () => {
+      await genProblem();
+      const p = lastSystemPrompt();
+      expect(p).toContain('The knight has 6 bags with 8 coins each. Print the total number of coins.');
     });
   });
 

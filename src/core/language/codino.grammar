@@ -3,7 +3,8 @@
 statement {
   Assignment |
   Print |
-  Loop |
+  CountLoop |
+  RangeLoop |
   Conditional
 }
 
@@ -12,11 +13,19 @@ Assignment {
 }
 
 Print {
-  (kw<"SCRIVI"> | kw<"WRITE">) expression
+  (kw<"SCRIVI"> | kw<"WRITE">) expression (Comma expression)*
 }
 
-Loop {
-  (kw<"RIPETI"> | kw<"REPEAT">) Number (kw<"VOLTE"> | kw<"TIMES">) statement* (kw<"FINE"> | kw<"END">)
+CountLoop {
+  (kw<"RIPETI"> | kw<"REPEAT">) expression (kw<"VOLTE"> | kw<"TIMES">)
+  statement* (kw<"FINE"> | kw<"END">)
+}
+
+RangeLoop[@dynamicPrecedence=1] {
+  (kw<"RIPETI"> | kw<"REPEAT">) Identifier
+  (kw<"DA"> | kw<"FROM">) expression
+  (kw<"A">  | kw<"TO">)   expression
+  statement* (kw<"FINE"> | kw<"END">)
 }
 
 Conditional {
@@ -37,7 +46,8 @@ Term {
 }
 
 condition {
-  expression (Greater | Less | Equal) expression
+  expression (Greater | Less | Equal) expression |
+  expression (kw<"PARI"> | kw<"EVEN"> | kw<"DISPARI"> | kw<"ODD">)
 }
 
 // XMul: the letter x as a multiplication operator alias.
@@ -59,6 +69,7 @@ kw<term> { @specialize[@name={term}]<Identifier, term> }
   Greater { ">" }
   Less { "<" }
   Equal { "=" }
+  Comma { "," }
 
   space { $[ \t\n\r]+ }
 }
