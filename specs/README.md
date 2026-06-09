@@ -22,3 +22,4 @@ Each capability spec describes the current state of one functional area: the dec
 Cross-cutting decisions that span multiple capabilities. ADRs capture **durable** decisions and the alternatives that were rejected.
 
 - [ADR-001](adr/ADR-001-single-workspace-redesign.md) — Single-workspace, glass-aesthetic UI redesign · *Accepted 2026-06-06*
+- [ADR-002](adr/ADR-002-language-revision-and-prescriptive-gating.md) — Codino language revision and prescriptive AI gating · *Accepted 2026-06-09*
