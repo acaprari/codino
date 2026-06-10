@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 const repoRoot = process.cwd();
 const svg = readFileSync(resolve(repoRoot, 'public/favicon.svg'), 'utf-8');
