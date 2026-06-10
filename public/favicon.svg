@@ -1,14 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Codino">
-  <!-- Editor window body -->
-  <rect x="2" y="2" width="60" height="60" rx="8" fill="#1e293b"/>
-  <!-- Title bar (with rounded top corners only) -->
-  <path d="M 2 14 L 2 10 Q 2 2 10 2 L 54 2 Q 62 2 62 10 L 62 14 Z" fill="#0f172a"/>
-  <!-- Traffic light dots -->
-  <circle cx="8" cy="8" r="2" fill="#ef4444"/>
-  <circle cx="14" cy="8" r="2" fill="#f59e0b"/>
-  <circle cx="20" cy="8" r="2" fill="#10b981"/>
-  <!-- Line numbers gutter -->
-  <rect x="2" y="14" width="6" height="48" fill="#0f172a"/>
-  <!-- The C, brand purple, bold monospace, centered in the code area -->
-  <text x="35" y="51" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="38" font-weight="700" fill="#9333ea" text-anchor="middle">C</text>
+  <defs>
+    <linearGradient id="aurora" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1e1b4b"/>
+      <stop offset="0.55" stop-color="#4c1d95"/>
+      <stop offset="1" stop-color="#831843"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#aurora)"/>
+  <g transform="translate(32 32) scale(0.06 -0.06) translate(-357.5 -352)" fill="#ffffff">
+    <path d="M406 -10Q300 -10 218 36.5Q136 83 89.5 164.5Q43 246 43 353Q43 431 71 497Q99 563 149 611.5Q199 660 266.5 687Q334 714 413 714Q488 714 557.5 684.5Q627 655 672 602L568 483Q537 517 498.5 536.5Q460 556 412 556Q358 556 314 531Q270 506 244 460Q218 414 218 351Q218 289 244 243.5Q270 198 317 173Q364 148 426 148Q474 148 515 167.5Q556 187 584 217L666 87Q641 59 599.5 37Q558 15 507.5 2.5Q457 -10 406 -10Z"/>
+  </g>
 </svg>

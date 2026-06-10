@@ -49,6 +49,9 @@ The content `<div>` calls `e.stopPropagation()` so clicking inside the modal doe
 
 Each consumer modal sets its own `dismissible` value — they are documented in their respective capability specs ([[story-onboarding]], [[execution-engine]], [[map-visualization]], [[settings]]) so the dismissibility contract is visible per modal, not just at the primitive.
 
+### Brand favicon derives from Aurora tokens
+`public/favicon.svg` is a 64×64 rounded square (rx=14) filled with the Aurora background gradient (`--aurora-bg-deep` → `--aurora-bg-mid` → `--aurora-bg-accent`, top-left to bottom-right) with a white "C" centered on top. The C is the Lexend-Bold glyph extracted from the Google Font and embedded as an SVG `<path>` (rather than a `<text>` element with `font-family="Lexend"`) so the icon renders identically regardless of whether the browser has Lexend available when fetching the favicon. The `<meta name="theme-color">` in `index.html` is `--aurora-bg-mid` (`#4c1d95`) so the browser chrome on mobile matches the favicon's gradient midpoint.
+
 ### Desktop-only guard at 900 px
 `DesktopOnlyGuard` wraps the app and short-circuits to a fallback card when `window.innerWidth < 900`. The threshold is a single module-level constant `MIN_WIDTH = 900`. A resize listener updates the width on every viewport change so the guard activates and deactivates live. The fallback card uses the elevated glass surface (per INV-03), contains a 💻 emoji header, and renders bilingual title + body strings. ADR-001 carries the rationale: coding requires a physical keyboard, and a half-working tablet layout would hurt perceived polish more than a clean refusal.
 > The 900 px cutoff was picked because it cleanly excludes tablets in portrait while leaving room for typical laptop widths. The threshold is not load-bearing — moving it by 50–100 px would not change which devices are blocked.
@@ -72,3 +75,5 @@ INV-07: `DesktopOnlyGuard` short-circuits the app render when `window.innerWidth
 INV-08: `AuroraModal.dismissible` defaults to `false`. When `false`, neither Escape nor backdrop click invoke `onClose` — the consumer must wire its own exit. When `true`, both are wired via the primitive.
 
 INV-09: `AuroraModal` does not render any close affordance (no ✕ button, no "Close" link). Consumer modals add their own when needed. The primitive only owns the overlay, the glass container, the dismissibility wiring, and the `role="dialog"`/`aria-modal="true"` attributes.
+
+INV-10: `public/favicon.svg` uses the Aurora background gradient stops (`--aurora-bg-deep`, `--aurora-bg-mid`, `--aurora-bg-accent`) and embeds the brand "C" as a Lexend-Bold path (not a `<text>` element), and the `theme-color` meta tag matches `--aurora-bg-mid`. Any color, glyph, or font change to the title bar's Codino wordmark must propagate to the favicon path so the brand asset cannot drift from the visual system again.
