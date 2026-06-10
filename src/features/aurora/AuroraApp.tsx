@@ -307,8 +307,8 @@ export function AuroraApp() {
             />
             {hint && (
               <div style={{
-                background: 'rgba(253, 224, 71, 0.10)',
-                border: '1px solid rgba(253, 224, 71, 0.25)',
+                background: 'rgba(var(--aurora-accent-amber-rgb), 0.10)',
+                border: '1px solid rgba(var(--aurora-accent-amber-rgb), 0.25)',
                 borderLeft: '3px solid var(--aurora-accent-amber)',
                 borderRadius: 'var(--aurora-card-radius)',
                 padding: '10px 14px',

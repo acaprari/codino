@@ -34,7 +34,7 @@ export function GameCompleteModal({ open, totalStars, language, onRestart, onClo
         <div style={{ fontSize: '64px', marginBottom: '12px' }}>🎉</div>
         <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '12px', color: 'var(--aurora-text-primary)' }}>{t.title}</h2>
         <p style={{ color: 'var(--aurora-text-secondary)', marginBottom: '20px', lineHeight: 1.5 }}>{t.body}</p>
-        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--aurora-accent-amber)', textShadow: '0 0 18px rgba(253, 224, 71, 0.5)', marginBottom: '26px' }}>
+        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--aurora-accent-amber)', textShadow: '0 0 18px rgba(var(--aurora-accent-amber-rgb), 0.5)', marginBottom: '26px' }}>
           ⭐ {totalStars} {t.stars}
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>

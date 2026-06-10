@@ -28,11 +28,11 @@ const baseStyle = {
 const primaryStyle = {
   background: 'linear-gradient(135deg, var(--aurora-accent-purple), var(--aurora-accent-pink))',
   color: 'white',
-  boxShadow: '0 6px 22px rgba(192,132,252,0.5)',
+  boxShadow: '0 6px 22px rgba(var(--aurora-accent-purple-rgb), 0.5)',
 };
 
 const ghostStyle = {
-  background: 'rgba(255,255,255,0.10)',
+  background: 'rgba(var(--aurora-white-rgb), 0.10)',
   color: 'var(--aurora-text-primary)',
   border: '1px solid var(--aurora-glass-border)',
 };

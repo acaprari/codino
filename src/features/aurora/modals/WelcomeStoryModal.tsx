@@ -77,7 +77,7 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
           aria-label={t.settings}
           title={t.settings}
           style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(var(--aurora-white-rgb), 0.08)',
             border: '1px solid var(--aurora-glass-border)',
             borderRadius: '8px',
             cursor: 'pointer',
@@ -104,7 +104,7 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
           width: '100%',
           height: '110px',
           padding: '12px 14px',
-          background: 'rgba(0, 0, 0, 0.25)',
+          background: 'rgba(var(--aurora-black-rgb), 0.25)',
           border: '1px solid var(--aurora-glass-border)',
           borderRadius: 'var(--aurora-card-radius)',
           color: 'var(--aurora-text-primary)',
@@ -148,8 +148,8 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
                 onClick={() => setStory(idea)}
                 style={{
                   padding: '6px 10px',
-                  background: 'rgba(110, 231, 183, 0.15)',
-                  border: '1px solid rgba(110, 231, 183, 0.30)',
+                  background: 'rgba(var(--aurora-accent-success-rgb), 0.15)',
+                  border: '1px solid rgba(var(--aurora-accent-success-rgb), 0.30)',
                   borderRadius: 'var(--aurora-card-radius)',
                   color: 'var(--aurora-accent-success)',
                   fontSize: '12px',
@@ -173,8 +173,8 @@ export function WelcomeStoryModal({ open, language, onSubmit, onGetIdeas, onOpen
               onClick={() => setStory(ex)}
               style={{
                 padding: '6px 10px',
-                background: 'rgba(240, 171, 252, 0.12)',
-                border: '1px solid rgba(240, 171, 252, 0.25)',
+                background: 'rgba(var(--aurora-accent-pink-rgb), 0.12)',
+                border: '1px solid rgba(var(--aurora-accent-pink-rgb), 0.25)',
                 borderRadius: 'var(--aurora-card-radius)',
                 color: 'var(--aurora-accent-pink)',
                 fontSize: '12px',

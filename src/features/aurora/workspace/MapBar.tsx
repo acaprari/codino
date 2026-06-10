@@ -71,13 +71,13 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, startEmo
                     background: done
                       ? 'linear-gradient(135deg, var(--aurora-accent-purple), var(--aurora-accent-pink))'
                       : current
-                      ? 'linear-gradient(135deg, var(--aurora-accent-amber), #f59e0b)'
-                      : 'rgba(255, 255, 255, 0.07)',
-                    border: '1px solid rgba(255, 255, 255, 0.20)',
+                      ? 'linear-gradient(135deg, var(--aurora-accent-amber), var(--aurora-accent-amber-deep))'
+                      : 'var(--aurora-glass-surface)',
+                    border: '1px solid rgba(var(--aurora-white-rgb), 0.20)',
                     boxShadow: done
-                      ? '0 0 14px rgba(192, 132, 252, 0.55)'
+                      ? '0 0 14px rgba(var(--aurora-accent-purple-rgb), 0.55)'
                       : current
-                      ? '0 0 18px rgba(253, 224, 71, 0.70)'
+                      ? '0 0 18px rgba(var(--aurora-accent-amber-rgb), 0.70)'
                       : 'none',
                   }}
                 >
@@ -92,7 +92,7 @@ export function MapBar({ completedLevels, currentLevel, chosenElements, startEmo
                 <div
                   style={{
                     height: '2px',
-                    background: 'rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(var(--aurora-white-rgb), 0.12)',
                     flex: 0.4,
                     minWidth: '12px',
                     borderRadius: '1px',

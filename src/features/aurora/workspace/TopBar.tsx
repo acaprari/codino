@@ -30,7 +30,7 @@ export function TopBar({ level, totalLevels, stars, language, onSettingsClick }:
             fontSize: '15px',
             fontWeight: 700,
             letterSpacing: '0.5px',
-            textShadow: '0 0 14px rgba(253, 224, 71, 0.5)',
+            textShadow: '0 0 14px rgba(var(--aurora-accent-amber-rgb), 0.5)',
           }}
         >
           ⭐ {stars}
@@ -40,7 +40,7 @@ export function TopBar({ level, totalLevels, stars, language, onSettingsClick }:
           onClick={onSettingsClick}
           aria-label={t.settings}
           style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(var(--aurora-white-rgb), 0.08)',
             border: '1px solid var(--aurora-glass-border)',
             borderRadius: '8px',
             cursor: 'pointer',

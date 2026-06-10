@@ -39,8 +39,8 @@ export function createEditorState(
         },
         '.cm-gutters': {
           fontSize: '13px',
-          backgroundColor: 'rgba(0, 0, 0, 0.18)',
-          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: 'rgba(var(--aurora-black-rgb), 0.18)',
+          borderRight: '1px solid rgba(var(--aurora-white-rgb), 0.08)',
         },
       }),
       ...(readOnly

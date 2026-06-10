@@ -18,19 +18,52 @@
   --aurora-accent-success: #6ee7b7;
   --aurora-accent-error:   #fda4af;
 
-  /* Glass surfaces */
-  --aurora-glass-surface:  rgba(255, 255, 255, 0.07);
-  --aurora-glass-elevated: rgba(255, 255, 255, 0.12);
-  --aurora-glass-border:   rgba(255, 255, 255, 0.16);
-  --aurora-glass-blur:     blur(28px) saturate(160%);
-  --aurora-shadow-glass:   0 12px 40px rgba(0, 0, 0, 0.30);
+  /* Accent RGB triples — consumed via rgba(var(--*-rgb), alpha) for tinted
+     surfaces, borders, and glows. Must stay in sync with the hex values above. */
+  --aurora-accent-purple-rgb:  192, 132, 252;
+  --aurora-accent-pink-rgb:    240, 171, 252;
+  --aurora-accent-amber-rgb:   253, 224, 71;
+  --aurora-accent-success-rgb: 110, 231, 183;
+  --aurora-accent-error-rgb:   253, 164, 175;
 
-  /* Editor syntax (consumed by codemirror/theme.ts in a later task) */
+  /* Deeper gradient companions paired with primary accents */
+  --aurora-accent-amber-deep:  #f59e0b;
+
+  /* Neutrals for alpha composition (glass overlays, modal backdrop, shadows) */
+  --aurora-white-rgb:    255, 255, 255;
+  --aurora-black-rgb:    0, 0, 0;
+  --aurora-overlay-rgb:  15, 23, 42;   /* slate-900, used by AuroraModal backdrop */
+
+  /* Background atmosphere — soft radial-gradient stops used by AuroraBackground.
+     Distinct from the foreground accent palette (these are softer violet/pink/indigo
+     atmospherics; the accents are the foreground UI colors). */
+  --aurora-bg-glow-violet-rgb: 167, 139, 250;
+  --aurora-bg-glow-pink-rgb:   244, 114, 182;
+  --aurora-bg-glow-indigo-rgb:  99, 102, 241;
+
+  /* Glass surfaces */
+  --aurora-glass-surface:  rgba(var(--aurora-white-rgb), 0.07);
+  --aurora-glass-elevated: rgba(var(--aurora-white-rgb), 0.12);
+  --aurora-glass-border:   rgba(var(--aurora-white-rgb), 0.16);
+  --aurora-glass-blur:     blur(28px) saturate(160%);
+  --aurora-shadow-glass:   0 12px 40px rgba(var(--aurora-black-rgb), 0.30);
+
+  /* Editor syntax (consumed by codemirror/theme.ts) */
   --aurora-code-keyword:    #93c5fd;
   --aurora-code-number:     var(--aurora-accent-amber);
   --aurora-code-string:     var(--aurora-accent-success);
   --aurora-code-identifier: var(--aurora-accent-pink);
   --aurora-code-operator:   var(--aurora-text-secondary);
+
+  /* Editor chrome — slate-themed (Aurora-fication of the editor surface is
+     deferred; the values below preserve the current visual). */
+  --aurora-editor-bg:           #1e293b;
+  --aurora-editor-fg:           #e2e8f0;
+  --aurora-editor-caret:        #60a5fa;
+  --aurora-editor-selection:    #334155;
+  --aurora-editor-gutter-bg:    #0f172a;
+  --aurora-editor-gutter-fg:    #64748b;
+  --aurora-editor-line-highlight-rgb: 234, 179, 8;  /* execution-step glow */
 
   /* Typography */
   --aurora-font-ui:   'Lexend', system-ui, sans-serif;

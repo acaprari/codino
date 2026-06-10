@@ -108,7 +108,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             style={{
               width: '100%',
               padding: '11px 14px',
-              background: 'rgba(0,0,0,0.25)',
+              background: 'rgba(var(--aurora-black-rgb), 0.25)',
               border: '1px solid var(--aurora-glass-border)',
               borderRadius: 'var(--aurora-card-radius)',
               color: 'var(--aurora-text-primary)',
@@ -119,16 +119,16 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               boxSizing: 'border-box',
             }}
           />
-          <div style={{ background: 'rgba(253, 224, 71, 0.08)', borderLeft: '3px solid var(--aurora-accent-amber)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '12.5px', color: 'var(--aurora-text-secondary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
+          <div style={{ background: 'rgba(var(--aurora-accent-amber-rgb), 0.08)', borderLeft: '3px solid var(--aurora-accent-amber)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '12.5px', color: 'var(--aurora-text-secondary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
             {t.warning}
           </div>
           {testResult === 'success' && (
-            <div style={{ background: 'rgba(110, 231, 183, 0.10)', borderLeft: '3px solid var(--aurora-accent-success)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '13px', color: 'var(--aurora-text-primary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
+            <div style={{ background: 'rgba(var(--aurora-accent-success-rgb), 0.10)', borderLeft: '3px solid var(--aurora-accent-success)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '13px', color: 'var(--aurora-text-primary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
               {t.success}
             </div>
           )}
           {testResult === 'error' && (
-            <div style={{ background: 'rgba(253, 164, 175, 0.10)', borderLeft: '3px solid var(--aurora-accent-error)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '13px', color: 'var(--aurora-text-primary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
+            <div style={{ background: 'rgba(var(--aurora-accent-error-rgb), 0.10)', borderLeft: '3px solid var(--aurora-accent-error)', padding: '10px 14px', borderRadius: 'var(--aurora-card-radius)', fontSize: '13px', color: 'var(--aurora-text-primary)', marginBottom: '12px', fontFamily: 'var(--aurora-font-ui)' }}>
               {t.error}
             </div>
           )}
@@ -147,7 +147,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                 style={{
                   flex: 1,
                   padding: '14px',
-                  background: language === lang ? 'rgba(240, 171, 252, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  background: language === lang ? 'rgba(var(--aurora-accent-pink-rgb), 0.15)' : 'rgba(var(--aurora-white-rgb), 0.05)',
                   border: language === lang ? '1px solid var(--aurora-accent-pink)' : '1px solid var(--aurora-glass-border)',
                   borderRadius: 'var(--aurora-card-radius)',
                   cursor: 'pointer',

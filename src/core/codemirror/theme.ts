@@ -3,39 +3,39 @@ import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 
 const codinoHighlightStyle = HighlightStyle.define([
-  { tag: tags.keyword, color: '#3b82f6', fontWeight: 'bold' },
-  { tag: tags.number, color: '#f59e0b' },
-  { tag: tags.string, color: '#10b981' },
-  { tag: tags.variableName, color: '#ec4899' },
-  { tag: tags.operator, color: '#6366f1' },
+  { tag: tags.keyword, color: 'var(--aurora-code-keyword)', fontWeight: 'bold' },
+  { tag: tags.number, color: 'var(--aurora-code-number)' },
+  { tag: tags.string, color: 'var(--aurora-code-string)' },
+  { tag: tags.variableName, color: 'var(--aurora-code-identifier)' },
+  { tag: tags.operator, color: 'var(--aurora-code-operator)' },
 ]);
 
 export const codinoTheme = [
   syntaxHighlighting(codinoHighlightStyle),
   EditorView.theme({
     '&': {
-      backgroundColor: '#1e293b',
-      color: '#e2e8f0',
+      backgroundColor: 'var(--aurora-editor-bg)',
+      color: 'var(--aurora-editor-fg)',
     },
     '.cm-content': {
-      caretColor: '#60a5fa',
+      caretColor: 'var(--aurora-editor-caret)',
     },
     '.cm-cursor, .cm-dropCursor': {
-      borderLeftColor: '#60a5fa',
+      borderLeftColor: 'var(--aurora-editor-caret)',
     },
     '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
-      backgroundColor: '#334155',
+      backgroundColor: 'var(--aurora-editor-selection)',
     },
     '.cm-activeLine': {
-      backgroundColor: '#334155',
+      backgroundColor: 'var(--aurora-editor-selection)',
     },
     '.cm-gutters': {
-      backgroundColor: '#0f172a',
-      color: '#64748b',
+      backgroundColor: 'var(--aurora-editor-gutter-bg)',
+      color: 'var(--aurora-editor-gutter-fg)',
       border: 'none',
     },
     '.cm-activeLineGutter': {
-      backgroundColor: '#1e293b',
+      backgroundColor: 'var(--aurora-editor-bg)',
     },
   }),
 ];

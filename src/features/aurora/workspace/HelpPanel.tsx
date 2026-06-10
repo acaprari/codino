@@ -109,8 +109,8 @@ export function HelpPanel({ language, currentLevel }: HelpPanelProps) {
                   <div
                     key={i}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      background: 'rgba(var(--aurora-white-rgb), 0.05)',
+                      border: '1px solid rgba(var(--aurora-white-rgb), 0.08)',
                       borderRadius: 'var(--aurora-card-radius)',
                       padding: '9px 11px',
                     }}

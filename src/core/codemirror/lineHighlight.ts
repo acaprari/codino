@@ -28,7 +28,7 @@ export const lineHighlightField = StateField.define<DecorationSet>({
 
 export const executionLineTheme = EditorView.theme({
   '.cm-executionLine': {
-    backgroundColor: 'rgba(234, 179, 8, 0.3) !important',
+    backgroundColor: 'rgba(var(--aurora-editor-line-highlight-rgb), 0.3) !important',
     borderRadius: '2px',
   },
 });

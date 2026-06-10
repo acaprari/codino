@@ -35,7 +35,7 @@ export function AuroraModal({
         position: 'fixed',
         inset: 0,
         zIndex: 50,
-        background: 'rgba(15, 23, 42, 0.55)',
+        background: 'rgba(var(--aurora-overlay-rgb), 0.55)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         display: 'flex',

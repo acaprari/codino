@@ -21,8 +21,8 @@ export function ExecutionPanel({ output, variables, language }: ExecutionPanelPr
         <div
           data-testid="execution-output"
           style={{
-            background: 'rgba(110, 231, 183, 0.10)',
-            border: '1px solid rgba(110, 231, 183, 0.25)',
+            background: 'rgba(var(--aurora-accent-success-rgb), 0.10)',
+            border: '1px solid rgba(var(--aurora-accent-success-rgb), 0.25)',
             borderRadius: 'var(--aurora-card-radius)',
             padding: '10px 12px',
             fontFamily: 'var(--aurora-font-code)',
@@ -45,8 +45,8 @@ export function ExecutionPanel({ output, variables, language }: ExecutionPanelPr
             <div
               key={name}
               style={{
-                background: 'rgba(240, 171, 252, 0.10)',
-                border: '1px solid rgba(240, 171, 252, 0.25)',
+                background: 'rgba(var(--aurora-accent-pink-rgb), 0.10)',
+                border: '1px solid rgba(var(--aurora-accent-pink-rgb), 0.25)',
                 borderRadius: 'var(--aurora-card-radius)',
                 padding: '6px 10px',
                 fontFamily: 'var(--aurora-font-code)',

@@ -12,6 +12,18 @@ Every pane and modal uses `backdrop-filter: blur(28px) saturate(160%)` over a tr
 - `--aurora-glass-surface` (0.07 alpha) for inline panes
 - `--aurora-glass-elevated` (0.12 alpha) for floating overlays
 
+### RGB companion tokens enable alpha composition without leaking literals
+Aurora's design language uses semi-transparent accent colors heavily — tinted card backgrounds, soft borders, glow shadows. CSS does not let `rgba()` take a hex token (`rgba(var(--aurora-accent-pink), 0.10)` is invalid), so each accent and each commonly-composed neutral has a `--*-rgb` companion exposing the three space-separated channels:
+
+```
+--aurora-accent-pink:     #f0abfc;
+--aurora-accent-pink-rgb: 240, 171, 252;
+```
+
+Sites then compose alpha at the call site: `background: 'rgba(var(--aurora-accent-pink-rgb), 0.10)'`. This honours INV-01 (no bare RGB literals outside `aurora.css`) without forcing every alpha variant to become its own discrete token. The companions exist for the five accents, white, black, the slate-900 modal overlay, the three background-glow stops used by `AuroraBackground`, and the execution-step line-highlight color used by `lineHighlight.ts`. When a hex token's value changes, its RGB companion must be updated in lockstep — they are not auto-derived.
+
+> Alternative considered: `color-mix(in srgb, var(--aurora-accent-pink) 10%, transparent)`. Cleaner syntax with no companion-token duplication, but the visual result differs subtly from straight alpha (sRGB mixing produces slightly different blends than the rgba multiply), and the migration churn was larger than the benefit at this stage. Worth revisiting if the `--*-rgb` companions become unwieldy.
+
 ### Strict accent role assignments
 Each accent color owns one and only one role. This is the discipline that prevents the "too many colors" problem:
 
@@ -58,7 +70,7 @@ Each consumer modal sets its own `dismissible` value — they are documented in 
 
 ## Invariants
 
-INV-01: All Codino UI components must source colors via `var(--aurora-*)` custom properties. Hard-coded hex values outside `aurora.css` violate the discipline.
+INV-01: All Codino UI components must source colors via `var(--aurora-*)` custom properties. Hard-coded hex literals and bare `rgb()`/`rgba()` tuples outside `aurora.css` violate the discipline. Alpha composition at the call site is permitted only via `rgba(var(--aurora-*-rgb), <alpha>)` over a declared RGB companion token.
 
 INV-02: Each accent color appears in only its assigned role. Reusing `--aurora-accent-success` for non-output green is forbidden.
 

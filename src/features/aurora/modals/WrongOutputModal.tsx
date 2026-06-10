@@ -39,11 +39,11 @@ export function WrongOutputModal({
         <p style={{ color: 'var(--aurora-text-primary)', lineHeight: 1.5, marginBottom: '18px' }}>{explanation}</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-          <div style={{ background: 'rgba(110, 231, 183, 0.10)', borderLeft: '3px solid var(--aurora-accent-success)', padding: '10px 12px', borderRadius: 'var(--aurora-card-radius)' }}>
+          <div style={{ background: 'rgba(var(--aurora-accent-success-rgb), 0.10)', borderLeft: '3px solid var(--aurora-accent-success)', padding: '10px 12px', borderRadius: 'var(--aurora-card-radius)' }}>
             <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--aurora-accent-success)', marginBottom: '4px' }}>{t.expected}</div>
             <div style={{ fontFamily: 'var(--aurora-font-code)', fontSize: '13px', color: 'var(--aurora-text-primary)' }}>{expected}</div>
           </div>
-          <div style={{ background: 'rgba(253, 164, 175, 0.10)', borderLeft: '3px solid var(--aurora-accent-error)', padding: '10px 12px', borderRadius: 'var(--aurora-card-radius)' }}>
+          <div style={{ background: 'rgba(var(--aurora-accent-error-rgb), 0.10)', borderLeft: '3px solid var(--aurora-accent-error)', padding: '10px 12px', borderRadius: 'var(--aurora-card-radius)' }}>
             <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--aurora-accent-error)', marginBottom: '4px' }}>{t.actual}</div>
             <div style={{ fontFamily: 'var(--aurora-font-code)', fontSize: '13px', color: 'var(--aurora-text-primary)' }}>{actual}</div>
           </div>
